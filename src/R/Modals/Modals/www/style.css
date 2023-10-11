@@ -1,0 +1,10 @@
+/* 
+# Herramienta digital Análisis de Riesgo SR - style.css
+# Organización Panamericana de la Salud
+# Última fecha de modificación: 2023-08-25
+# R 4.3.0
+*/
+
+.shiny-output-error { visibility: hidden; }
+.shiny-output-error:before { visibility: hidden; }
+

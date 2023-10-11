@@ -1,0 +1,234 @@
+/* 
+# Herramienta digital Análisis de Riesgo SR - style.css
+# Organización Panamericana de la Salud
+# Última fecha de modificación: 2023-07-26
+# R 4.3.0
+*/
+
+.main-sidebar { font-size: 16px; }
+.glyphicon { font-size: 80px; }
+g.pointtext { display: none; }
+hr {border-top: 1px solid #000000;}
+.shiny-output-error { visibility: hidden; }
+.shiny-output-error:before { visibility: hidden; }
+
+/* logo */
+.skin-purple .main-header .logo {
+    background-color: #1c9ad6;
+}
+
+/* logo when hovered */
+.skin-purple .main-header .logo:hover {
+    background-color: #1c9ad6;
+}
+
+/* main sidebar */
+.skin-purple .main-sidebar {
+    background-color: #e7e7e7;
+    
+}
+
+/* navbar (rest of the header) */
+.skin-purple .main-header .navbar {
+    background-color: #1c9ad6;
+}
+
+/* toggle button when hovered */
+.skin-purple .main-header .navbar .sidebar-toggle:hover{
+    background-color: #177dad;
+}
+
+/* Side bar selected color on side rectangle */
+.skin-purple .sidebar-menu > li.active > a{
+    border-left-color: #177dad;
+}
+
+.skin-purple .sidebar-menu > li > a:hover {
+    border-left-color: #177dad;
+}
+
+/* active selected tab in the sidebarmenu */
+.skin-purple .main-sidebar .sidebar .sidebar-menu .active a{
+    background-color: #adaaab;
+}
+/* other links in the sidebarmenu when hovered */
+.skin-purple .main-sidebar .sidebar .sidebar-menu a:hover{
+    background-color: #adaaab;
+}
+.shiny-input-container {
+    color: #474747;
+    }
+/* other links in the sidebarmenu */
+.skin-purple .main-sidebar .sidebar .sidebar-menu a{
+    color: #000000;
+}
+
+.nav-tabs-custom .nav-tabs li.active {
+    border-top-color: #1c9ad6;
+}
+
+.small-box {border-radius: 5px;}
+.small-box.bg-purple { background-color: #1c9ad6 !important;}
+.small-box.bg-teal { background-color: #22a6b3 !important;}
+.small-box.bg-orange { background-color: #f0932b !important;}
+.small-box.bg-blue { background-color: #3e804f !important;}
+
+.box.box-solid.box-primary>.box-header {
+    background:#1c9ad6;
+    border-radius: 7px;
+}
+
+.box {
+    border-radius: 10px;
+}
+
+.btn {
+    border-radius: 10px;
+}
+
+.box.box-info {
+    border-top-color: #7f8c8d;
+}
+
+.irs--shiny .irs-bar {
+    background-color: #1c9ad6;
+    border-bottom-color: #1c9ad6;
+    border-top-color: #1c9ad6;
+}
+
+.irs--shiny .irs-from {
+    background-color:  #1c9ad6;
+}
+
+.irs--shiny .irs-to {
+    background-color:  #1c9ad6;
+}
+
+.box.box-solid.box-info {
+    border-bottom-color: #7f8c8d;
+    border-left-color: #7f8c8d;
+    border-right-color: #7f8c8d;
+    border-top-color: #7f8c8d;
+    background: #FFFFFF;
+}
+
+.box.box-solid.box-info>.box-header {
+    background:#7f8c8d;
+    border-radius: 7px;
+}
+
+.box.box-solid.box-primary{
+    border-bottom-color: #1c9ad6;
+    border-left-color: #1c9ad6;
+    border-right-color: #1c9ad6;
+    border-top-color: #1c9ad6;
+    background: #FFFFFF;
+}
+
+.small-box.bg-maroon {
+    background-color: #9c9c9c !important;
+}
+
+.box.bg-maroon {
+    background-color: #1c9ad6 !important;
+    border-radius: 0px !important;
+}
+
+.small-box.bg-green {
+    background-color: #53A567FF !important;
+}
+
+.container-fluid {
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+.box.box-solid.bg-maroon {
+    margin-bottom: 0 !important;
+    padding-top: 10px !important;
+}
+
+.box.box-solid.bg-black {
+    margin-bottom: 0 !important;
+}
+
+.box.bg-black {
+    background-color: #ffffff !important;
+    border-radius: 0px !important;
+}
+
+.modal-content {
+    border-radius: 10px;
+}
+
+.modal-header {
+    border-bottom-color: #f4f4f4;
+    background-color: #f1f1f1;
+    border-radius: 8px;
+}
+
+.leaflet .legend i{
+    margin-top: 0px;
+    margin-bottom: 5px;
+    border-radius: 5px;
+}
+
+.nav-tabs-custom>.nav-tabs>li {
+    background: #e1e1e1 !important;
+    border-radius: 5px;
+}
+
+.skin-purple .main-sidebar .sidebar .sidebar-menu .active a {
+    background-color: #177dad !important;
+    color: white;
+    font-weight: bold;
+    /*border-radius: 0px 15px 0 0;*/
+}
+
+.skin-purple .main-sidebar .sidebar .sidebar-menu .active a:hover {
+    background: #cacaca !important;
+    color: #000000;
+}
+
+.skin-purple .main-sidebar .sidebar .sidebar-menu a:hover {
+    background-color: #cacaca !important;
+    color: #000000;
+}
+
+.skin-purple .main-sidebar .sidebar .sidebar-menu a {
+    border-top: 1px solid #9f9f9f;
+}
+
+.far, .fas {
+    padding-right: 5px;
+}
+
+@media only screen and (max-width: 450px) {
+	img#country_flag {
+		top: 255px !important;
+		right: 0px !important;
+		z-index: 10000;
+	}
+}
+
+.button_word {
+    background-color: white;
+    color: black;
+    border-radius: 5px !important;
+    margin-top: 10px !important;
+    margin-bottom: 10px !important;
+    margin-left: 15px !important;
+    margin-right: 5px !important;
+    float:center;
+}
+
+.button_html {
+    background-color: white;
+    color: black;
+    border-radius: 5px !important;
+    margin-top: 10px !important;
+    margin-bottom: 10px !important;
+    margin-left: 1px !important;
+    margin-right: 5px !important;
+    float:center;
+}
