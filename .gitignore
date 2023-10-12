@@ -53,3 +53,6 @@ rsconnect/
 
 # Python notebooks
 notebooks
+
+# Excel cache
+~$country_data.xlsx
