@@ -50,3 +50,6 @@ rsconnect/
 
 # Mac folder cache
 .DS_Store
+
+# Python notebooks
+notebooks
