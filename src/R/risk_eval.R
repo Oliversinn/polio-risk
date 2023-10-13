@@ -10,6 +10,8 @@ population_inmunity_df = read_excel(PATH_country_data, sheet = 3, skip = 2, col_
 colnames(population_inmunity_df) = c('admin1', 'admin2', 'subnational', 'region', 'population', 'pfa','year1','year2','year3','year4','year5','ipv2','effective_inmunization_campaign')
 survaillance_df = read_excel(PATH_country_data, sheet = 4, skip = 2, col_names = FALSE)
 colnames(survaillance_df) = c('admin1', 'admin2', 'subnational', 'region', 'population', 'pfa', 'compliant_units', 'pfa_rate', 'pfa_notified', 'pfa_investigated', 'suitable_samples', 'followups', 'active_search')
+determinants_df = read_excel(PATH_country_data, sheet = 5, skip = 2, col_names = FALSE)
+colnames(determinants_df) = c('admin1', 'admin2', 'subnational', 'region', 'population', 'pfa', 'drinking_water', 'sanitation_services')
 
 library(readxl)
 library(sf)
@@ -222,3 +224,30 @@ score_active_search <- function(survaillance_df) {
   )
   return(score)
 }
+
+## Determinants ----
+
+# score drinking water
+score_drinking_water <- function(determinants_df) {
+  population_and_pfa <- population_and_pfa(determinants_df)
+  score <- case_when(
+    population_and_pfa & determinants_df[["drinking_water"]] < 90 ~ 5,
+    population_and_pfa & determinants_df[["drinking_water"]] >= 90 ~ 0,
+    !population_and_pfa & determinants_df[["drinking_water"]] < 90 ~ 6,
+    !population_and_pfa & determinants_df[["drinking_water"]] >= 90 ~ 0,
+  )
+  return(score)
+}
+
+# Score sanitation services
+score_sanitation_services <- function(determinants_df) {
+  population_and_pfa <- population_and_pfa(determinants_df)
+  score <- case_when(
+    population_and_pfa & determinants_df[["sanitation_services"]] < 90 ~ 5,
+    population_and_pfa & determinants_df[["sanitation_services"]] >= 90 ~ 0,
+    !population_and_pfa & determinants_df[["sanitation_services"]] < 90 ~ 6,
+    !population_and_pfa & determinants_df[["sanitation_services"]] >= 90 ~ 0,
+  )
+  return(score)
+}
+
