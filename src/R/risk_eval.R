@@ -6,12 +6,14 @@
 
 Sys.setlocale(locale = "es_ES.UTF-8")
 
-population_inmunity_df = read_excel(PATH_country_data, sheet = 3, skip = 2, col_names = FALSE)
-colnames(population_inmunity_df) = c('admin1', 'admin2', 'subnational', 'region', 'population', 'pfa','year1','year2','year3','year4','year5','ipv2','effective_inmunization_campaign')
-survaillance_df = read_excel(PATH_country_data, sheet = 4, skip = 2, col_names = FALSE)
-colnames(survaillance_df) = c('admin1', 'admin2', 'subnational', 'region', 'population', 'pfa', 'compliant_units', 'pfa_rate', 'pfa_notified', 'pfa_investigated', 'suitable_samples', 'followups', 'active_search')
-determinants_df = read_excel(PATH_country_data, sheet = 5, skip = 2, col_names = FALSE)
-colnames(determinants_df) = c('admin1', 'admin2', 'subnational', 'region', 'population', 'pfa', 'drinking_water', 'sanitation_services')
+population_inmunity = read_excel(PATH_country_data, sheet = 3, skip = 2, col_names = FALSE)
+colnames(population_inmunity) = c('admin1', 'admin2', 'subnational', 'region', 'population', 'pfa','year1','year2','year3','year4','year5','ipv2','effective_inmunization_campaign')
+survaillance = read_excel(PATH_country_data, sheet = 4, skip = 2, col_names = FALSE)
+colnames(survaillance) = c('admin1', 'admin2', 'subnational', 'region', 'population', 'pfa', 'compliant_units', 'pfa_rate', 'pfa_notified', 'pfa_investigated', 'suitable_samples', 'followups', 'active_search')
+determinants = read_excel(PATH_country_data, sheet = 5, skip = 2, col_names = FALSE)
+colnames(determinants) = c('admin1', 'admin2', 'subnational', 'region', 'population', 'pfa', 'drinking_water', 'sanitation_services')
+outbreaks = read_excel(PATH_country_data, sheet = 6, skip = 2, col_names = FALSE)
+colnames(outbreaks) =  c('admin1', 'admin2', 'subnational', 'region', 'measles', 'rubella', 'diphtheria', 'yellow_fever', 'tetanus')
 
 library(readxl)
 library(sf)
@@ -250,4 +252,20 @@ score_sanitation_services <- function(determinants_df) {
   )
   return(score)
 }
+
+
+## Outbreaks ----
+
+# Score outbreaks
+score_outbreak <- function(outbreaks_df, disease) {
+  score <- case_when(
+    outbreaks_df[[disease]] == lang_label("yes") ~ 2,
+    outbreaks_df[[disease]] == lang_label("no") ~ 0
+  )
+  return(score)
+}
+
+
+
+
 
