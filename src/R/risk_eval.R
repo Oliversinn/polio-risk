@@ -6,9 +6,10 @@
 
 Sys.setlocale(locale = "es_ES.UTF-8")
 
-# df = read_excel(PATH_country_data, sheet = 3, skip = 2, col_names = FALSE)
-# colnames(df) = c('admin1', 'admin2', 'subnational', 'region', 'population', 'pfa','year1','year2','year3','year4','year5','ipv2','effective_inmunization_campaign')
-
+population_inmunity_df = read_excel(PATH_country_data, sheet = 3, skip = 2, col_names = FALSE)
+colnames(population_inmunity_df) = c('admin1', 'admin2', 'subnational', 'region', 'population', 'pfa','year1','year2','year3','year4','year5','ipv2','effective_inmunization_campaign')
+survaillance_df = read_excel(PATH_country_data, sheet = 4, skip = 2, col_names = FALSE)
+colnames(survaillance_df) = c('admin1', 'admin2', 'subnational', 'region', 'population', 'pfa', 'compliant_units', 'pfa_rate', 'pfa_notified', 'pfa_investigated', 'suitable_samples', 'followups', 'active_search')
 
 library(readxl)
 library(sf)
@@ -83,6 +84,8 @@ var_norm <- function(x) {
 
 # SCORING Functions ----
 
+## Population immunity ----
+
 # Population and PFA
 population_and_pfa <- function(population_inmunity_df) {
     score <- case_when(
@@ -96,16 +99,16 @@ population_and_pfa <- function(population_inmunity_df) {
 score_coverage_polio3 <- function(population_inmunity_df, year_column) {
   population_and_pfa <- population_and_pfa(population_inmunity_df)
   score = case_when(
-    population_and_pfa == TRUE & round(population_inmunity_df[[year_column]],0)  < 80 ~ 8,
-    population_and_pfa == TRUE & (round(population_inmunity_df[[year_column]],0) >= 80 & round(population_inmunity_df[[year_column]],0) < 90) ~ 5,
-    population_and_pfa == TRUE & (round(population_inmunity_df[[year_column]],0) >= 90 & round(population_inmunity_df[[year_column]],0) < 95) ~ 2,
-    population_and_pfa == TRUE & (round(population_inmunity_df[[year_column]],0) >= 95 & round(population_inmunity_df[[year_column]],0) <= 100) ~ 0,
-    population_and_pfa == TRUE & round(population_inmunity_df[[year_column]],0)  > 100 ~ 2,
-    population_and_pfa == FALSE & round(population_inmunity_df[[year_column]],0)  < 80 ~ 10,
-    population_and_pfa == FALSE & (round(population_inmunity_df[[year_column]],0) >= 80 & round(population_inmunity_df[[year_column]],0) < 90) ~ 6,
-    population_and_pfa == FALSE & (round(population_inmunity_df[[year_column]],0) >= 90 & round(population_inmunity_df[[year_column]],0) < 95) ~ 3,
-    population_and_pfa == FALSE & (round(population_inmunity_df[[year_column]],0) >= 95 & round(population_inmunity_df[[year_column]],0) <= 100) ~ 0,
-    population_and_pfa == FALSE & round(population_inmunity_df[[year_column]],0)  > 100 ~ 3
+    population_and_pfa & round(population_inmunity_df[[year_column]],0)  < 80 ~ 8,
+    population_and_pfa & (round(population_inmunity_df[[year_column]],0) >= 80 & round(population_inmunity_df[[year_column]],0) < 90) ~ 5,
+    population_and_pfa & (round(population_inmunity_df[[year_column]],0) >= 90 & round(population_inmunity_df[[year_column]],0) < 95) ~ 2,
+    population_and_pfa & (round(population_inmunity_df[[year_column]],0) >= 95 & round(population_inmunity_df[[year_column]],0) <= 100) ~ 0,
+    population_and_pfa & round(population_inmunity_df[[year_column]],0)  > 100 ~ 2,
+    !population_and_pfa & round(population_inmunity_df[[year_column]],0)  < 80 ~ 10,
+    !population_and_pfa & (round(population_inmunity_df[[year_column]],0) >= 80 & round(population_inmunity_df[[year_column]],0) < 90) ~ 6,
+    !population_and_pfa & (round(population_inmunity_df[[year_column]],0) >= 90 & round(population_inmunity_df[[year_column]],0) < 95) ~ 3,
+    !population_and_pfa & (round(population_inmunity_df[[year_column]],0) >= 95 & round(population_inmunity_df[[year_column]],0) <= 100) ~ 0,
+    !population_and_pfa & round(population_inmunity_df[[year_column]],0)  > 100 ~ 3
   )
   return(score)
 }
@@ -114,16 +117,16 @@ score_coverage_polio3 <- function(population_inmunity_df, year_column) {
 score_ipv2 <- function(population_inmunity_df) {
   population_and_pfa <- population_and_pfa(population_inmunity_df)
   score = case_when(
-    population_and_pfa == TRUE & round(population_inmunity_df[["ipv2"]],0)  < 80 ~ 8,
-    population_and_pfa == TRUE & (round(population_inmunity_df[["ipv2"]],0) >= 80 & round(population_inmunity_df[["ipv2"]],0) < 90) ~ 5,
-    population_and_pfa == TRUE & (round(population_inmunity_df[["ipv2"]],0) >= 90 & round(population_inmunity_df[["ipv2"]],0) < 95) ~ 2,
-    population_and_pfa == TRUE & (round(population_inmunity_df[["ipv2"]],0) >= 95 & round(population_inmunity_df[["ipv2"]],0) <= 100) ~ 0,
-    population_and_pfa == TRUE & round(population_inmunity_df[["ipv2"]],0)  > 100 ~ 2,
-    population_and_pfa == FALSE & round(population_inmunity_df[["ipv2"]],0)  < 80 ~ 10,
-    population_and_pfa == FALSE & (round(population_inmunity_df[["ipv2"]],0) >= 80 & round(population_inmunity_df[["ipv2"]],0) < 90) ~ 6,
-    population_and_pfa == FALSE & (round(population_inmunity_df[["ipv2"]],0) >= 90 & round(population_inmunity_df[["ipv2"]],0) < 95) ~ 3,
-    population_and_pfa == FALSE & (round(population_inmunity_df[["ipv2"]],0) >= 95 & round(population_inmunity_df[["ipv2"]],0) <= 100) ~ 0,
-    population_and_pfa == FALSE & round(population_inmunity_df[["ipv2"]],0)  > 100 ~ 3
+    population_and_pfa & round(population_inmunity_df[["ipv2"]],0)  < 80 ~ 8,
+    population_and_pfa & (round(population_inmunity_df[["ipv2"]],0) >= 80 & round(population_inmunity_df[["ipv2"]],0) < 90) ~ 5,
+    population_and_pfa & (round(population_inmunity_df[["ipv2"]],0) >= 90 & round(population_inmunity_df[["ipv2"]],0) < 95) ~ 2,
+    population_and_pfa & (round(population_inmunity_df[["ipv2"]],0) >= 95 & round(population_inmunity_df[["ipv2"]],0) <= 100) ~ 0,
+    population_and_pfa & round(population_inmunity_df[["ipv2"]],0)  > 100 ~ 2,
+    !population_and_pfa & round(population_inmunity_df[["ipv2"]],0)  < 80 ~ 10,
+    !population_and_pfa & (round(population_inmunity_df[["ipv2"]],0) >= 80 & round(population_inmunity_df[["ipv2"]],0) < 90) ~ 6,
+    !population_and_pfa & (round(population_inmunity_df[["ipv2"]],0) >= 90 & round(population_inmunity_df[["ipv2"]],0) < 95) ~ 3,
+    !population_and_pfa & (round(population_inmunity_df[["ipv2"]],0) >= 95 & round(population_inmunity_df[["ipv2"]],0) <= 100) ~ 0,
+    !population_and_pfa & round(population_inmunity_df[["ipv2"]],0)  > 100 ~ 3
   )
   return(score)
 }
@@ -132,13 +135,90 @@ score_ipv2 <- function(population_inmunity_df) {
 score_succesfull_inmunization_campaign <- function(population_inmunity_df) {
   population_and_pfa <- population_and_pfa(population_inmunity_df)
   score = case_when(
-    population_and_pfa == TRUE & population_inmunity_df[["effective_inmunization_campaign"]] == lang_label("no") ~ 6,
-    population_and_pfa == TRUE & population_inmunity_df[["effective_inmunization_campaign"]] == lang_label("yes") ~ 0,
-    population_and_pfa == FALSE & population_inmunity_df[["effective_inmunization_campaign"]] == lang_label("no") ~ 8,
-    population_and_pfa == FALSE & population_inmunity_df[["effective_inmunization_campaign"]] == lang_label("yes") ~ 0,
+    population_and_pfa & population_inmunity_df[["effective_inmunization_campaign"]] == lang_label("no") ~ 6,
+    population_and_pfa & population_inmunity_df[["effective_inmunization_campaign"]] == lang_label("yes") ~ 0,
+    !population_and_pfa & population_inmunity_df[["effective_inmunization_campaign"]] == lang_label("no") ~ 8,
+    !population_and_pfa & population_inmunity_df[["effective_inmunization_campaign"]] == lang_label("yes") ~ 0,
     TRUE ~ 0
    )
   return(score)
 }
 
+## Survaillance ----
 
+# Score reporting units
+score_reporting_units <- function(survaillance_df) {
+  population_and_pfa = population_and_pfa(survaillance_df)
+  score = case_when(
+    population_and_pfa & survaillance_df[["compliant_units"]] < 80 ~ 8,
+    !population_and_pfa & survaillance_df[["compliant_units"]] < 80 ~ 10,
+    TRUE ~ 0
+  )
+  return(score)
+}
+
+# Score PFA rate
+score_pfa_rate <- function(survaillance_df) {
+  population_and_pfa <- population_and_pfa(survaillance_df)
+  score <- case_when(
+    population_and_pfa & survaillance_df[['pfa_rate']] < 1 ~ 8,
+    population_and_pfa & survaillance_df[['pfa_rate']] >= 1 ~ 0,
+    TRUE ~ NA
+  )
+  return(score)
+}
+
+# Score PFA notified < 14 days
+score_pfa_notified <- function(survaillance_df) {
+  population_and_pfa <- population_and_pfa(survaillance_df)
+  score <- case_when(
+    population_and_pfa & survaillance_df[["pfa_notified"]] < 80 ~ 5,
+    population_and_pfa & survaillance_df[["pfa_notified"]] >= 80 ~ 0,
+    TRUE ~ NA
+  )
+  return(score)
+}
+
+# Score PFA investigated < 48 hr
+score_pfa_investigated <- function(survaillance_df) {
+  population_and_pfa <- population_and_pfa(survaillance_df)
+  score <- case_when(
+    population_and_pfa & survaillance_df[["pfa_investigated"]] < 80 ~ 5,
+    population_and_pfa & survaillance_df[["pfa_investigated"]] >= 80 ~ 0,
+    TRUE ~ NA
+  )
+  return(score)
+}
+
+# Score suitable samples
+score_suitable_samples <- function(survaillance_df) {
+  population_and_pfa <- population_and_pfa(survaillance_df)
+  score <- case_when(
+    population_and_pfa & survaillance_df[["suitable_samples"]] < 80 ~ 5,
+    population_and_pfa & survaillance_df[["suitable_samples"]] >= 80 ~ 0,
+    TRUE ~ NA
+  )
+  return(score)
+}
+
+# Score followups
+score_followups <- function(survaillance_df) {
+  population_and_pfa <- population_and_pfa(survaillance_df)
+  score <- case_when(
+    population_and_pfa & survaillance_df[["followups"]] < 80 ~ 5,
+    population_and_pfa & survaillance_df[["followups"]] >= 80 ~ 0,
+    TRUE ~ NA
+  )
+  return(score)
+}
+
+# Score active search
+score_active_search <- function(survaillance_df) {
+  population_and_pfa <- population_and_pfa(survaillance_df)
+  score <- case_when(
+    !population_and_pfa & survaillance_df[["active_search"]] == lang_label("no") ~ 10,
+    !population_and_pfa & survaillance_df[["active_search"]] == lang_label("yes") ~ 0,
+    TRUE ~ NA
+  )
+  return(score)
+}
