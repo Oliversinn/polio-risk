@@ -481,7 +481,7 @@ if ("ADMIN1_GEO_ID" %in% colnames(country_shapes)) {
   admin1_geo_id_df <- id_data %>% select(`ADMIN1 GEO_ID`,ADMIN1) %>% unique()
   admin1_geo_id_df <- rbind(admin1_geo_id_df,c(0,toupper(lang_label("rep_label_all"))))
 } else {
-  admin1_geo_id_df <- id_data %>% select(ADMIN1) %>% unique()
+  admin1_geo_id_df <- id_data %>% select(GEO_ID, ADMIN1) %>% unique()
   admin1_geo_id_df <- rbind(admin1_geo_id_df,c(0,toupper(lang_label("rep_label_all"))))
 }
 
