@@ -501,6 +501,15 @@ if ("ADMIN1_GEO_ID" %in% colnames(country_shapes)) {
 }
 
 
+# SAVE ----
+rm(determinants_score_join,
+   immunity_scores_join,
+   outbreaks_scores_join,
+   survaillance_scores_join,
+   sheet_cut_off)
+save.image(file = "POLIO.RData")
 
+# CLEAN ----
+rm(list = ls())
 
 
