@@ -55,4 +55,4 @@ rsconnect/
 notebooks
 
 # Excel cache
-~$country_data.xlsx
+~$*.xlsx
