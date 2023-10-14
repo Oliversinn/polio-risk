@@ -1,10 +1,11 @@
-##############################################################
-# Herramienta digital Análisis de Riesgo SR - geodata_to_shapefiles.R
-# Organización Panamericana de la Salud
-# Autor: Luis Quezada
-# Última fecha de modificación: 2023-10-02
-# R 4.3.0
-##############################################################
+# Autorship ----
+# Risk Analysis digital tool - geodata_to_shapefiles.R
+# Pan American Health Organization
+# Authors: Luis Quezada & Oliver Mazariegos
+# Last update: 2023-10-02
+# R 4.3.1
+
+# Setup ----
 
 Sys.setlocale(locale = "es_ES.UTF-8")
 
