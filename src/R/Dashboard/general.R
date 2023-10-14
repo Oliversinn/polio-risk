@@ -1,7 +1,7 @@
 # AUTHORSHIP ----
 
 # Pan American Health Organization
-# Autho: Luis Quezada & Oliver Mazariegos
+# Author: Luis Quezada & Oliver Mazariegos
 # Last Update: 2023-10-09
 # R 4.3.1
 
@@ -107,12 +107,11 @@ ind_rangos_table <- function(LANG_TLS,CUT_OFFS,indicator) {
 ind_prep_bar_data <- function(LANG_TLS,CUT_OFFS,data,indicator,admin1_id,risk) {
   
   var_to_summarise <- case_when(
-    indicator == "GENERAL" ~ "TOTAL_PR",
-    indicator == "INM_POB" ~ "INMUNIDAD_POB",
-    indicator == "SURV_QUAL" ~ "CALIDAD_VIG",
-    indicator == "PROG_DEL" ~ "RENDIMIENTO_PROG",
-    indicator == "THRE_ASSE" ~ "EVAL_AMENAZA",
-    indicator == "RAP_RES" ~ "RES_RAPIDA"
+    indicator == "GENERAL" ~ "total_score",
+    indicator == "INM_POB" ~ "immunity_score",
+    indicator == "SURV_QUAL" ~ "survaillance_score",
+    indicator == "PROG_DEL" ~ "determinants_score",
+    indicator == "THRE_ASSE" ~ "outbreaks_score"
   )
   
   prep_data <- data %>% rename("PR" = var_to_summarise)
@@ -136,12 +135,11 @@ ind_prep_map_data <- function(LANG_TLS,ZERO_POB_LIST,CUT_OFFS,map_data,data,indi
   map_data <- full_join(map_data,data,by = "GEO_ID")
   
   var_to_summarise <- case_when(
-    indicator == "GENERAL" ~ "TOTAL_PR",
-    indicator == "INM_POB" ~ "INMUNIDAD_POB",
-    indicator == "SURV_QUAL" ~ "CALIDAD_VIG",
-    indicator == "PROG_DEL" ~ "RENDIMIENTO_PROG",
-    indicator == "THRE_ASSE" ~ "EVAL_AMENAZA",
-    indicator == "RAP_RES" ~ "RES_RAPIDA"
+    indicator == "GENERAL" ~ "total_score",
+    indicator == "INM_POB" ~ "immunity_score",
+    indicator == "SURV_QUAL" ~ "survaillance_score",
+    indicator == "PROG_DEL" ~ "determinants_score",
+    indicator == "THRE_ASSE" ~ "outbreaks_score"
   )
   
   map_data <- map_data %>% rename("PR" = var_to_summarise)
@@ -165,12 +163,11 @@ ind_prep_map_data <- function(LANG_TLS,ZERO_POB_LIST,CUT_OFFS,map_data,data,indi
 ind_get_bar_table <- function(LANG_TLS,CUT_OFFS,data,indicator,admin1_id,risk) {
   
   var_to_summarise <- case_when(
-    indicator == "GENERAL" ~ "TOTAL_PR",
-    indicator == "INM_POB" ~ "INMUNIDAD_POB",
-    indicator == "SURV_QUAL" ~ "CALIDAD_VIG",
-    indicator == "PROG_DEL" ~ "RENDIMIENTO_PROG",
-    indicator == "THRE_ASSE" ~ "EVAL_AMENAZA",
-    indicator == "RAP_RES" ~ "RES_RAPIDA"
+    indicator == "GENERAL" ~ "total_score",
+    indicator == "INM_POB" ~ "immunity_score",
+    indicator == "SURV_QUAL" ~ "survaillance_score",
+    indicator == "PROG_DEL" ~ "determinants_score",
+    indicator == "THRE_ASSE" ~ "outbreaks_score"
   )
   
   if (indicator != "GENERAL") {
@@ -358,7 +355,7 @@ ind_plot_multibar_data <- function(LANG_TLS,CUT_OFFS,bar_data,admin1_id,selected
                                           "zoomIn2d","zoomOut2d","toggleSpikelines","lasso2d","hoverCompareCartesian"))
     } else {
       var_to_summarise <- case_when(
-        selected_indicador == "GENERAL" ~ "TOTAL_PR",
+        selected_indicador == "GENERAL" ~ "total_score",
         selected_indicador == "INM_POB" ~ "INMUNIDAD_POB",
         selected_indicador == "SURV_QUAL" ~ "CALIDAD_VIG",
         selected_indicador == "PROG_DEL" ~ "RENDIMIENTO_PROG",
@@ -525,12 +522,11 @@ ind_plot_map_data <- function(LANG_TLS,ZERO_POB_LIST,CUT_OFFS,map_data,indicator
 ind_prep_box_data <- function(LANG_TLS,CUT_OFFS,data,indicator,admin1_id) {
   
   var_to_summarise <- case_when(
-    indicator == "GENERAL" ~ "TOTAL_PR",
-    indicator == "INM_POB" ~ "INMUNIDAD_POB",
-    indicator == "SURV_QUAL" ~ "CALIDAD_VIG",
-    indicator == "PROG_DEL" ~ "RENDIMIENTO_PROG",
-    indicator == "THRE_ASSE" ~ "EVAL_AMENAZA",
-    indicator == "RAP_RES" ~ "RES_RAPIDA"
+    indicator == "GENERAL" ~ "total_score",
+    indicator == "INM_POB" ~ "immunity_score",
+    indicator == "SURV_QUAL" ~ "survaillance_score",
+    indicator == "PROG_DEL" ~ "determinants_score",
+    indicator == "THRE_ASSE" ~ "outbreaks_score"
   )
   
   prep_data <- data %>% rename("PR" = var_to_summarise)
@@ -578,5 +574,30 @@ datos_boxes <- function(LANG_TLS,ind_data) {
   res <- c(dat_LR,dat_MR,dat_HR,dat_VHR,dat_total)
   
   return(res)
+}
+
+ind_rename <- function(selected_ind) {
+  return(
+    case_when(
+      lang_label("menuitem_general_label") == selected_ind ~ "GENERAL",
+      lang_label("menuitem_inm_pob") == selected_ind ~ "INM_POB",
+      lang_label("menuitem_surv_qual") == selected_ind ~ "SURV_QUAL",
+      lang_label("menuitem_prog_del") == selected_ind ~ "PROG_DEL",
+      lang_label("menuitem_thre_asse") == selected_ind ~ "THRE_ASSE",
+      lang_label("menuitem_rap_res") == selected_ind ~ "RAP_RES"
+    )
+  )
+}
+
+risk_rename <- function(selected_risk) {
+  return(
+    case_when(
+      toupper(lang_label("rep_label_all")) == selected_risk ~ "ALL",
+      lang_label("cut_offs_VHR") == selected_risk ~ "VHR",
+      lang_label("cut_offs_HR") == selected_risk ~ "HR",
+      lang_label("cut_offs_MR") == selected_risk ~ "MR",
+      lang_label("cut_offs_LR") == selected_risk ~ "LR"
+    )
+  )
 }
 

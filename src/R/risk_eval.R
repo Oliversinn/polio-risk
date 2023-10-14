@@ -16,15 +16,19 @@ library(tidyverse)
 rm(list = ls())
 
 # PATHS ----
-PATH_country_data   = "Data/country_data.xlsx"
-PATH_risk_cut_offs  = "R/risk_cut_offs.xlsx"
-PATH_shapefiles     = "Data/shapefiles/"
+file_path = rstudioapi::getSourceEditorContext()$path
+file_path_index = unlist(gregexec('R/risk_eval.R',file_path))[1]
+PATH_global = substr(file_path,1,file_path_index - 1)
+PATH_country_data   = paste0(PATH_global,"Data/country_data.xlsx")
+PATH_risk_cut_offs  = paste0(PATH_global,"R/risk_cut_offs.xlsx")
+PATH_shapefiles     = paste0(PATH_global,"Data/shapefiles/")
+PATH_translations   = paste0(PATH_global,"R/translations.xlsx")
 
 # VARS ----
 LANG <- as.character(read_excel(PATH_country_data,sheet = 1)[8,2])
 
 # LANG ----
-LANG_TLS <- read_excel("R/translations.xlsx",sheet = "DASHBOARD") %>% 
+LANG_TLS <- read_excel(PATH_translations,sheet = "DASHBOARD") %>% 
   select(LABEL,all_of(LANG))
 colnames(LANG_TLS) <- c("LABEL","LANG")
 lang_label <- function(label) {
@@ -318,6 +322,7 @@ CUT_OFFS <- CUT_OFFS %>% pivot_longer(!RV,names_to = "risk_level")
 # POPULATION AREA ----
 pop_data <- read_excel(PATH_country_data,sheet = 2)
 colnames(pop_data) <- c("ADMIN1 GEO_ID","GEO_ID","ADMIN1","ADMIN2","POB")
+pop_data <- admin_normalizer(pop_data)
 pop_data$`ADMIN1 GEO_ID` <- as.character(pop_data$`ADMIN1 GEO_ID`)
 pop_data$GEO_ID <- as.character(pop_data$GEO_ID)
 pop_data <- pop_data %>% filter(!is.na(`ADMIN1 GEO_ID`) & !is.na(GEO_ID))
@@ -328,10 +333,11 @@ ZERO_POB_LIST <- ZERO_POB_LIST$GEO_ID
 # POPULATION IMMUNITY ----
 
 ## Read data ----
-immunity_data = read_excel(PATH_country_data, sheet = 3, skip = 2, col_names = FALSE)
-colnames(immunity_data) = c('ADMIN1 GEO_ID', 'GEO_ID', 'ADMIN1', 'ADMIN2', 
+immunity_data <- read_excel(PATH_country_data, sheet = 3, skip = 2, col_names = FALSE)
+colnames(immunity_data) <- c('ADMIN1 GEO_ID', 'GEO_ID', 'ADMIN1', 'ADMIN2', 
                             'POB', 'pfa','year1','year2','year3',
                             'year4','year5','ipv2','effective_campaign')
+immunity_data <- admin_normalizer(immunity_data)
 
 ## Filter missing GEO codes ----
 immunity_data <- geocodes_cleansing(immunity_data)
@@ -375,6 +381,7 @@ colnames(survaillance_data) <- c('ADMIN1 GEO_ID', 'GEO_ID', 'ADMIN1', 'ADMIN2',
                            'POB', 'pfa', 'compliant_units_percent', 'pfa_rate', 
                            'pfa_notified_percent', 'pfa_investigated_percent', 
                            'suitable_samples_percent', 'followups_percent', 'active_search')
+survaillance_data <- admin_normalizer(survaillance_data)
 
 ## Filtering missing GEO codes ----
 survaillance_data <- geocodes_cleansing(survaillance_data)
@@ -413,6 +420,7 @@ scores_data <- left_join(scores_data, survaillance_scores_join)
 determinants_data <- read_excel(PATH_country_data, sheet = 5, skip = 2, col_names = FALSE)
 colnames(determinants_data) <- c('ADMIN1 GEO_ID', 'GEO_ID', 'ADMIN1', 'ADMIN2', 
                                 'POB', 'pfa', 'drinking_water_percent', 'sanitation_services_percent')
+determinants_data <- admin_normalizer(determinants_data)
 
 ## Filtering missing GEO codes ----
 determinants_data <- geocodes_cleansing(determinants_data)
@@ -447,6 +455,7 @@ scores_data <- left_join(scores_data, determinants_scores_join)
 outbreaks_data = read_excel(PATH_country_data, sheet = 6, skip = 2, col_names = FALSE)
 colnames(outbreaks_data) =  c('ADMIN1 GEO_ID', 'GEO_ID', 'ADMIN1', 'ADMIN2',
                               'measles', 'rubella', 'diphtheria', 'yellow_fever', 'tetanus')
+outbreaks_data <- admin_normalizer(outbreaks_data)
 
 ## Filtering missing GEO codes ----
 outbreaks_data = geocodes_cleansing(outbreaks_data)
@@ -483,6 +492,7 @@ scores_data <- scores_data %>%
 
 # SHAPEFILES ----
 country_shapes <- st_read(PATH_shapefiles,layer = "admin2")
+country_shapes <- admin_normalizer(country_shapes)
 if ("ADMIN1_" %in% colnames(country_shapes)) {
   country_shapes <- country_shapes %>% rename("ADMIN1_GEO_ID" = "ADMIN1_")
   country_shapes <- country_shapes %>% 
@@ -499,6 +509,95 @@ if ("ADMIN1_GEO_ID" %in% colnames(country_shapes)) {
   admin1_geo_id_df <- id_data %>% select(GEO_ID, ADMIN1) %>% unique()
   admin1_geo_id_df <- rbind(admin1_geo_id_df,c(0,toupper(lang_label("rep_label_all"))))
 }
+
+# HARCODE ADMIN1 GEO ID ----
+country_shapes <- country_shapes %>% 
+  mutate(
+    `ADMIN1 GEO_ID` = case_when(
+      nchar(as.character(GEO_ID)) == 3 ~ substr(as.character(GEO_ID),1,1),
+      nchar(as.character(GEO_ID)) == 4 ~ substr(as.character(GEO_ID),1,2)
+    ),
+    .before = 1
+  )
+
+hardcoded_columns <- country_shapes %>% 
+  select(
+    `ADMIN1 GEO_ID`,
+    GEO_ID,
+    ADMIN1,
+    ADMIN2
+  )
+
+## POPULATION IMMUNITY ----
+immunity_scores <- immunity_scores %>% 
+  select(
+    -`ADMIN1 GEO_ID`,
+    -GEO_ID
+  ) %>% 
+  full_join(hardcoded_columns, ., by = c("ADMIN1" = "ADMIN1", "ADMIN2" = "ADMIN2"))
+
+immunity_data <- immunity_data %>% 
+  select(
+    -`ADMIN1 GEO_ID`,
+    -GEO_ID
+  ) %>% 
+  full_join(hardcoded_columns, ., by = c("ADMIN1" = "ADMIN1", "ADMIN2" = "ADMIN2"))
+
+## SURVAILLANCE ----
+survaillance_scores <- survaillance_scores %>% 
+  select(
+    -`ADMIN1 GEO_ID`,
+    -GEO_ID
+  ) %>% 
+  full_join(hardcoded_columns, ., by = c("ADMIN1" = "ADMIN1", "ADMIN2" = "ADMIN2"))
+
+survaillance_data <- survaillance_data %>% 
+  select(
+    -`ADMIN1 GEO_ID`,
+    -GEO_ID
+  ) %>% 
+  full_join(hardcoded_columns, ., by = c("ADMIN1" = "ADMIN1", "ADMIN2" = "ADMIN2"))
+
+
+
+## DETERMINANTS ----
+determinants_data <- determinants_data %>% 
+  select(
+    -`ADMIN1 GEO_ID`,
+    -GEO_ID
+  ) %>% 
+  full_join(hardcoded_columns, ., by = c("ADMIN1" = "ADMIN1", "ADMIN2" = "ADMIN2"))
+
+determinants_scores <- determinants_scores %>% 
+  select(
+    -`ADMIN1 GEO_ID`,
+    -GEO_ID
+  ) %>% 
+  full_join(hardcoded_columns, ., by = c("ADMIN1" = "ADMIN1", "ADMIN2" = "ADMIN2"))
+
+## OUTBREAKS ----
+outbreaks_scores <- outbreaks_scores %>% 
+  select(
+    -`ADMIN1 GEO_ID`,
+    -GEO_ID
+  ) %>% 
+  full_join(hardcoded_columns, ., by = c("ADMIN1" = "ADMIN1", "ADMIN2" = "ADMIN2"))
+
+outbreaks_data <- outbreaks_data %>% 
+  select(
+    -`ADMIN1 GEO_ID`,
+    -GEO_ID
+  ) %>% 
+  full_join(hardcoded_columns, ., by = c("ADMIN1" = "ADMIN1", "ADMIN2" = "ADMIN2"))
+
+
+## SCORES ----
+scores_data <- scores_data %>% 
+  select(
+    -`ADMIN1 GEO_ID`,
+    -GEO_ID
+  ) %>% 
+  full_join(hardcoded_columns, ., by = c("ADMIN1" = "ADMIN1", "ADMIN2" = "ADMIN2"))
 
 
 # SAVE ----
