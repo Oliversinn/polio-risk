@@ -63,8 +63,9 @@ admin_normalizer <- function(admin_df) {
       ADMIN2 = gsub("Ó","O", ADMIN2),
       ADMIN2 = gsub("Ú","U", ADMIN2),
       ADMIN2 = gsub("Ñ","N", ADMIN2),
-      ADMIN2 = gsub("Ü","U", ADMIN2)
+      ADMIN2 = gsub("Ü","U", ADMIN2),
     )
+  return(admin_df)
 }
 
 var_norm <- function(x) {
@@ -234,6 +235,12 @@ score_active_search <- function(survaillance_df) {
 # score drinking water
 score_drinking_water <- function(determinants_df) {
   population_and_pfa <- population_and_pfa(determinants_df)
+  if (mean(determinants_df[["drinking_water_percent"]]) < 1) {
+    determinants_df <- determinants_df %>% 
+      mutate(
+        drinking_water_percent = round(drinking_water_percent * 100,0)
+      )
+  }
   score <- case_when(
     population_and_pfa & determinants_df[["drinking_water_percent"]] < 90 ~ 5,
     population_and_pfa & determinants_df[["drinking_water_percent"]] >= 90 ~ 0,
@@ -246,6 +253,12 @@ score_drinking_water <- function(determinants_df) {
 # Score sanitation services
 score_sanitation_services <- function(determinants_df) {
   population_and_pfa <- population_and_pfa(determinants_df)
+  if (mean(determinants_df[["sanitation_services_percent"]]) < 1) {
+    determinants_df <- determinants_df %>% 
+      mutate(
+        sanitation_services_percent = round(sanitation_services_percent * 100,0)
+      )
+  }
   score <- case_when(
     population_and_pfa & determinants_df[["sanitation_services_percent"]] < 90 ~ 5,
     population_and_pfa & determinants_df[["sanitation_services_percent"]] >= 90 ~ 0,
@@ -280,6 +293,7 @@ outbreak_opts <- outbreak_opts[!is.na(outbreak_opts)]
 # GENERAL ----
 id_data <- read_excel(PATH_country_data,sheet = 2) %>% select(1,2,3,4)
 colnames(id_data) <- c("ADMIN1 GEO_ID","GEO_ID","ADMIN1","ADMIN2")
+id_data <- admin_normalizer(id_data)
 id_data$`ADMIN1 GEO_ID` <- as.character(id_data$`ADMIN1 GEO_ID`)
 id_data$GEO_ID <- as.character(id_data$GEO_ID)
 id_data <- id_data %>% filter(!is.na(`ADMIN1 GEO_ID`) & !is.na(GEO_ID))
@@ -321,6 +335,7 @@ colnames(immunity_data) = c('ADMIN1 GEO_ID', 'GEO_ID', 'ADMIN1', 'ADMIN2',
 
 ## Filter missing GEO codes ----
 immunity_data <- geocodes_cleansing(immunity_data)
+immunity_data <- admin_normalizer(immunity_data)
 
 ## Scores calculation ----
 immunity_scores <- immunity_data %>% 
@@ -346,8 +361,8 @@ immunity_scores <- immunity_data %>%
 ## Adding to scores_data ----
 immunity_scores_join <- immunity_scores %>% 
   select(
-    'ADMIN1 GEO_ID', 
-    'GEO_ID',
+    'ADMIN1',
+    'ADMIN2',
     'immunity_score'
   )
 scores_data <- left_join(scores_data, immunity_scores_join)
@@ -355,14 +370,14 @@ scores_data <- left_join(scores_data, immunity_scores_join)
 # SURVAILLANCE ----
 
 ## Read data ----
-survaillance <- read_excel(PATH_country_data, sheet = 4, skip = 2, col_names = FALSE)
-colnames(survaillance) <- c('ADMIN1 GEO_ID', 'GEO_ID', 'ADMIN1', 'ADMIN2', 
+survaillance_data <- read_excel(PATH_country_data, sheet = 4, skip = 2, col_names = FALSE)
+colnames(survaillance_data) <- c('ADMIN1 GEO_ID', 'GEO_ID', 'ADMIN1', 'ADMIN2', 
                            'POB', 'pfa', 'compliant_units_percent', 'pfa_rate', 
                            'pfa_notified_percent', 'pfa_investigated_percent', 
                            'suitable_samples_percent', 'followups_percent', 'active_search')
 
 ## Filtering missing GEO codes ----
-survaillance_data <- geocodes_cleansing(survaillance)
+survaillance_data <- geocodes_cleansing(survaillance_data)
 
 ## Scores calculation ----
 survaillance_scores <- survaillance_data %>% 
@@ -376,7 +391,7 @@ survaillance_scores <- survaillance_data %>%
     pfa_investigated_score = score_pfa_investigated(survaillance_data),
     suitable_samples_score = score_suitable_samples(survaillance_data),
     followups_score = score_followups(survaillance_data),
-    active_search_score = score_active_search(survaillance)
+    active_search_score = score_active_search(survaillance_data)
   ) %>% 
   rowwise() %>% 
   mutate(
@@ -386,8 +401,8 @@ survaillance_scores <- survaillance_data %>%
 ## Adding to scores_data ----
 survaillance_scores_join <- survaillance_scores %>% 
   select(
-    'ADMIN1 GEO_ID', 
-    'GEO_ID',
+    'ADMIN1',
+    'ADMIN2',
     'survaillance_score'
   )
 scores_data <- left_join(scores_data, survaillance_scores_join)
@@ -420,8 +435,8 @@ determinants_scores <-  determinants_data %>%
 ## Adding to scores_data ----
 determinants_scores_join <- determinants_scores %>% 
   select(
-    'ADMIN1 GEO_ID', 
-    'GEO_ID',
+    'ADMIN1',
+'ADMIN2',
     'determinants_score'
   )
 scores_data <- left_join(scores_data, determinants_scores_join)
@@ -453,8 +468,8 @@ outbreaks_scores <- outbreaks_data %>%
 ## Adding to scores_data ----
 outbreaks_scores_join <- outbreaks_scores %>% 
   select(
-    'ADMIN1 GEO_ID', 
-    'GEO_ID',
+    'ADMIN1',
+    'ADMIN2',
     'outbreaks_score'
   )
 scores_data <- left_join(scores_data, outbreaks_scores_join)
