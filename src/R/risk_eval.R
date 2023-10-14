@@ -461,6 +461,13 @@ scores_data <- scores_data %>%
     total_score = sum(c_across(matches('score')), na.rm = T) 
   )
 
+# SHAPEFILES ----
+country_shapes <- st_read(PATH_shapefiles,layer = "admin2")
+if ("ADMIN1_" %in% colnames(country_shapes)) {
+  country_shapes <- country_shapes %>% rename("ADMIN1_GEO_ID" = "ADMIN1_")}
+country_shapes <- country_shapes %>% 
+  mutate(`ADMIN1_GEO_ID` = as.character(`ADMIN1_GEO_ID`),GEO_ID = as.character(GEO_ID))
+
 
 
 
