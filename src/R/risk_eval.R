@@ -237,10 +237,10 @@ score_active_search <- function(survaillance_df) {
 score_drinking_water <- function(determinants_df) {
   population_and_pfa <- population_and_pfa(determinants_df)
   score <- case_when(
-    population_and_pfa & determinants_df[["drinking_water"]] < 90 ~ 5,
-    population_and_pfa & determinants_df[["drinking_water"]] >= 90 ~ 0,
-    !population_and_pfa & determinants_df[["drinking_water"]] < 90 ~ 6,
-    !population_and_pfa & determinants_df[["drinking_water"]] >= 90 ~ 0,
+    population_and_pfa & determinants_df[["drinking_water_percent"]] < 90 ~ 5,
+    population_and_pfa & determinants_df[["drinking_water_percent"]] >= 90 ~ 0,
+    !population_and_pfa & determinants_df[["drinking_water_percent"]] < 90 ~ 6,
+    !population_and_pfa & determinants_df[["drinking_water_percent"]] >= 90 ~ 0,
   )
   return(score)
 }
@@ -249,10 +249,10 @@ score_drinking_water <- function(determinants_df) {
 score_sanitation_services <- function(determinants_df) {
   population_and_pfa <- population_and_pfa(determinants_df)
   score <- case_when(
-    population_and_pfa & determinants_df[["sanitation_services"]] < 90 ~ 5,
-    population_and_pfa & determinants_df[["sanitation_services"]] >= 90 ~ 0,
-    !population_and_pfa & determinants_df[["sanitation_services"]] < 90 ~ 6,
-    !population_and_pfa & determinants_df[["sanitation_services"]] >= 90 ~ 0,
+    population_and_pfa & determinants_df[["sanitation_services_percent"]] < 90 ~ 5,
+    population_and_pfa & determinants_df[["sanitation_services_percent"]] >= 90 ~ 0,
+    !population_and_pfa & determinants_df[["sanitation_services_percent"]] < 90 ~ 6,
+    !population_and_pfa & determinants_df[["sanitation_services_percent"]] >= 90 ~ 0,
   )
   return(score)
 }
@@ -392,16 +392,36 @@ scores_data <- left_join(scores_data, survaillance_scores_join)
 # DETERMINANTS ----
 
 ## Read data ----
-
+determinants_data <- read_excel(PATH_country_data, sheet = 5, skip = 2, col_names = FALSE)
+colnames(determinants_data) <- c('ADMIN1 GEO_ID', 'GEO_ID', 'ADMIN1', 'ADMIN2', 
+                                'POB', 'pfa', 'drinking_water_percent', 'sanitation_services_percent')
 
 ## Filtering missing GEO codes ----
-
+determinants_data <- geocodes_cleansing(determinants_data)
 
 ## Scores calculation ----
-
+determinants_scores <-  determinants_data %>% 
+  mutate_at(
+    vars(contains('percent')), ~ round(.,digits = 0)
+  ) %>% 
+  mutate(
+    drinking_water_score = score_drinking_water(determinants_data),
+    sanitation_services = score_sanitation_services(determinants_data)
+  ) %>% 
+  rowwise() %>% 
+  mutate(
+    determinants_score = sum(c_across(matches('score')), na.rm = T) 
+  )
+  
 
 ## Adding to scores_data ----
-
+determinants_scores_join <- determinants_scores %>% 
+  select(
+    'ADMIN1 GEO_ID', 
+    'GEO_ID',
+    'determinants_score'
+  )
+scores_data <- left_join(scores_data, determinants_scores_join)
 
 
 
