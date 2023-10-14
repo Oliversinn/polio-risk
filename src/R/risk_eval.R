@@ -296,6 +296,10 @@ COUNTRY_NAME <- config_data$val[1]
 REPORT_FILE_FORMAT <- config_data$val[8]
 scores_data <- id_data
 
+# RISK CUT OFFS ----
+CUT_OFFS <- read_xlsx(PATH_risk_cut_offs,sheet = sheet_cut_off,n_max = 6)
+CUT_OFFS <- CUT_OFFS %>% pivot_longer(!RV,names_to = "risk_level")
+
 # POPULATION AREA ----
 pop_data <- read_excel(PATH_country_data,sheet = 2)
 colnames(pop_data) <- c("ADMIN1 GEO_ID","GEO_ID","ADMIN1","ADMIN2","POB")
@@ -464,9 +468,10 @@ scores_data <- scores_data %>%
 # SHAPEFILES ----
 country_shapes <- st_read(PATH_shapefiles,layer = "admin2")
 if ("ADMIN1_" %in% colnames(country_shapes)) {
-  country_shapes <- country_shapes %>% rename("ADMIN1_GEO_ID" = "ADMIN1_")}
-country_shapes <- country_shapes %>% 
-  mutate(`ADMIN1_GEO_ID` = as.character(`ADMIN1_GEO_ID`),GEO_ID = as.character(GEO_ID))
+  country_shapes <- country_shapes %>% rename("ADMIN1_GEO_ID" = "ADMIN1_")
+  country_shapes <- country_shapes %>% 
+    mutate(`ADMIN1_GEO_ID` = as.character(`ADMIN1_GEO_ID`),GEO_ID = as.character(GEO_ID))
+}
 
 
 
