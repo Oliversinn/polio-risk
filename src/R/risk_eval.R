@@ -297,6 +297,7 @@ REPORT_FILE_FORMAT <- config_data$val[8]
 scores_data <- id_data
 
 # RISK CUT OFFS ----
+sheet_cut_off <- 'sheet_cut_off'
 CUT_OFFS <- read_xlsx(PATH_risk_cut_offs,sheet = sheet_cut_off,n_max = 6)
 CUT_OFFS <- CUT_OFFS %>% pivot_longer(!RV,names_to = "risk_level")
 
@@ -473,7 +474,16 @@ if ("ADMIN1_" %in% colnames(country_shapes)) {
     mutate(`ADMIN1_GEO_ID` = as.character(`ADMIN1_GEO_ID`),GEO_ID = as.character(GEO_ID))
 }
 
-
+# DBD VARS ----
+YEAR_LIST <- c(YEAR_1,YEAR_2,YEAR_3,YEAR_4,YEAR_5)
+admin1_list <- c(toupper(lang_label("rep_label_all")),sort(unique(id_data$ADMIN1)))
+if ("ADMIN1_GEO_ID" %in% colnames(country_shapes)) {
+  admin1_geo_id_df <- id_data %>% select(`ADMIN1 GEO_ID`,ADMIN1) %>% unique()
+  admin1_geo_id_df <- rbind(admin1_geo_id_df,c(0,toupper(lang_label("rep_label_all"))))
+} else {
+  admin1_geo_id_df <- id_data %>% select(ADMIN1) %>% unique()
+  admin1_geo_id_df <- rbind(admin1_geo_id_df,c(0,toupper(lang_label("rep_label_all"))))
+}
 
 
 
