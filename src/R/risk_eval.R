@@ -1,15 +1,13 @@
 # AUTORSHIP ----
-# Organización Panamericana de la Salud
-# Autor: Oliver Mazariegos
-# Última fecha de modificación: 2023-10-09
+# Pan American Health Organization
+# Author: Oliver Mazariegos
+# Last Update: 2023-10-09
 # R 4.3.1
 
 # SETUP ----
 
 Sys.setlocale(locale = "es_ES.UTF-8")
 
-# outbreaks = read_excel(PATH_country_data, sheet = 6, skip = 2, col_names = FALSE)
-# colnames(outbreaks) =  c('admin1', 'admin2', 'subnational', 'region', 'measles', 'rubella', 'diphtheria', 'yellow_fever', 'tetanus')
 
 library(readxl)
 library(sf)
@@ -423,6 +421,45 @@ determinants_scores_join <- determinants_scores %>%
   )
 scores_data <- left_join(scores_data, determinants_scores_join)
 
+# OUTBREAKS ----
+
+## Read data ----
+outbreaks_data = read_excel(PATH_country_data, sheet = 6, skip = 2, col_names = FALSE)
+colnames(outbreaks_data) =  c('ADMIN1 GEO_ID', 'GEO_ID', 'ADMIN1', 'ADMIN2',
+                              'measles', 'rubella', 'diphtheria', 'yellow_fever', 'tetanus')
+
+## Filtering missing GEO codes ----
+outbreaks_data = geocodes_cleansing(outbreaks_data)
+
+## Scores calculation ----
+outbreaks_scores <- outbreaks_data %>% 
+  mutate(
+    measles_score = score_outbreak(outbreaks_data, 'measles'),
+    rubella_score = score_outbreak(outbreaks_data, 'rubella'),
+    diphtheria_score = score_outbreak(outbreaks_data, 'diphtheria'),
+    yellow_fever_score = score_outbreak(outbreaks_data, 'yellow_fever'),
+    tetanus_score = score_outbreak(outbreaks_data, 'tetanus')
+  ) %>% 
+  rowwise() %>% 
+  mutate(
+    outbreaks_score = sum(c_across(matches('score')), na.rm = T) 
+  )
+
+## Adding to scores_data ----
+outbreaks_scores_join <- outbreaks_scores %>% 
+  select(
+    'ADMIN1 GEO_ID', 
+    'GEO_ID',
+    'outbreaks_score'
+  )
+scores_data <- left_join(scores_data, outbreaks_scores_join)
+
+# TOTAL SCORE ----
+scores_data <- scores_data %>% 
+  rowwise() %>% 
+  mutate(
+    total_score = sum(c_across(matches('score')), na.rm = T) 
+  )
 
 
 
