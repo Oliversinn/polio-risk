@@ -520,7 +520,7 @@ country_shapes <- country_shapes %>%
     .before = 1
   )
 
-hardcoded_columns <- country_shapes %>% 
+hardcoded_columns <- as.data.frame(country_shapes) %>% 
   select(
     `ADMIN1 GEO_ID`,
     GEO_ID,
@@ -590,6 +590,13 @@ outbreaks_data <- outbreaks_data %>%
   ) %>% 
   full_join(hardcoded_columns, ., by = c("ADMIN1" = "ADMIN1", "ADMIN2" = "ADMIN2"))
 
+## admin1_geo_id_df ----
+admin1_geo_id_df <- hardcoded_columns %>% 
+  select(
+    `ADMIN1 GEO_ID`,
+    ADMIN1
+  )
+
 
 ## SCORES ----
 scores_data <- scores_data %>% 
@@ -601,7 +608,7 @@ scores_data <- scores_data %>%
 
 
 # SAVE ----
-rm(determinants_score_join,
+rm(determinants_scores_join,
    immunity_scores_join,
    outbreaks_scores_join,
    survaillance_scores_join,
@@ -609,6 +616,6 @@ rm(determinants_score_join,
 save.image(file = "POLIO.RData")
 
 # CLEAN ----
-rm(list = ls())
+#rm(list = ls())
 
 

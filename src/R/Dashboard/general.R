@@ -51,6 +51,7 @@ get_risk_level <- function(LANG_TLS,CUT_OFFS,indicator,risk_points) {
   rp_MD <- CUT_OFFS$value[CUT_OFFS$RV == indicator & CUT_OFFS$risk_level == "MR"]
   rp_HR <- CUT_OFFS$value[CUT_OFFS$RV == indicator & CUT_OFFS$risk_level == "HR"]
   rp_VHR <- CUT_OFFS$value[CUT_OFFS$RV == indicator & CUT_OFFS$risk_level == "VHR"]
+  print(rp_VHR)
   risk_levels <- c()
   for (r_point in risk_points) {
     if (is.na(r_point)) {r_level = lang_label_tls(LANG_TLS,"no_data")}
@@ -107,11 +108,11 @@ ind_rangos_table <- function(LANG_TLS,CUT_OFFS,indicator) {
 ind_prep_bar_data <- function(LANG_TLS,CUT_OFFS,data,indicator,admin1_id,risk) {
   
   var_to_summarise <- case_when(
-    indicator == "GENERAL" ~ "total_score",
-    indicator == "INM_POB" ~ "immunity_score",
-    indicator == "SURV_QUAL" ~ "survaillance_score",
-    indicator == "PROG_DEL" ~ "determinants_score",
-    indicator == "THRE_ASSE" ~ "outbreaks_score"
+    indicator == "total_score" ~ "GENERAL",
+    indicator == "immunity_score" ~ "immunity_score",
+    indicator == "survaillance_score" ~ "survaillance_score",
+    indicator == "determinants_score" ~ "determinants_score",
+    indicator == "outbreaks_score" ~ "outbreaks_score"
   )
   
   prep_data <- data %>% rename("PR" = var_to_summarise)
@@ -135,11 +136,11 @@ ind_prep_map_data <- function(LANG_TLS,ZERO_POB_LIST,CUT_OFFS,map_data,data,indi
   map_data <- full_join(map_data,data,by = "GEO_ID")
   
   var_to_summarise <- case_when(
-    indicator == "GENERAL" ~ "total_score",
-    indicator == "INM_POB" ~ "immunity_score",
-    indicator == "SURV_QUAL" ~ "survaillance_score",
-    indicator == "PROG_DEL" ~ "determinants_score",
-    indicator == "THRE_ASSE" ~ "outbreaks_score"
+    indicator == "total_score" ~ "GENERAL",
+    indicator == "immunity_score" ~ "immunity_score",
+    indicator == "survaillance_score" ~ "survaillance_score",
+    indicator == "determinants_score" ~ "determinants_score",
+    indicator == "outbreaks_score" ~ "outbreaks_score"
   )
   
   map_data <- map_data %>% rename("PR" = var_to_summarise)
@@ -163,11 +164,11 @@ ind_prep_map_data <- function(LANG_TLS,ZERO_POB_LIST,CUT_OFFS,map_data,data,indi
 ind_get_bar_table <- function(LANG_TLS,CUT_OFFS,data,indicator,admin1_id,risk) {
   
   var_to_summarise <- case_when(
-    indicator == "GENERAL" ~ "total_score",
-    indicator == "INM_POB" ~ "immunity_score",
-    indicator == "SURV_QUAL" ~ "survaillance_score",
-    indicator == "PROG_DEL" ~ "determinants_score",
-    indicator == "THRE_ASSE" ~ "outbreaks_score"
+    indicator == "total_score" ~ "GENERAL",
+    indicator == "immunity_score" ~ "immunity_score",
+    indicator == "survaillance_score" ~ "survaillance_score",
+    indicator == "determinants_score" ~ "determinants_score",
+    indicator == "outbreaks_score" ~ "outbreaks_score"
   )
   
   if (indicator != "GENERAL") {
@@ -207,10 +208,10 @@ ind_get_bar_table <- function(LANG_TLS,CUT_OFFS,data,indicator,admin1_id,risk) {
     colnames(data) = c(
       lang_label_tls(LANG_TLS,"table_admin1_name"),
       lang_label_tls(LANG_TLS,"table_admin2_name"),
-      lang_label_tls(LANG_TLS,"menuitem_inm_pob"),
-      lang_label_tls(LANG_TLS,"menuitem_surv_qual"),
-      lang_label_tls(LANG_TLS,"menuitem_prog_del"),
-      lang_label_tls(LANG_TLS,"menuitem_thre_asse"),
+      lang_label_tls(LANG_TLS,"menuitem_immunity"),
+      lang_label_tls(LANG_TLS,"menuitem_survaillance"),
+      lang_label_tls(LANG_TLS,"menuitem_determinants"),
+      lang_label_tls(LANG_TLS,"menuitem_outbreaks"),
       lang_label_tls(LANG_TLS,"menuitem_rap_res"),
       lang_label_tls(LANG_TLS,"risk_points"),
       lang_label_tls(LANG_TLS,"risk_level")
@@ -318,10 +319,10 @@ ind_plot_multibar_data <- function(LANG_TLS,CUT_OFFS,bar_data,admin1_id,selected
       }
       
       fig <- plot_ly(bar_data, type = 'bar',orientation = 'h',y = ~LUGAR,
-                     x = ~INMUNIDAD_POB, name = lang_label_tls(LANG_TLS,"menuitem_inm_pob"),marker = list(color = "#8DB1CC"),text = ~INMUNIDAD_POB, textposition = 'inside',textangle = 0) %>%
-        add_trace(x = ~CALIDAD_VIG, name = lang_label_tls(LANG_TLS,"menuitem_surv_qual"), marker = list(color = "#2165A4"),text = ~CALIDAD_VIG, textposition = 'inside') %>%
-        add_trace(x = ~RENDIMIENTO_PROG, name = lang_label_tls(LANG_TLS,"menuitem_prog_del"), marker = list(color = "#253E80"),text = ~RENDIMIENTO_PROG, textposition = 'inside') %>%
-        add_trace(x = ~EVAL_AMENAZA, name = lang_label_tls(LANG_TLS,"menuitem_thre_asse"), marker = list(color = "#6436A5"),text = ~EVAL_AMENAZA, textposition = 'inside') %>%
+                     x = ~INMUNIDAD_POB, name = lang_label_tls(LANG_TLS,"menuitem_immunity"),marker = list(color = "#8DB1CC"),text = ~INMUNIDAD_POB, textposition = 'inside',textangle = 0) %>%
+        add_trace(x = ~CALIDAD_VIG, name = lang_label_tls(LANG_TLS,"menuitem_survaillance"), marker = list(color = "#2165A4"),text = ~CALIDAD_VIG, textposition = 'inside') %>%
+        add_trace(x = ~RENDIMIENTO_PROG, name = lang_label_tls(LANG_TLS,"menuitem_determinants"), marker = list(color = "#253E80"),text = ~RENDIMIENTO_PROG, textposition = 'inside') %>%
+        add_trace(x = ~EVAL_AMENAZA, name = lang_label_tls(LANG_TLS,"menuitem_outbreaks"), marker = list(color = "#6436A5"),text = ~EVAL_AMENAZA, textposition = 'inside') %>%
         add_trace(x = ~RES_RAPIDA, name = lang_label_tls(LANG_TLS,"menuitem_rap_res"), marker = list(color = "#39076A"),text = ~RES_RAPIDA, textposition = 'inside') %>%
         
         layout(xaxis = list(title = x_axis_title, tickfont = list(size = 12)), 
@@ -355,12 +356,11 @@ ind_plot_multibar_data <- function(LANG_TLS,CUT_OFFS,bar_data,admin1_id,selected
                                           "zoomIn2d","zoomOut2d","toggleSpikelines","lasso2d","hoverCompareCartesian"))
     } else {
       var_to_summarise <- case_when(
-        selected_indicador == "GENERAL" ~ "total_score",
-        selected_indicador == "INM_POB" ~ "INMUNIDAD_POB",
-        selected_indicador == "SURV_QUAL" ~ "CALIDAD_VIG",
-        selected_indicador == "PROG_DEL" ~ "RENDIMIENTO_PROG",
-        selected_indicador == "THRE_ASSE" ~ "EVAL_AMENAZA",
-        selected_indicador == "RAP_RES" ~ "RES_RAPIDA"
+        selected_indicador == "total_score" ~ "GENERAL",
+        selected_indicador == "immunity_score" ~ "immunity_score",
+        selected_indicador == "srvaillance_score" ~ "srvaillance_score",
+        selected_indicador == "determinants_score" ~ "determinants_score",
+        selected_indicador == "outbreaks_score" ~ "outbreaks_score"
       )
       
       bar_data <- bar_data %>% rename(VAR = var_to_summarise)
@@ -520,24 +520,26 @@ ind_plot_map_data <- function(LANG_TLS,ZERO_POB_LIST,CUT_OFFS,map_data,indicator
 
 
 ind_prep_box_data <- function(LANG_TLS,CUT_OFFS,data,indicator,admin1_id) {
-  
+  print(admin1_id)
+  print(indicator)
   var_to_summarise <- case_when(
-    indicator == "GENERAL" ~ "total_score",
-    indicator == "INM_POB" ~ "immunity_score",
-    indicator == "SURV_QUAL" ~ "survaillance_score",
-    indicator == "PROG_DEL" ~ "determinants_score",
-    indicator == "THRE_ASSE" ~ "outbreaks_score"
+    indicator == "total_score" ~ "total_score",
+    indicator == "immunity_score" ~ "immunity_score",
+    indicator == "survaillance_score" ~ "survaillance_score",
+    indicator == "determinants_score" ~ "determinants_score",
+    indicator == "outbreaks_score" ~ "outbreaks_score"
   )
   
   prep_data <- data %>% rename("PR" = var_to_summarise)
-  
+  print(prep_data)
+  print(admin1_id)
   if (admin1_id == 0) {
     prep_data <- prep_data %>% filter(!is.na(PR)) %>% select(LUGAR = ADMIN2,PR)
   } else {
     prep_data <- prep_data %>% filter(`ADMIN1 GEO_ID` == admin1_id) %>% filter(!is.na(PR)) %>% select(LUGAR = ADMIN2,PR)
   }
-  
   prep_data$risk_level <- get_risk_level(LANG_TLS,CUT_OFFS,indicator,prep_data$PR)
+
   
   return(prep_data)
 }
@@ -580,11 +582,10 @@ ind_rename <- function(selected_ind) {
   return(
     case_when(
       lang_label("menuitem_general_label") == selected_ind ~ "GENERAL",
-      lang_label("menuitem_inm_pob") == selected_ind ~ "INM_POB",
-      lang_label("menuitem_surv_qual") == selected_ind ~ "SURV_QUAL",
-      lang_label("menuitem_prog_del") == selected_ind ~ "PROG_DEL",
-      lang_label("menuitem_thre_asse") == selected_ind ~ "THRE_ASSE",
-      lang_label("menuitem_rap_res") == selected_ind ~ "RAP_RES"
+      lang_label("menuitem_immunity") == selected_ind ~ "immunity_score",
+      lang_label("menuitem_survaillance") == selected_ind ~ "survaillance_score",
+      lang_label("menuitem_determinants") == selected_ind ~ "determinants_score",
+      lang_label("menuitem_outbreaks") == selected_ind ~ "outbreaks_score"
     )
   )
 }

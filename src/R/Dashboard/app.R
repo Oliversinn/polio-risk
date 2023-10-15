@@ -28,6 +28,8 @@ library(mapview)
 library(webshot)
 webshot::install_phantomjs()
 
+options(shiny.fullstacktrace=TRUE)
+
 
 # LOAD DATA ----
 load(file = "POLIO.RData")
@@ -146,9 +148,9 @@ ui <- fluidPage(
                       choices = c(
                         lang_label("menuitem_general_label")
                         #lang_label("menuitem_inm_pob"),
-                        #lang_label("menuitem_prog_del"),
+                        #lang_label("menuitem_determinants"),
                         #lang_label("menuitem_surv_qual"),
-                        #lang_label("menuitem_thre_asse"),
+                        #lang_label("menuitem_outbreaks"),
                         #lang_label("menuitem_rap_res")
                       ),
                       selected = lang_label("menuitem_general_label")
@@ -184,14 +186,14 @@ ui <- fluidPage(
           tabItem(
             tabName = "GENERAL",
             h2(textOutput("indicadores_title")),
-            br()#,
+            br(),
             
-            #fluidRow(
-            #  valueBoxOutput("ind_box_1",width = 3),
-            #  valueBoxOutput("ind_box_2",width = 3),
-            #  valueBoxOutput("ind_box_3",width = 3),
-            #  valueBoxOutput("ind_box_4",width = 3)
-            #)
+            fluidRow(
+              valueBoxOutput("ind_box_1",width = 3),
+              valueBoxOutput("ind_box_2",width = 3),
+              valueBoxOutput("ind_box_3",width = 3),
+              valueBoxOutput("ind_box_4",width = 3)
+            )
           )
         )
       )
@@ -205,16 +207,15 @@ server <- function(input, output, session) {
   
   # SERVER GENERAL IND ----
   ind_rename <- function(selected_ind) {
-    return(
-      case_when(
-        lang_label("menuitem_general_label") == selected_ind ~ "GENERAL",
-        lang_label("menuitem_inm_pob") == selected_ind ~ "INM_POB",
-        lang_label("menuitem_surv_qual") == selected_ind ~ "SURV_QUAL",
-        lang_label("menuitem_prog_del") == selected_ind ~ "PROG_DEL",
-        lang_label("menuitem_thre_asse") == selected_ind ~ "THRE_ASSE",
-        lang_label("menuitem_rap_res") == selected_ind ~ "RAP_RES"
-      )
+    renamed <- case_when(
+      lang_label("menuitem_general_label") == selected_ind ~ "total_score",
+      lang_label("menuitem_immunity") == selected_ind ~ "immunity_score",
+      lang_label("menuitem_survaillance") == selected_ind ~ "survailance_score",
+      lang_label("menuitem_determinants") == selected_ind ~ "determinants_score",
+      lang_label("menuitem_outbreaks") == selected_ind ~ "outbreaks_score"
     )
+    print(renamed)
+    return(renamed)
   }
   
   risk_rename <- function(selected_risk) {
@@ -236,6 +237,24 @@ server <- function(input, output, session) {
   box_data$a4 <- 0
   box_data$at <- 0
   
+  # observeEvent(input$indicadores_select_indicador, {
+  #   new_box_data <- datos_boxes(LANG_TLS,indicadores_prep_box_data())
+  #   box_data$a1 <- new_box_data[1]
+  #   box_data$a2 <- new_box_data[2]
+  #   box_data$a3 <- new_box_data[3]
+  #   box_data$a4 <- new_box_data[4]
+  #   box_data$at <- new_box_data[5]
+  # })
+  # 
+  # observeEvent(input$indicadores_select_admin1, {
+  #   new_box_data <- datos_boxes(LANG_TLS,indicadores_prep_box_data())
+  #   box_data$a1 <- new_box_data[1]
+  #   box_data$a2 <- new_box_data[2]
+  #   box_data$a3 <- new_box_data[3]
+  #   box_data$a4 <- new_box_data[4]
+  #   box_data$at <- new_box_data[5]
+  # })
+  
   
   
   box_lugar <- function(admin1) {
@@ -255,9 +274,42 @@ server <- function(input, output, session) {
     )
   })
   
+  output$ind_box_2 <- renderValueBox({
+    valueBox(
+      VB_style(get_box_text(box_data$a2,box_data$at,"MR"),"font-size: 85%;"),
+      VB_style(paste(lang_label("box_MR_admin2"),box_lugar(input$indicadores_select_admin1)),"font-size: 95%;"),
+      icon = icon('minus-sign', lib = 'glyphicon'),
+      color = "purple"
+    )
+  })
+  
+  output$ind_box_3 <- renderValueBox({
+    valueBox(
+      VB_style(get_box_text(box_data$a3,box_data$at,"HR"),"font-size: 85%;"),
+      VB_style(paste(lang_label("box_HR_admin2"),box_lugar(input$indicadores_select_admin1)),"font-size: 95%;"),
+      icon = icon('exclamation-sign', lib = 'glyphicon'),
+      color = "purple"
+    )
+  })
+  
+  output$ind_box_4 <- renderValueBox({
+    valueBox(
+      VB_style(get_box_text(box_data$a4,box_data$at,"VHR"),"font-size: 85%;"),
+      VB_style(paste(lang_label("box_VHR_admin2"),box_lugar(input$indicadores_select_admin1)),"font-size: 95%;"),
+      icon = icon('alert', lib = 'glyphicon'),
+      color = "purple"
+    )
+  })
+  
   output$indicadores_title <- renderText({
     input$indicadores_select_indicador
   })
+  
+  ## REACTIVE ----
+  ### indicadores_prep_box_data ----
+  #indicadores_prep_box_data <- reactive({
+    #ind_prep_box_data(LANG_TLS,CUT_OFFS,scores_data,ind_rename(input$indicadores_select_indicador),get_a1_geo_id(input$indicadores_select_admin1))
+  #})
   
   
 }
