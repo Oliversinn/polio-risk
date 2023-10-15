@@ -31,7 +31,6 @@ webshot::install_phantomjs()
 
 # LOAD DATA ----
 load(file = "POLIO.RData")
-
 # FUNCS ----
 get_a1_geo_id <- function(admin1) {
   return(admin1_geo_id_df$`ADMIN1 GEO_ID`[admin1_geo_id_df$ADMIN1 == admin1])
@@ -109,7 +108,7 @@ ui <- fluidPage(
     box(width = 12, background = "maroon",
         HTML(paste0('<center><div style = "text-align: left; padding-left: 30px; padding-right: 30px; padding-top: 10px;">
                         <img src="',lang_label("logo_org"),'" height="35"> <img id="country_flag" style = "right: 30px !important; position: absolute; padding-top: 1px; padding-bottom: 1px; padding-right: 1px; padding-left: 1px; margin-bottom: 10px; background-color: white;" src="country_flag.png" height="50">
-                        </div> <h2>',lang_label("dashboard_title"),' - <b>',toupper(COUNTRY_NAME),'</b></h2> </center>'))
+                        </div> <h2>',lang_label("dashboard_title"),' <b>',toupper(COUNTRY_NAME),'</b></h2> </center>'))
     )
   ),
   ## DASHBOARD SKIN ----
@@ -119,13 +118,13 @@ ui <- fluidPage(
     
     ## DASHBOARD HEADER ----
     header = dashboardHeader(
-      titleWidth = "30%",
+      titleWidth = 300,
       title = paste0(lang_label("header_year_eval"),": ", YEAR_EVAL)
     ),
     
     ## DASHBOARD SIDEBAR ----
     dashboardSidebar(
-      width = "30%",
+      width = 300,
       
       sidebarMenu(
         id = "sidebarid",
@@ -143,7 +142,7 @@ ui <- fluidPage(
           
           ##### SOCRE TYPE SELECTOR
           selectInput("indicadores_select_indicador",
-                      label = paste0(lang_label("general_select_id"), ":"),
+                      label = paste0(lang_label("general_select_ind"), ":"),
                       choices = c(
                         lang_label("menuitem_general_label")
                         #lang_label("menuitem_inm_pob"),
