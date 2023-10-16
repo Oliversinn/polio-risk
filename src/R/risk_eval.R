@@ -498,6 +498,7 @@ if ("ADMIN1_" %in% colnames(country_shapes)) {
   country_shapes <- country_shapes %>% 
     mutate(`ADMIN1_GEO_ID` = as.character(`ADMIN1_GEO_ID`),GEO_ID = as.character(GEO_ID))
 }
+country_shapes <- country_shapes[!duplicated(country_shapes$GEO_ID),]
 
 # DBD VARS ----
 YEAR_LIST <- c(YEAR_1,YEAR_2,YEAR_3,YEAR_4,YEAR_5)

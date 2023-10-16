@@ -7,7 +7,7 @@
 # SERVER ----
 function(input, output, session) {
   
-  # GENERAL IND ----
+  # GENERAL FUNCTIONS ----
   ind_rename <- function(selected_ind) {
     renamed <- case_when(
       lang_label("menuitem_general_label") == selected_ind ~ "total_score",
@@ -31,6 +31,16 @@ function(input, output, session) {
     )
   }
   
+  box_lugar <- function(admin1) {
+    if (admin1 == toupper(lang_label("rep_label_all"))) {
+      return(toupper(COUNTRY_NAME))
+    } else {
+      return(toupper(admin1))
+    }
+  }
+  
+  
+  #### VALUE BOXES ----
   box_data <- reactiveValues()
   box_data$a1 <- 0
   box_data$a2 <- 0
@@ -56,15 +66,13 @@ function(input, output, session) {
     box_data$at <- new_box_data[5]
   })
   
-  
-  
-  box_lugar <- function(admin1) {
-    if (admin1 == toupper(lang_label("rep_label_all"))) {
-      return(toupper(COUNTRY_NAME))
-    } else {
-      return(toupper(admin1))
-    }
-  }
+  indicadores_prep_box_data <- reactive({
+    ind_prep_box_data(LANG_TLS,
+                      CUT_OFFS,
+                      scores_data,
+                      ind_rename(input$indicadores_select_indicador),
+                      unique(get_a1_geo_id(input$indicadores_select_admin1)))
+  })
   
   output$ind_box_1 <- renderValueBox({
     valueBox(
@@ -106,13 +114,22 @@ function(input, output, session) {
     input$indicadores_select_indicador
   })
   
-  ## REACTIVE ----
-  ### indicadores_prep_box_data ----
-  indicadores_prep_box_data <- reactive({
-    ind_prep_box_data(LANG_TLS,
-                      CUT_OFFS,
-                      scores_data,
-                      ind_rename(input$indicadores_select_indicador),
-                      unique(get_a1_geo_id(input$indicadores_select_admin1)))
+  #### GENERAL MAP ----
+  indicadores_prep_map_data <- reactive({
+    ind_prep_map_data(LANG_TLS,ZERO_POB_LIST,CUT_OFFS,country_shapes,scores_data,ind_rename(input$indicadores_select_indicador),get_a1_geo_id(input$indicadores_select_admin1),risk_rename(input$indicadores_select_risk))
   })
+  
+  ind_map <- reactiveValues(dat = 0)
+  
+  output$indicadores_title_map_box <- renderText({
+    text_title <- title_map_box(input$indicadores_select_indicador,input$indicadores_select_admin1)
+    text_title <- paste0(text_title," (",YEAR_1," - ",YEAR_5,")")
+    text_title
+  })
+  
+  output$indicadores_plot_map <- renderLeaflet({
+    ind_map$dat <- ind_plot_map_data(LANG_TLS,ZERO_POB_LIST,CUT_OFFS,indicadores_prep_map_data(),ind_rename(input$indicadores_select_indicador),get_a1_geo_id(input$indicadores_select_admin1),risk_rename(input$indicadores_select_risk))
+    ind_map$dat
+  })
+  
 }

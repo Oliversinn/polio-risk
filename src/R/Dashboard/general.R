@@ -133,15 +133,13 @@ ind_prep_bar_data <- function(LANG_TLS,CUT_OFFS,data,indicator,admin1_id,risk) {
 ind_prep_map_data <- function(LANG_TLS,ZERO_POB_LIST,CUT_OFFS,map_data,data,indicator,admin1_id,risk) {
   data <- data %>% select(-ADMIN1,-ADMIN2)
   map_data <- full_join(map_data,data,by = "GEO_ID")
-  
   var_to_summarise <- case_when(
-    indicator == "total_score" ~ "GENERAL",
+    indicator == "total_score" ~ "total_score",
     indicator == "immunity_score" ~ "immunity_score",
     indicator == "survaillance_score" ~ "survaillance_score",
     indicator == "determinants_score" ~ "determinants_score",
     indicator == "outbreaks_score" ~ "outbreaks_score"
   )
-  
   map_data <- map_data %>% rename("PR" = var_to_summarise)
   map_data$risk_level <- get_risk_level(LANG_TLS,CUT_OFFS,indicator,map_data$PR)
   map_data$risk_level[map_data$GEO_ID %in% ZERO_POB_LIST] <- "NO_HAB"
@@ -156,7 +154,6 @@ ind_prep_map_data <- function(LANG_TLS,ZERO_POB_LIST,CUT_OFFS,map_data,data,indi
     map_data$PR[map_data$risk_level != lang_label_tls(LANG_TLS,risk)] <- NA
     map_data$risk_level[map_data$risk_level != lang_label_tls(LANG_TLS,risk)] <- NA
   }
-  
   return(map_data)
 }
 
@@ -413,14 +410,13 @@ ind_plot_multibar_data <- function(LANG_TLS,CUT_OFFS,bar_data,admin1_id,selected
 
 
 ind_plot_map_data <- function(LANG_TLS,ZERO_POB_LIST,CUT_OFFS,map_data,indicator,admin1_id,risk) {
-  
   table_intervals <- c(
     get_risk_level_point_limit(CUT_OFFS,indicator,"LR"),
     get_risk_level_point_limit(CUT_OFFS,indicator,"MR"),
     get_risk_level_point_limit(CUT_OFFS,indicator,"HR"),
     get_risk_level_point_limit(CUT_OFFS,indicator,"VHR")
   )
-  
+
   map_data <- map_data %>% mutate(
     risk_level_num = case_when(
       is.na(risk_level) ~ 0,
@@ -436,7 +432,7 @@ ind_plot_map_data <- function(LANG_TLS,ZERO_POB_LIST,CUT_OFFS,map_data,indicator
       T ~ risk_level
     )
   )
-  
+
   pal_gradient <- colorNumeric(
     c("#666666","#92d050","#fec000","#e8132b","#920000","#9bc2e6"),
     domain = c(0,5)
@@ -478,6 +474,7 @@ ind_plot_map_data <- function(LANG_TLS,ZERO_POB_LIST,CUT_OFFS,map_data,indicator
   }
   
   map_data <- st_as_sf(map_data)
+  print(map_data)
   
   shape_label <- sprintf("<strong>%s</strong>, %s<br/>%s: %s<br/>%s: %s",
                          map_data$ADMIN2,

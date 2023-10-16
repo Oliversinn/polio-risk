@@ -83,18 +83,49 @@ fluidPage(
         tags$head(tags$link(rel = "stylesheet", type = "text/css", href = "style.css")),
         
         tabItems(
-          #### TAB GENERAL SCORES  
+          ### TAB GENERAL SCORES ----
           tabItem(
             tabName = "GENERAL",
             h2(textOutput("indicadores_title")),
             br(),
             
+            #### VALUE BOXES ----
             fluidRow(
               valueBoxOutput("ind_box_1",width = 3),
               valueBoxOutput("ind_box_2",width = 3),
               valueBoxOutput("ind_box_3",width = 3),
               valueBoxOutput("ind_box_4",width = 3)
+            ),
+            
+            #### DISPLAY MAP FOR ALL ----
+            conditionalPanel(
+              paste0('input.indicadores_select_admin1 == "',toupper(lang_label("rep_label_all")),'"'),
+              fluidRow(
+                box(
+                  width = 12,
+                  solidHeader = TRUE,
+                  collapsible = TRUE,
+                  title = textOutput("indicadores_title_map_box"),
+                  tabBox(
+                    width = 12,
+                    height = NULL,
+                    ###### MAP ----
+                    tabPanel(
+                      title = lang_label("button_map"), icon = icon("map",class = "fa-solid fa-map"),
+                      shinycssloaders::withSpinner(leafletOutput("indicadores_plot_map",height = 600),color = "#1c9ad6", type = "8", size = 0.5),
+                      br(),div(style = "text-align: center;",downloadButton(outputId = "dl_indicadores_plot_map",lang_label("button_download_map"),icon = icon('camera')))
+                    ),
+                    ###### TABLE ----
+                    tabPanel(
+                      title = lang_label("button_datatable"),icon = icon("table"),
+                      shinycssloaders::withSpinner(dataTableOutput("indicadores_table",height = 620),color = "#1c9ad6", type = "8", size = 0.5)
+                    )
+                  )
+                )
+              )
             )
+            
+            
           )
         )
       )
