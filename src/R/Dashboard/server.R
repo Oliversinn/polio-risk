@@ -132,4 +132,8 @@ function(input, output, session) {
     ind_map$dat
   })
   
+  output$indicadores_table <- renderDataTable(server = FALSE,{
+    ind_get_bar_table(LANG_TLS,CUT_OFFS,scores_data,ind_rename(input$indicadores_select_indicador),get_a1_geo_id(input$indicadores_select_admin1),risk_rename(input$indicadores_select_risk))
+  })
+  
 }
