@@ -132,7 +132,7 @@ ind_prep_bar_data <- function(LANG_TLS,CUT_OFFS,data,indicator,admin1_id,risk) {
 
 ind_prep_map_data <- function(LANG_TLS,ZERO_POB_LIST,CUT_OFFS,map_data,data,indicator,admin1_id,risk) {
   data <- data %>% select(-ADMIN1,-ADMIN2)
-  map_data <- full_join(map_data,data,by = "GEO_ID")
+  map_data <- full_join(map_data,data,by = c("ADMIN1 GEO_ID" = "ADMIN1 GEO_ID", "GEO_ID" = "GEO_ID"))
   var_to_summarise <- case_when(
     indicator == "total_score" ~ "total_score",
     indicator == "immunity_score" ~ "immunity_score",
@@ -143,7 +143,6 @@ ind_prep_map_data <- function(LANG_TLS,ZERO_POB_LIST,CUT_OFFS,map_data,data,indi
   map_data <- map_data %>% rename("PR" = var_to_summarise)
   map_data$risk_level <- get_risk_level(LANG_TLS,CUT_OFFS,indicator,map_data$PR)
   map_data$risk_level[map_data$GEO_ID %in% ZERO_POB_LIST] <- "NO_HAB"
-  
   if (admin1_id == 0) {
     map_data <- map_data %>% select(ADMIN1,ADMIN2,PR,risk_level,geometry)
   } else {
@@ -474,8 +473,7 @@ ind_plot_map_data <- function(LANG_TLS,ZERO_POB_LIST,CUT_OFFS,map_data,indicator
   }
   
   map_data <- st_as_sf(map_data)
-  print(map_data)
-  
+
   shape_label <- sprintf("<strong>%s</strong>, %s<br/>%s: %s<br/>%s: %s",
                          map_data$ADMIN2,
                          map_data$ADMIN1,

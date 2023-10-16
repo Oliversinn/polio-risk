@@ -120,6 +120,8 @@ function(input, output, session) {
   })
   
   ind_map <- reactiveValues(dat = 0)
+  ind_map_2 <- reactiveValues(dat = 0)
+  
   
   output$indicadores_title_map_box <- renderText({
     text_title <- title_map_box(input$indicadores_select_indicador,input$indicadores_select_admin1)
@@ -132,8 +134,23 @@ function(input, output, session) {
     ind_map$dat
   })
   
+  
   output$indicadores_table <- renderDataTable(server = FALSE,{
     ind_get_bar_table(LANG_TLS,CUT_OFFS,scores_data,ind_rename(input$indicadores_select_indicador),get_a1_geo_id(input$indicadores_select_admin1),risk_rename(input$indicadores_select_risk))
   })
+  
+  output$indicadores_plot_map_2 <- renderLeaflet({
+    ind_map_2$dat <- ind_plot_map_data(LANG_TLS,ZERO_POB_LIST,CUT_OFFS,indicadores_prep_map_data(),ind_rename(input$indicadores_select_indicador),get_a1_geo_id(input$indicadores_select_admin1),risk_rename(input$indicadores_select_risk))
+    ind_map_2$dat
+  })
+  
+  output$dl_indicadores_plot_map_2 <- downloadHandler(
+    filename = function() {
+      paste0(lang_label("map")," ",input$indicadores_select_admin1," ",toupper(COUNTRY_NAME)," ",input$indicadores_select_indicador," (",YEAR_1,"-",YEAR_5,").png")
+    },
+    content = function(file) {
+      mapshot(ind_map_2$dat, file = file)
+    }
+  )
   
 }
