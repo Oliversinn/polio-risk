@@ -1,0 +1,118 @@
+# AUTORSHIP ----
+# Pan American Health Organization
+# Author: Oliver Mazariegos
+# Last Update: 2023-10-09
+# R 4.3.1
+
+# SERVER ----
+function(input, output, session) {
+  
+  # GENERAL IND ----
+  ind_rename <- function(selected_ind) {
+    renamed <- case_when(
+      lang_label("menuitem_general_label") == selected_ind ~ "total_score",
+      lang_label("menuitem_immunity") == selected_ind ~ "immunity_score",
+      lang_label("menuitem_survaillance") == selected_ind ~ "survailance_score",
+      lang_label("menuitem_determinants") == selected_ind ~ "determinants_score",
+      lang_label("menuitem_outbreaks") == selected_ind ~ "outbreaks_score"
+    )
+    return(renamed)
+  }
+  
+  risk_rename <- function(selected_risk) {
+    return(
+      case_when(
+        toupper(lang_label("rep_label_all")) == selected_risk ~ "ALL",
+        lang_label("cut_offs_VHR") == selected_risk ~ "VHR",
+        lang_label("cut_offs_HR") == selected_risk ~ "HR",
+        lang_label("cut_offs_MR") == selected_risk ~ "MR",
+        lang_label("cut_offs_LR") == selected_risk ~ "LR"
+      )
+    )
+  }
+  
+  box_data <- reactiveValues()
+  box_data$a1 <- 0
+  box_data$a2 <- 0
+  box_data$a3 <- 0
+  box_data$a4 <- 0
+  box_data$at <- 0
+  
+  observeEvent(input$indicadores_select_indicador, {
+    new_box_data <- datos_boxes(LANG_TLS,indicadores_prep_box_data())
+    box_data$a1 <- new_box_data[1]
+    box_data$a2 <- new_box_data[2]
+    box_data$a3 <- new_box_data[3]
+    box_data$a4 <- new_box_data[4]
+    box_data$at <- new_box_data[5]
+  })
+  
+  observeEvent(input$indicadores_select_admin1, {
+    new_box_data <- datos_boxes(LANG_TLS,indicadores_prep_box_data())
+    box_data$a1 <- new_box_data[1]
+    box_data$a2 <- new_box_data[2]
+    box_data$a3 <- new_box_data[3]
+    box_data$a4 <- new_box_data[4]
+    box_data$at <- new_box_data[5]
+  })
+  
+  
+  
+  box_lugar <- function(admin1) {
+    if (admin1 == toupper(lang_label("rep_label_all"))) {
+      return(toupper(COUNTRY_NAME))
+    } else {
+      return(toupper(admin1))
+    }
+  }
+  
+  output$ind_box_1 <- renderValueBox({
+    valueBox(
+      VB_style(get_box_text(box_data$a1,box_data$at,"LR"),"font-size: 90%;"),
+      VB_style(paste(lang_label("box_LR_admin2"),box_lugar(input$indicadores_select_admin1)),"font-size: 95%;"),
+      icon = icon('ok-sign', lib = 'glyphicon'),
+      color = "purple"
+    )
+  })
+  
+  output$ind_box_2 <- renderValueBox({
+    valueBox(
+      VB_style(get_box_text(box_data$a2,box_data$at,"MR"),"font-size: 85%;"),
+      VB_style(paste(lang_label("box_MR_admin2"),box_lugar(input$indicadores_select_admin1)),"font-size: 95%;"),
+      icon = icon('minus-sign', lib = 'glyphicon'),
+      color = "purple"
+    )
+  })
+  
+  output$ind_box_3 <- renderValueBox({
+    valueBox(
+      VB_style(get_box_text(box_data$a3,box_data$at,"HR"),"font-size: 85%;"),
+      VB_style(paste(lang_label("box_HR_admin2"),box_lugar(input$indicadores_select_admin1)),"font-size: 95%;"),
+      icon = icon('exclamation-sign', lib = 'glyphicon'),
+      color = "purple"
+    )
+  })
+  
+  output$ind_box_4 <- renderValueBox({
+    valueBox(
+      VB_style(get_box_text(box_data$a4,box_data$at,"VHR"),"font-size: 85%;"),
+      VB_style(paste(lang_label("box_VHR_admin2"),box_lugar(input$indicadores_select_admin1)),"font-size: 95%;"),
+      icon = icon('alert', lib = 'glyphicon'),
+      color = "purple"
+    )
+  })
+  
+  output$indicadores_title <- renderText({
+    input$indicadores_select_indicador
+  })
+  
+  ## REACTIVE ----
+  ### indicadores_prep_box_data ----
+  indicadores_prep_box_data <- reactive({
+    ind_prep_box_data(LANG_TLS,
+                      CUT_OFFS,
+                      scores_data,
+                      ind_rename(input$indicadores_select_indicador),
+                      unique(get_a1_geo_id(input$indicadores_select_admin1)))
+  })
+}

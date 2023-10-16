@@ -533,7 +533,6 @@ ind_prep_box_data <- function(LANG_TLS,CUT_OFFS,data,indicator,admin1_id) {
   } else {
     prep_data <- prep_data %>% filter(`ADMIN1 GEO_ID` == admin1_id) %>% filter(!is.na(PR)) %>% select(LUGAR = ADMIN2,PR)
   }
-  print(prep_data)
   prep_data$risk_level <- get_risk_level(LANG_TLS,CUT_OFFS,indicator,prep_data$PR)
 
   
