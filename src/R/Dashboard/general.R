@@ -297,28 +297,27 @@ ind_plot_bar_data <- function(LANG_TLS,CUT_OFFS,bar_data,indicator,admin1_id) {
 
 
 ind_plot_multibar_data <- function(LANG_TLS,CUT_OFFS,bar_data,admin1_id,selected_indicador,risk) {
-  
   fig <- NULL
   y_axis_title <- lang_label_tls(LANG_TLS,"rep_label_admin2_name_plural")
   x_axis_title <- lang_label_tls(LANG_TLS,"risk_points_general")
-  indicator = "GENERAL"
-  max_y_point <- get_risk_level_point_limit(CUT_OFFS,"GENERAL","VHR")
+  indicator = "total_score"
+  max_y_point <- get_risk_level_point_limit(CUT_OFFS,"total_score","VHR")
   bar_data <- bar_data %>% filter(`ADMIN1 GEO_ID` == admin1_id) %>% filter(!is.na(total_score))
   bar_data <- bar_data %>% rename(LUGAR = ADMIN2)
-  
+
   if (admin1_id != 0) {
     
-    if (selected_indicador == "GENERAL") {
+    if (selected_indicador == "total_score") {
       bar_data$risk_level <- get_risk_level(LANG_TLS,CUT_OFFS,indicator,bar_data$total_score)
       if (risk != "ALL") {
         bar_data <- bar_data %>% filter(risk_level == lang_label_tls(LANG_TLS,risk))
       }
-      
+
       fig <- plot_ly(bar_data, type = 'bar',orientation = 'h',y = ~LUGAR,
                      x = ~immunity_score, name = lang_label_tls(LANG_TLS,"menuitem_immunity"),marker = list(color = "#8DB1CC"),text = ~immunity_score, textposition = 'inside',textangle = 0) %>%
         add_trace(x = ~survaillance_score, name = lang_label_tls(LANG_TLS,"menuitem_survaillance"), marker = list(color = "#2165A4"),text = ~survaillance_score, textposition = 'inside') %>%
         add_trace(x = ~determinants_score, name = lang_label_tls(LANG_TLS,"menuitem_determinants"), marker = list(color = "#253E80"),text = ~determinants_score, textposition = 'inside') %>%
-        add_trace(x = ~outbreaks_score, name = lang_label_tls(LANG_TLS,"menuitem_outbreaks"), marker = list(color = "#6436A5"),text = ~outbreaks_score, textposition = 'inside')
+        add_trace(x = ~outbreaks_score, name = lang_label_tls(LANG_TLS,"menuitem_outbreaks"), marker = list(color = "#6436A5"),text = ~outbreaks_score, textposition = 'inside') %>% 
 
         layout(xaxis = list(title = x_axis_title, tickfont = list(size = 12)), 
                barmode = 'stack',

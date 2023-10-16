@@ -180,5 +180,9 @@ function(input, output, session) {
     ind_plot_bar_data(LANG_TLS,CUT_OFFS,indicadores_prep_bar_data(),ind_rename(input$indicadores_select_indicador),get_a1_geo_id(input$indicadores_select_admin1))
   })
   
+  output$indicadores_plot_multibar <- renderPlotly({
+    ind_plot_multibar_data(LANG_TLS,CUT_OFFS,scores_data,get_a1_geo_id(input$indicadores_select_admin1),ind_rename(input$indicadores_select_indicador),risk_rename(input$indicadores_select_risk))
+  })
+  
   
 }
