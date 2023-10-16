@@ -184,5 +184,10 @@ function(input, output, session) {
     ind_plot_multibar_data(LANG_TLS,CUT_OFFS,scores_data,get_a1_geo_id(input$indicadores_select_admin1),ind_rename(input$indicadores_select_indicador),risk_rename(input$indicadores_select_risk))
   })
   
+  ### INDICATORS CHEAT SHEET ----
+  output$indicadores_rangos_table <- renderDataTable(server = FALSE,{
+    ind_rangos_table(LANG_TLS,CUT_OFFS,ind_rename(input$indicadores_select_indicador))
+  })
+  
   
 }
