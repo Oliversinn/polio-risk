@@ -134,6 +134,14 @@ function(input, output, session) {
     ind_map$dat
   })
   
+  output$dl_indicadores_plot_map <- downloadHandler(
+    filename = function() {
+      paste0(lang_label("map")," ",toupper(COUNTRY_NAME)," ",input$indicadores_select_indicador," (",YEAR_1,"-",YEAR_5,").png")
+    },
+    content = function(file) {
+      mapshot(ind_map$dat, file = file)
+    }
+  )
   
   output$indicadores_table <- renderDataTable(server = FALSE,{
     ind_get_bar_table(LANG_TLS,CUT_OFFS,scores_data,ind_rename(input$indicadores_select_indicador),get_a1_geo_id(input$indicadores_select_admin1),risk_rename(input$indicadores_select_risk))
@@ -152,5 +160,9 @@ function(input, output, session) {
       mapshot(ind_map_2$dat, file = file)
     }
   )
+  
+  output$indicadores_table_2 <- renderDataTable(server = FALSE,{
+    ind_get_bar_table(LANG_TLS,CUT_OFFS,scores_data,ind_rename(input$indicadores_select_indicador),get_a1_geo_id(input$indicadores_select_admin1),risk_rename(input$indicadores_select_risk))
+  })
   
 }
