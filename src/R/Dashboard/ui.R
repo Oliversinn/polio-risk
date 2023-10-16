@@ -149,6 +149,24 @@ fluidPage(
                       shinycssloaders::withSpinner(dataTableOutput("indicadores_table_2",height = 620),color = "#1c9ad6", type = "8", size = 0.5)
                     )
                   )
+                ),
+                box(
+                  width = 6,
+                  solidHeader = TRUE,
+                  collapsible = TRUE,
+                  title = textOutput("indicadores_title_bar_box"),
+                  tabBox(
+                    width = 12,
+                    height = NULL,
+                    tabPanel(
+                      title = lang_label("general_title_plot_bar"),icon = icon("bar-chart"),
+                      shinycssloaders::withSpinner(plotlyOutput("indicadores_plot_bar",height = 595),color = "#1c9ad6", type = "8", size = 0.5)
+                    ),
+                    tabPanel(
+                      title = lang_label("general_title_plot_multibar"),icon = icon("square-check"),
+                      shinycssloaders::withSpinner(plotlyOutput("indicadores_plot_multibar",height = 595),color = "#1c9ad6", type = "8", size = 0.5)
+                    )
+                  )
                 )
                 
               )

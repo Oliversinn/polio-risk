@@ -107,7 +107,7 @@ ind_rangos_table <- function(LANG_TLS,CUT_OFFS,indicator) {
 ind_prep_bar_data <- function(LANG_TLS,CUT_OFFS,data,indicator,admin1_id,risk) {
   
   var_to_summarise <- case_when(
-    indicator == "total_score" ~ "GENERAL",
+    indicator == "total_score" ~ "total_score",
     indicator == "immunity_score" ~ "immunity_score",
     indicator == "survaillance_score" ~ "survaillance_score",
     indicator == "determinants_score" ~ "determinants_score",

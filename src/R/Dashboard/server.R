@@ -114,7 +114,7 @@ function(input, output, session) {
     input$indicadores_select_indicador
   })
   
-  #### GENERAL MAP ----
+  #### MAP ----
   indicadores_prep_map_data <- reactive({
     ind_prep_map_data(LANG_TLS,ZERO_POB_LIST,CUT_OFFS,country_shapes,scores_data,ind_rename(input$indicadores_select_indicador),get_a1_geo_id(input$indicadores_select_admin1),risk_rename(input$indicadores_select_risk))
   })
@@ -164,5 +164,21 @@ function(input, output, session) {
   output$indicadores_table_2 <- renderDataTable(server = FALSE,{
     ind_get_bar_table(LANG_TLS,CUT_OFFS,scores_data,ind_rename(input$indicadores_select_indicador),get_a1_geo_id(input$indicadores_select_admin1),risk_rename(input$indicadores_select_risk))
   })
+  
+  ### TOTAL POINTS ----
+  indicadores_prep_bar_data <- reactive({
+    ind_prep_bar_data(LANG_TLS,CUT_OFFS,scores_data,ind_rename(input$indicadores_select_indicador),get_a1_geo_id(input$indicadores_select_admin1),risk_rename(input$indicadores_select_risk))
+  })
+  
+  output$indicadores_title_bar_box <- renderText({
+    text_title <- title_bar_box(input$indicadores_select_indicador,input$indicadores_select_admin1)
+    text_title <- paste0(text_title," (",YEAR_1," - ",YEAR_5,")")
+    text_title
+  })
+  
+  output$indicadores_plot_bar <- renderPlotly({
+    ind_plot_bar_data(LANG_TLS,CUT_OFFS,indicadores_prep_bar_data(),ind_rename(input$indicadores_select_indicador),get_a1_geo_id(input$indicadores_select_admin1))
+  })
+  
   
 }
