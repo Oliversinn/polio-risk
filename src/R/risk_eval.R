@@ -596,6 +596,7 @@ admin1_geo_id_df <- hardcoded_columns %>%
     `ADMIN1 GEO_ID`,
     ADMIN1
   )
+admin1_geo_id_df <- rbind(admin1_geo_id_df,c(0,toupper(lang_label("rep_label_all"))))
 
 
 ## SCORES ----

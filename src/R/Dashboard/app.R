@@ -187,7 +187,7 @@ ui <- fluidPage(
             tabName = "GENERAL",
             h2(textOutput("indicadores_title")),
             br(),
-            
+
             fluidRow(
               valueBoxOutput("ind_box_1",width = 3),
               valueBoxOutput("ind_box_2",width = 3),
@@ -214,7 +214,6 @@ server <- function(input, output, session) {
       lang_label("menuitem_determinants") == selected_ind ~ "determinants_score",
       lang_label("menuitem_outbreaks") == selected_ind ~ "outbreaks_score"
     )
-    print(renamed)
     return(renamed)
   }
   
@@ -237,23 +236,23 @@ server <- function(input, output, session) {
   box_data$a4 <- 0
   box_data$at <- 0
   
-  # observeEvent(input$indicadores_select_indicador, {
-  #   new_box_data <- datos_boxes(LANG_TLS,indicadores_prep_box_data())
-  #   box_data$a1 <- new_box_data[1]
-  #   box_data$a2 <- new_box_data[2]
-  #   box_data$a3 <- new_box_data[3]
-  #   box_data$a4 <- new_box_data[4]
-  #   box_data$at <- new_box_data[5]
-  # })
-  # 
-  # observeEvent(input$indicadores_select_admin1, {
-  #   new_box_data <- datos_boxes(LANG_TLS,indicadores_prep_box_data())
-  #   box_data$a1 <- new_box_data[1]
-  #   box_data$a2 <- new_box_data[2]
-  #   box_data$a3 <- new_box_data[3]
-  #   box_data$a4 <- new_box_data[4]
-  #   box_data$at <- new_box_data[5]
-  # })
+  observeEvent(input$indicadores_select_indicador, {
+    new_box_data <- datos_boxes(LANG_TLS,indicadores_prep_box_data())
+    box_data$a1 <- new_box_data[1]
+    box_data$a2 <- new_box_data[2]
+    box_data$a3 <- new_box_data[3]
+    box_data$a4 <- new_box_data[4]
+    box_data$at <- new_box_data[5]
+  })
+
+  observeEvent(input$indicadores_select_admin1, {
+    new_box_data <- datos_boxes(LANG_TLS,indicadores_prep_box_data())
+    box_data$a1 <- new_box_data[1]
+    box_data$a2 <- new_box_data[2]
+    box_data$a3 <- new_box_data[3]
+    box_data$a4 <- new_box_data[4]
+    box_data$at <- new_box_data[5]
+  })
   
   
   
@@ -307,9 +306,13 @@ server <- function(input, output, session) {
   
   ## REACTIVE ----
   ### indicadores_prep_box_data ----
-  #indicadores_prep_box_data <- reactive({
-    #ind_prep_box_data(LANG_TLS,CUT_OFFS,scores_data,ind_rename(input$indicadores_select_indicador),get_a1_geo_id(input$indicadores_select_admin1))
-  #})
+  indicadores_prep_box_data <- reactive({
+    ind_prep_box_data(LANG_TLS,
+                      CUT_OFFS,
+                      scores_data,
+                      ind_rename(input$indicadores_select_indicador),
+                      unique(get_a1_geo_id(input$indicadores_select_admin1)))
+  })
   
   
 }

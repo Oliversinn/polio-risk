@@ -51,7 +51,6 @@ get_risk_level <- function(LANG_TLS,CUT_OFFS,indicator,risk_points) {
   rp_MD <- CUT_OFFS$value[CUT_OFFS$RV == indicator & CUT_OFFS$risk_level == "MR"]
   rp_HR <- CUT_OFFS$value[CUT_OFFS$RV == indicator & CUT_OFFS$risk_level == "HR"]
   rp_VHR <- CUT_OFFS$value[CUT_OFFS$RV == indicator & CUT_OFFS$risk_level == "VHR"]
-  print(rp_VHR)
   risk_levels <- c()
   for (r_point in risk_points) {
     if (is.na(r_point)) {r_level = lang_label_tls(LANG_TLS,"no_data")}
@@ -520,8 +519,6 @@ ind_plot_map_data <- function(LANG_TLS,ZERO_POB_LIST,CUT_OFFS,map_data,indicator
 
 
 ind_prep_box_data <- function(LANG_TLS,CUT_OFFS,data,indicator,admin1_id) {
-  print(admin1_id)
-  print(indicator)
   var_to_summarise <- case_when(
     indicator == "total_score" ~ "total_score",
     indicator == "immunity_score" ~ "immunity_score",
@@ -531,13 +528,12 @@ ind_prep_box_data <- function(LANG_TLS,CUT_OFFS,data,indicator,admin1_id) {
   )
   
   prep_data <- data %>% rename("PR" = var_to_summarise)
-  print(prep_data)
-  print(admin1_id)
   if (admin1_id == 0) {
     prep_data <- prep_data %>% filter(!is.na(PR)) %>% select(LUGAR = ADMIN2,PR)
   } else {
     prep_data <- prep_data %>% filter(`ADMIN1 GEO_ID` == admin1_id) %>% filter(!is.na(PR)) %>% select(LUGAR = ADMIN2,PR)
   }
+  print(prep_data)
   prep_data$risk_level <- get_risk_level(LANG_TLS,CUT_OFFS,indicator,prep_data$PR)
 
   
