@@ -35,7 +35,7 @@ options(shiny.fullstacktrace = TRUE)
 load(file = "POLIO.RData")
 # FUNCS ----
 get_a1_geo_id <- function(admin1) {
-  return(unique(admin1_geo_id_df$`ADMIN1 GEO_ID`[admin1_geo_id_df$ADMIN1 == admin1]))
+  return((admin1_geo_id_df$`ADMIN1 GEO_ID`[admin1_geo_id_df$ADMIN1 == admin1]))
 }
 
 lang_label <- function(label) {

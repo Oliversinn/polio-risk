@@ -56,3 +56,6 @@ notebooks
 
 # Excel cache
 ~$*.xlsx
+
+# geo.csv
+geo.csv
