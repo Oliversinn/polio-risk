@@ -47,12 +47,11 @@ fluidPage(
           selectInput("indicadores_select_indicador",
                       label = paste0(lang_label("general_select_ind"), ":"),
                       choices = c(
-                        lang_label("menuitem_general_label")
-                        #lang_label("menuitem_inm_pob"),
-                        #lang_label("menuitem_determinants"),
-                        #lang_label("menuitem_surv_qual"),
-                        #lang_label("menuitem_outbreaks"),
-                        #lang_label("menuitem_rap_res")
+                        lang_label("menuitem_general_label"),
+                        lang_label("menuitem_immunity"),
+                        lang_label("menuitem_survaillance"),
+                        lang_label("menuitem_determinants"),
+                        lang_label("menuitem_outbreaks")
                       ),
                       selected = lang_label("menuitem_general_label")
           ),

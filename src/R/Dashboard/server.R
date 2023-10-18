@@ -12,7 +12,7 @@ function(input, output, session) {
     renamed <- case_when(
       lang_label("menuitem_general_label") == selected_ind ~ "total_score",
       lang_label("menuitem_immunity") == selected_ind ~ "immunity_score",
-      lang_label("menuitem_survaillance") == selected_ind ~ "survailance_score",
+      lang_label("menuitem_survaillance") == selected_ind ~ "survaillance_score",
       lang_label("menuitem_determinants") == selected_ind ~ "determinants_score",
       lang_label("menuitem_outbreaks") == selected_ind ~ "outbreaks_score"
     )
