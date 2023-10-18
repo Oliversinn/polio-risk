@@ -132,7 +132,8 @@ ind_prep_bar_data <- function(LANG_TLS,CUT_OFFS,data,indicator,admin1_id,risk) {
 
 ind_prep_map_data <- function(LANG_TLS,ZERO_POB_LIST,CUT_OFFS,map_data,data,indicator,admin1_id,risk) {
   data <- data %>% select(-ADMIN1,-ADMIN2)
-  map_data <- full_join(map_data,data,by = c("ADMIN1 GEO_ID" = "ADMIN1 GEO_ID", "GEO_ID" = "GEO_ID"))
+  map_data <- full_join(map_data,data,by = c("GEO_ID" = "GEO_ID", "ADMIN1 GEO_ID" = "ADMIN1 GEO_ID") )
+  print(map_data)
   var_to_summarise <- case_when(
     indicator == "total_score" ~ "total_score",
     indicator == "immunity_score" ~ "immunity_score",
