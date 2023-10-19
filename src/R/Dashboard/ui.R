@@ -190,10 +190,18 @@ fluidPage(
             
             fluidRow(
               column(
-                width = 6, offset = 3,
+                width = 12,
                 box(
                   width = 12,
                   solidHeader = TRUE,collapsible = TRUE,title = lang_label("general_title_limits_table"),
+                  selectInput(
+                    "general_limits_table_filter", 
+                    label = "", 
+                    choices = c(
+                      lang_label("population_pfa_filter"),
+                      lang_label("population_pfa_no_filter")
+                    ),
+                  ),
                   shinycssloaders::withSpinner(dataTableOutput("indicadores_rangos_table"),color = "#1c9ad6", type = "8", size = 0.3)
                 )
               )

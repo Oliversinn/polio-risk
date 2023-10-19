@@ -195,7 +195,11 @@ function(input, output, session) {
   
   ### INDICATORS CHEAT SHEET ----
   output$indicadores_rangos_table <- renderDataTable(server = FALSE,{
-    ind_rangos_table(LANG_TLS,CUT_OFFS,ind_rename(input$indicadores_select_indicador), TRUE)
+    pfa_filter <- case_when(
+      input$general_limits_table_filter == lang_label("population_pfa_filter") ~ TRUE,
+      input$general_limits_table_filter == lang_label("population_pfa_no_filter") ~ FALSE,
+    )
+    ind_rangos_table(LANG_TLS,CUT_OFFS,ind_rename(input$indicadores_select_indicador), pfa_filter)
   })
   
   
