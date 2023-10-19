@@ -46,37 +46,59 @@ lang_label_tls <- function(LANG_TLS,label) {
 
 
 # Risk funcs ----
-get_risk_level <- function(LANG_TLS,CUT_OFFS,indicator,risk_points) {
-  rp_LR <- CUT_OFFS$value[CUT_OFFS$RV == indicator & CUT_OFFS$risk_level == "LR"]
-  rp_MD <- CUT_OFFS$value[CUT_OFFS$RV == indicator & CUT_OFFS$risk_level == "MR"]
-  rp_HR <- CUT_OFFS$value[CUT_OFFS$RV == indicator & CUT_OFFS$risk_level == "HR"]
-  rp_VHR <- CUT_OFFS$value[CUT_OFFS$RV == indicator & CUT_OFFS$risk_level == "VHR"]
+get_risk_level <- function(LANG_TLS,CUT_OFFS,indicator,risk_points, pfa) {
+  rp_LR <- CUT_OFFS$value[CUT_OFFS$RV == indicator & CUT_OFFS$risk_level == "LR" & CUT_OFFS$PFA == FALSE]
+  rp_LR_PFA <- CUT_OFFS$value[CUT_OFFS$RV == indicator & CUT_OFFS$risk_level == "LR" & CUT_OFFS$PFA == TRUE]
+  rp_MD <- CUT_OFFS$value[CUT_OFFS$RV == indicator & CUT_OFFS$risk_level == "MR" & CUT_OFFS$PFA == FALSE]
+  rp_MD_PFA <- CUT_OFFS$value[CUT_OFFS$RV == indicator & CUT_OFFS$risk_level == "MR" & CUT_OFFS$PFA == TRUE]
+  rp_HR <- CUT_OFFS$value[CUT_OFFS$RV == indicator & CUT_OFFS$risk_level == "HR" & CUT_OFFS$PFA == FALSE]
+  rp_HR_PFA <- CUT_OFFS$value[CUT_OFFS$RV == indicator & CUT_OFFS$risk_level == "HR" & CUT_OFFS$PFA == TRUE]
+  rp_VHR <- CUT_OFFS$value[CUT_OFFS$RV == indicator & CUT_OFFS$risk_level == "VHR" & CUT_OFFS$PFA == FALSE]
+  rp_VHR_PFA <- CUT_OFFS$value[CUT_OFFS$RV == indicator & CUT_OFFS$risk_level == "VHR" & CUT_OFFS$PFA == TRUE]
   risk_levels <- c()
-  print(risk_points)
-  for (r_point in risk_points) {
-    if (is.na(r_point)) {r_level = lang_label_tls(LANG_TLS,"no_data")}
-    else if (r_point >= 0 & r_point <= rp_LR) {r_level = lang_label_tls(LANG_TLS,"LR")}
-    else if (r_point > rp_LR & r_point <= rp_MD) {r_level = lang_label_tls(LANG_TLS,"MR")}
-    else if (r_point > rp_MD & r_point <= rp_HR) {r_level = lang_label_tls(LANG_TLS,"HR")}
-    else if (r_point > rp_HR) {r_level = lang_label_tls(LANG_TLS,"VHR")}
-    risk_levels <- c(risk_levels,r_level)
+  
+  for (i in 1:length(risk_points)) {
+    if (pfa[i]) {
+      if (is.na(risk_points[i])) {r_level = lang_label_tls(LANG_TLS,"no_data")}
+      else if (risk_points[i] >= 0 & risk_points[i] <= rp_LR) {r_level = lang_label_tls(LANG_TLS,"LR")}
+      else if (risk_points[i] > rp_LR & risk_points[i] <= rp_MD) {r_level = lang_label_tls(LANG_TLS,"MR")}
+      else if (risk_points[i] > rp_MD & risk_points[i] <= rp_HR) {r_level = lang_label_tls(LANG_TLS,"HR")}
+      else if (risk_points[i] > rp_HR) {r_level = lang_label_tls(LANG_TLS,"VHR")}
+      risk_levels <- c(risk_levels,r_level)
+    } else {
+      if (is.na(risk_points[i])) {r_level = lang_label_tls(LANG_TLS,"no_data")}
+      else if (risk_points[i] >= 0 & risk_points[i] <= rp_LR_PFA) {r_level = lang_label_tls(LANG_TLS,"LR")}
+      else if (risk_points[i] > rp_LR_PFA & risk_points[i] <= rp_MD_PFA) {r_level = lang_label_tls(LANG_TLS,"MR")}
+      else if (risk_points[i] > rp_MD_PFA & risk_points[i] <= rp_HR_PFA) {r_level = lang_label_tls(LANG_TLS,"HR")}
+      else if (risk_points[i] > rp_HR_PFA) {r_level = lang_label_tls(LANG_TLS,"VHR")}
+      risk_levels <- c(risk_levels,r_level)
+    }
   }
+  
+  # for (r_point in risk_points) {
+  #   if (is.na(r_point)) {r_level = lang_label_tls(LANG_TLS,"no_data")}
+  #   else if (r_point >= 0 & r_point <= rp_LR) {r_level = lang_label_tls(LANG_TLS,"LR")}
+  #   else if (r_point > rp_LR & r_point <= rp_MD) {r_level = lang_label_tls(LANG_TLS,"MR")}
+  #   else if (r_point > rp_MD & r_point <= rp_HR) {r_level = lang_label_tls(LANG_TLS,"HR")}
+  #   else if (r_point > rp_HR) {r_level = lang_label_tls(LANG_TLS,"VHR")}
+  #   risk_levels <- c(risk_levels,r_level)
+  # }
   return(risk_levels)
 }
 
-get_risk_level_point_limit <- function(CUT_OFFS,indicator,risk_level) {
-  risk_point <- CUT_OFFS$value[CUT_OFFS$RV == indicator & CUT_OFFS$risk_level == risk_level]
+get_risk_level_point_limit <- function(CUT_OFFS,indicator,risk_level, pfa) {
+  risk_point <- CUT_OFFS$value[CUT_OFFS$RV == indicator & CUT_OFFS$risk_level == risk_level & CUT_OFFS$PFA == pfa]
   return(risk_point)
 }
 
 
 # Dashboard ----
 
-ind_rangos_table <- function(LANG_TLS,CUT_OFFS,indicator) {
+ind_rangos_table <- function(LANG_TLS,CUT_OFFS,indicator, pfa) {
   
   table_percentages <- c(lang_label_tls(LANG_TLS,"LR"),lang_label_tls(LANG_TLS,"MR"),lang_label_tls(LANG_TLS,"HR"),lang_label_tls(LANG_TLS,"VHR"))
-  table_intervals_min <- c(0,get_risk_level_point_limit(CUT_OFFS,indicator,"LR") + 1,get_risk_level_point_limit(CUT_OFFS,indicator,"MR") + 1,get_risk_level_point_limit(CUT_OFFS,indicator,"HR") + 1)
-  table_intervals_max <- c(get_risk_level_point_limit(CUT_OFFS,indicator,"LR"),get_risk_level_point_limit(CUT_OFFS,indicator,"MR"),get_risk_level_point_limit(CUT_OFFS,indicator,"HR"),get_risk_level_point_limit(CUT_OFFS,indicator,"VHR"))
+  table_intervals_min <- c(0,get_risk_level_point_limit(CUT_OFFS,indicator,"LR", pfa) + 1,get_risk_level_point_limit(CUT_OFFS,indicator,"MR", pfa) + 1,get_risk_level_point_limit(CUT_OFFS,indicator,"HR", pfa) + 1)
+  table_intervals_max <- c(get_risk_level_point_limit(CUT_OFFS,indicator,"LR", pfa),get_risk_level_point_limit(CUT_OFFS,indicator,"MR", pfa),get_risk_level_point_limit(CUT_OFFS,indicator,"HR", pfa),get_risk_level_point_limit(CUT_OFFS,indicator,"VHR", pfa))
   table_colors <- c("rgba(146, 208, 80, 0.7)","rgba(254, 192, 0, 0.7)","rgba(232, 19, 43, 0.7)","rgba(146, 0, 0, 0.7)")
   
   rangos_df <- data.frame(table_percentages,table_intervals_min)
@@ -115,6 +137,8 @@ ind_prep_bar_data <- function(LANG_TLS,CUT_OFFS,data,indicator,admin1_id,risk) {
     indicator == "outbreaks_score" ~ "outbreaks_score"
   )
   
+  pfa <- population_and_pfa(data)
+  
   prep_data <- data %>% rename("PR" = var_to_summarise)
   
   if (admin1_id == 0) {
@@ -123,7 +147,9 @@ ind_prep_bar_data <- function(LANG_TLS,CUT_OFFS,data,indicator,admin1_id,risk) {
     prep_data <- prep_data %>% filter(`ADMIN1 GEO_ID` == admin1_id) %>% filter(!is.na(PR)) %>% select(ADMIN2,PR)
   }
   
-  prep_data$risk_level <- get_risk_level(LANG_TLS,CUT_OFFS,indicator,prep_data$PR)
+
+  
+  prep_data$risk_level <- get_risk_level(LANG_TLS,CUT_OFFS,indicator,prep_data$PR, pfa = pfa)
   if (risk != "ALL") {
     prep_data <- prep_data %>% filter(risk_level == lang_label_tls(LANG_TLS,risk))
   }
@@ -141,8 +167,9 @@ ind_prep_map_data <- function(LANG_TLS,ZERO_POB_LIST,CUT_OFFS,map_data,data,indi
     indicator == "determinants_score" ~ "determinants_score",
     indicator == "outbreaks_score" ~ "outbreaks_score"
   )
+  pfa <- population_and_pfa(map_data)
   map_data <- map_data %>% rename("PR" = var_to_summarise)
-  map_data$risk_level <- get_risk_level(LANG_TLS,CUT_OFFS,indicator,map_data$PR)
+  map_data$risk_level <- get_risk_level(LANG_TLS,CUT_OFFS,indicator,map_data$PR, pfa = pfa)
   map_data$risk_level[map_data$GEO_ID %in% ZERO_POB_LIST] <- "NO_HAB"
   if (admin1_id == 0) {
     map_data <- map_data %>% select(ADMIN1,ADMIN2,PR,risk_level,geometry)
@@ -167,6 +194,7 @@ ind_get_bar_table <- function(LANG_TLS,CUT_OFFS,data,indicator,admin1_id,risk) {
     indicator == "outbreaks_score" ~ "outbreaks_score"
   )
   
+  pfa <- population_and_pfa(data)
   
   
   if (indicator != "total_score") {
@@ -179,7 +207,8 @@ ind_get_bar_table <- function(LANG_TLS,CUT_OFFS,data,indicator,admin1_id,risk) {
       data <- data %>% arrange(desc(ADMIN2))
     }
     
-    data$risk_level <- get_risk_level(LANG_TLS,CUT_OFFS,indicator,data$PR)
+    
+    data$risk_level <- get_risk_level(LANG_TLS,CUT_OFFS,indicator,data$PR, pfa = pfa)
     if (risk != "ALL") {
       data <- data %>% filter(risk_level == lang_label_tls(LANG_TLS,risk))
     }
@@ -197,8 +226,7 @@ ind_get_bar_table <- function(LANG_TLS,CUT_OFFS,data,indicator,admin1_id,risk) {
       data <- data %>% filter(`ADMIN1 GEO_ID` == admin1_id) %>% select(ADMIN1,ADMIN2,immunity_score,survaillance_score,determinants_score,outbreaks_score,total_score)
       data <- data %>% arrange(desc(ADMIN2))
     }
-    
-    data$risk_level <- get_risk_level(LANG_TLS,CUT_OFFS,indicator,data$total_score)
+    data$risk_level <- get_risk_level(LANG_TLS,CUT_OFFS,indicator,data$total_score, pfa = pfa)
     if (risk != "ALL") {
       data <- data %>% filter(risk_level == lang_label_tls(LANG_TLS,risk))
     }
@@ -254,6 +282,7 @@ ind_get_bar_table <- function(LANG_TLS,CUT_OFFS,data,indicator,admin1_id,risk) {
 
 ind_plot_bar_data <- function(LANG_TLS,CUT_OFFS,bar_data,indicator,admin1_id) {
   fig <- NULL
+  pfa <- TRUE
   
   if (admin1_id != 0) {
     y_axis_title <- str_to_title(lang_label_tls(LANG_TLS,"rep_label_admin2_name_plural"))
@@ -270,19 +299,19 @@ ind_plot_bar_data <- function(LANG_TLS,CUT_OFFS,bar_data,indicator,admin1_id) {
       layout(shapes = list(
         list(type = "rect",fillcolor = "#92d050", line = list(color = "#92d050"),
              opacity = 0.4, layer = "below",
-             x0 = 0, x1 = get_risk_level_point_limit(CUT_OFFS,indicator,"LR"), xref = "x",
+             x0 = 0, x1 = get_risk_level_point_limit(CUT_OFFS,indicator,"LR", pfa), xref = "x",
              y0 = -1, y1 = nrow(bar_data), yref = "y"),
         list(type = "rect",fillcolor = "#fec000", line = list(color = "#fec000"),
              opacity = 0.3, layer = "below",
-             x0 = get_risk_level_point_limit(CUT_OFFS,indicator,"LR"), x1 = get_risk_level_point_limit(CUT_OFFS,indicator,"MR"), xref = "x",
+             x0 = get_risk_level_point_limit(CUT_OFFS,indicator,"LR", pfa), x1 = get_risk_level_point_limit(CUT_OFFS,indicator,"MR", pfa), xref = "x",
              y0 = -1, y1 = nrow(bar_data), yref = "y"),
         list(type = "rect",fillcolor = "#e8132b", line = list(color = "#e8132b"),
              opacity = 0.2, layer = "below",
-             x0 = get_risk_level_point_limit(CUT_OFFS,indicator,"MR"), x1 = get_risk_level_point_limit(CUT_OFFS,indicator,"HR"), xref = "x",
+             x0 = get_risk_level_point_limit(CUT_OFFS,indicator,"MR", pfa), x1 = get_risk_level_point_limit(CUT_OFFS,indicator,"HR", pfa), xref = "x",
              y0 = -1, y1 = nrow(bar_data), yref = "y"),
         list(type = "rect",fillcolor = "#920000", line = list(color = "#920000"),
              opacity = 0.3, layer = "below",
-             x0 = get_risk_level_point_limit(CUT_OFFS,indicator,"HR"), x1 = get_risk_level_point_limit(CUT_OFFS,indicator,"VHR"), xref = "x",
+             x0 = get_risk_level_point_limit(CUT_OFFS,indicator,"HR", pfa), x1 = get_risk_level_point_limit(CUT_OFFS,indicator,"VHR", pfa), xref = "x",
              y0 = -1, y1 = nrow(bar_data), yref = "y")
       )) %>%
       config(displaylogo = FALSE) %>%
@@ -306,10 +335,11 @@ ind_plot_multibar_data <- function(LANG_TLS,CUT_OFFS,bar_data,admin1_id,selected
   bar_data <- bar_data %>% filter(`ADMIN1 GEO_ID` == admin1_id) %>% filter(!is.na(total_score))
   bar_data <- bar_data %>% rename(LUGAR = ADMIN2)
 
+  pfa <- population_and_pfa(bar_data)
   if (admin1_id != 0) {
     
     if (selected_indicador == "total_score") {
-      bar_data$risk_level <- get_risk_level(LANG_TLS,CUT_OFFS,indicator,bar_data$total_score)
+      bar_data$risk_level <- get_risk_level(LANG_TLS,CUT_OFFS,indicator,bar_data$total_score, pfa = pfa)
       if (risk != "ALL") {
         bar_data <- bar_data %>% filter(risk_level == lang_label_tls(LANG_TLS,risk))
       }
@@ -361,7 +391,9 @@ ind_plot_multibar_data <- function(LANG_TLS,CUT_OFFS,bar_data,admin1_id,selected
       bar_data <- bar_data %>% rename(VAR = var_to_summarise)
       bar_data$other_PR <- bar_data$total_score - bar_data$VAR
       
-      bar_data$risk_level <- get_risk_level(LANG_TLS,CUT_OFFS,selected_indicador,bar_data$VAR)
+      pfa <- population_and_pfa(bar_data)
+      
+      bar_data$risk_level <- get_risk_level(LANG_TLS,CUT_OFFS,selected_indicador,bar_data$VAR, pfa = pfa)
       if (risk != "ALL") {
         bar_data <- bar_data %>% filter(risk_level == lang_label_tls(LANG_TLS,risk))
       }
@@ -409,11 +441,12 @@ ind_plot_multibar_data <- function(LANG_TLS,CUT_OFFS,bar_data,admin1_id,selected
 
 
 ind_plot_map_data <- function(LANG_TLS,ZERO_POB_LIST,CUT_OFFS,map_data,indicator,admin1_id,risk) {
+  pfa <- population_and_pfa(map_data)
   table_intervals <- c(
-    get_risk_level_point_limit(CUT_OFFS,indicator,"LR"),
-    get_risk_level_point_limit(CUT_OFFS,indicator,"MR"),
-    get_risk_level_point_limit(CUT_OFFS,indicator,"HR"),
-    get_risk_level_point_limit(CUT_OFFS,indicator,"VHR")
+    get_risk_level_point_limit(CUT_OFFS,indicator,"LR", pfa),
+    get_risk_level_point_limit(CUT_OFFS,indicator,"MR", pfa),
+    get_risk_level_point_limit(CUT_OFFS,indicator,"HR", pfa),
+    get_risk_level_point_limit(CUT_OFFS,indicator,"VHR", pfa)
   )
 
   map_data <- map_data %>% mutate(
@@ -521,15 +554,14 @@ ind_prep_box_data <- function(LANG_TLS,CUT_OFFS,data,indicator,admin1_id) {
     indicator == "determinants_score" ~ "determinants_score",
     indicator == "outbreaks_score" ~ "outbreaks_score"
   )
-  
+  pfa <- population_and_pfa(data)
   prep_data <- data %>% rename("PR" = var_to_summarise)
   if (admin1_id == 0) {
     prep_data <- prep_data %>% filter(!is.na(PR)) %>% select(LUGAR = ADMIN2,PR)
   } else {
     prep_data <- prep_data %>% filter(`ADMIN1 GEO_ID` == admin1_id) %>% filter(!is.na(PR)) %>% select(LUGAR = ADMIN2,PR)
   }
-
-  prep_data$risk_level <- get_risk_level(LANG_TLS,CUT_OFFS,indicator,prep_data$PR)
+  prep_data$risk_level <- get_risk_level(LANG_TLS,CUT_OFFS,indicator,prep_data$PR, pfa = pfa)
 
   
   return(prep_data)

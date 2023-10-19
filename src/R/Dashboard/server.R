@@ -186,7 +186,7 @@ function(input, output, session) {
   
   ### INDICATORS CHEAT SHEET ----
   output$indicadores_rangos_table <- renderDataTable(server = FALSE,{
-    ind_rangos_table(LANG_TLS,CUT_OFFS,ind_rename(input$indicadores_select_indicador))
+    ind_rangos_table(LANG_TLS,CUT_OFFS,ind_rename(input$indicadores_select_indicador), TRUE)
   })
   
   

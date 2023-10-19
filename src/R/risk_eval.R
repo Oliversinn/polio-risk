@@ -100,7 +100,7 @@ geocodes_cleansing <- function(df) {
 # Population and PFA
 population_and_pfa <- function(population_inmunity_df) {
     score <- case_when(
-      population_inmunity_df$POB >= 100000 | population_inmunity_df$pfa == lang_label("yes") ~ TRUE,
+      population_inmunity_df$POB15 >= 100000 | population_inmunity_df$pfa == lang_label("yes") ~ TRUE,
       TRUE ~ FALSE
     )
     return(score)
@@ -161,9 +161,9 @@ score_effective_campaign <- function(population_inmunity_df) {
 score_compliant_units <- function(survaillance_df) {
   population_and_pfa = population_and_pfa(survaillance_df)
   score = case_when(
-    population_and_pfa & survaillance_df[["compliant_units_percent"]] < 80 ~ 8,
-    !population_and_pfa & survaillance_df[["compliant_units_percent"]] < 80 ~ 10,
-    TRUE ~ 0
+    survaillance_df[["compliant_units_percent"]] < 80 ~ 8,
+    survaillance_df[["compliant_units_percent"]] >= 80 ~ 0,
+    TRUE ~ 8
   )
   return(score)
 }
@@ -227,7 +227,7 @@ score_followups <- function(survaillance_df) {
 score_active_search <- function(survaillance_df) {
   population_and_pfa <- population_and_pfa(survaillance_df)
   score <- case_when(
-    !population_and_pfa & survaillance_df[["active_search"]] == lang_label("no") ~ 10,
+    !population_and_pfa & survaillance_df[["active_search"]] == lang_label("no") ~ 12,
     !population_and_pfa & survaillance_df[["active_search"]] == lang_label("yes") ~ 0,
     TRUE ~ NA
   )
@@ -278,7 +278,8 @@ score_sanitation_services <- function(determinants_df) {
 # Score outbreaks
 score_outbreak <- function(outbreaks_df, disease) {
   score <- case_when(
-    outbreaks_df[[disease]] == lang_label("yes") ~ 2,
+    disease != 'polio' & outbreaks_df[[disease]] == lang_label("yes") ~ 2,
+    disease == 'polio' & outbreaks_df[[disease]] == lang_label("yes") ~ 4,
     outbreaks_df[[disease]] == lang_label("no") ~ 0
   )
   return(score)
@@ -316,18 +317,18 @@ scores_data <- id_data
 
 # RISK CUT OFFS ----
 sheet_cut_off <- 'sheet_cut_off'
-CUT_OFFS <- read_xlsx(PATH_risk_cut_offs,sheet = sheet_cut_off,n_max = 6)
-CUT_OFFS <- CUT_OFFS %>% pivot_longer(!RV,names_to = "risk_level")
+CUT_OFFS <- read_xlsx(PATH_risk_cut_offs,sheet = sheet_cut_off,n_max = 10)
+CUT_OFFS <- CUT_OFFS %>% pivot_longer(!RV:PFA,names_to = "risk_level")
 
 # POPULATION AREA ----
 pop_data <- read_excel(PATH_country_data,sheet = 2)
-colnames(pop_data) <- c("ADMIN1 GEO_ID","GEO_ID","ADMIN1","ADMIN2","POB")
+colnames(pop_data) <- c("ADMIN1 GEO_ID","GEO_ID","ADMIN1","ADMIN2",'POB1', 'POB5', "POB15")
 pop_data <- admin_normalizer(pop_data)
 pop_data$`ADMIN1 GEO_ID` <- as.character(pop_data$`ADMIN1 GEO_ID`)
 pop_data$GEO_ID <- as.character(pop_data$GEO_ID)
 pop_data <- pop_data %>% filter(!is.na(`ADMIN1 GEO_ID`) & !is.na(GEO_ID))
-pop_data$POB <- as.numeric(pop_data$POB)
-ZERO_POB_LIST <- pop_data %>% filter(POB <= 0) %>% select(GEO_ID)
+pop_data$POB15 <- as.numeric(pop_data$POB15)
+ZERO_POB_LIST <- pop_data %>% filter(POB15 <= 0) %>% select(GEO_ID)
 ZERO_POB_LIST <- ZERO_POB_LIST$GEO_ID
 
 # POPULATION IMMUNITY ----
@@ -335,7 +336,7 @@ ZERO_POB_LIST <- ZERO_POB_LIST$GEO_ID
 ## Read data ----
 immunity_data <- read_excel(PATH_country_data, sheet = 3, skip = 2, col_names = FALSE)
 colnames(immunity_data) <- c('ADMIN1 GEO_ID', 'GEO_ID', 'ADMIN1', 'ADMIN2', 
-                            'POB', 'pfa','year1','year2','year3',
+                            'POB1', 'POB5', 'POB15', 'pfa','year1','year2','year3',
                             'year4','year5','ipv2','effective_campaign')
 immunity_data <- admin_normalizer(immunity_data)
 
@@ -367,8 +368,11 @@ immunity_scores <- immunity_data %>%
 ## Adding to scores_data ----
 immunity_scores_join <- immunity_scores %>% 
   select(
-    'ADMIN1',
-    'ADMIN2',
+    'GEO_ID',
+    'POB1',
+    'POB5',
+    'POB15',
+    'pfa',
     'immunity_score'
   )
 scores_data <- left_join(scores_data, immunity_scores_join)
@@ -378,7 +382,7 @@ scores_data <- left_join(scores_data, immunity_scores_join)
 ## Read data ----
 survaillance_data <- read_excel(PATH_country_data, sheet = 4, skip = 2, col_names = FALSE)
 colnames(survaillance_data) <- c('ADMIN1 GEO_ID', 'GEO_ID', 'ADMIN1', 'ADMIN2', 
-                           'POB', 'pfa', 'compliant_units_percent', 'pfa_rate', 
+                                 'POB1', 'POB5', 'POB15', 'pfa', 'compliant_units_percent', 'pfa_rate', 
                            'pfa_notified_percent', 'pfa_investigated_percent', 
                            'suitable_samples_percent', 'followups_percent', 'active_search')
 survaillance_data <- admin_normalizer(survaillance_data)
@@ -408,8 +412,7 @@ survaillance_scores <- survaillance_data %>%
 ## Adding to scores_data ----
 survaillance_scores_join <- survaillance_scores %>% 
   select(
-    'ADMIN1',
-    'ADMIN2',
+    'GEO_ID',
     'survaillance_score'
   )
 scores_data <- left_join(scores_data, survaillance_scores_join)
@@ -419,7 +422,7 @@ scores_data <- left_join(scores_data, survaillance_scores_join)
 ## Read data ----
 determinants_data <- read_excel(PATH_country_data, sheet = 5, skip = 2, col_names = FALSE)
 colnames(determinants_data) <- c('ADMIN1 GEO_ID', 'GEO_ID', 'ADMIN1', 'ADMIN2', 
-                                'POB', 'pfa', 'drinking_water_percent', 'sanitation_services_percent')
+                                 'POB1', 'POB5', 'POB15', 'pfa', 'drinking_water_percent', 'sanitation_services_percent')
 determinants_data <- admin_normalizer(determinants_data)
 
 ## Filtering missing GEO codes ----
@@ -443,8 +446,7 @@ determinants_scores <-  determinants_data %>%
 ## Adding to scores_data ----
 determinants_scores_join <- determinants_scores %>% 
   select(
-    'ADMIN1',
-'ADMIN2',
+    'GEO_ID',
     'determinants_score'
   )
 scores_data <- left_join(scores_data, determinants_scores_join)
@@ -454,7 +456,8 @@ scores_data <- left_join(scores_data, determinants_scores_join)
 ## Read data ----
 outbreaks_data = read_excel(PATH_country_data, sheet = 6, skip = 2, col_names = FALSE)
 colnames(outbreaks_data) =  c('ADMIN1 GEO_ID', 'GEO_ID', 'ADMIN1', 'ADMIN2',
-                              'measles', 'rubella', 'diphtheria', 'yellow_fever', 'tetanus')
+                              'POB1', 'POB5', 'POB15', 'pfa',
+                              'polio', 'measles', 'rubella', 'diphtheria', 'yellow_fever', 'tetanus')
 outbreaks_data <- admin_normalizer(outbreaks_data)
 
 ## Filtering missing GEO codes ----
@@ -463,6 +466,7 @@ outbreaks_data = geocodes_cleansing(outbreaks_data)
 ## Scores calculation ----
 outbreaks_scores <- outbreaks_data %>% 
   mutate(
+    polio_score = score_outbreak(outbreaks_data, 'polio'),
     measles_score = score_outbreak(outbreaks_data, 'measles'),
     rubella_score = score_outbreak(outbreaks_data, 'rubella'),
     diphtheria_score = score_outbreak(outbreaks_data, 'diphtheria'),
@@ -477,8 +481,7 @@ outbreaks_scores <- outbreaks_data %>%
 ## Adding to scores_data ----
 outbreaks_scores_join <- outbreaks_scores %>% 
   select(
-    'ADMIN1',
-    'ADMIN2',
+    'GEO_ID',
     'outbreaks_score'
   )
 scores_data <- left_join(scores_data, outbreaks_scores_join)
