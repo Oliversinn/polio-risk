@@ -137,19 +137,19 @@ ind_prep_bar_data <- function(LANG_TLS,CUT_OFFS,data,indicator,admin1_id,risk) {
     indicator == "outbreaks_score" ~ "outbreaks_score"
   )
   
-  pfa <- population_and_pfa(data)
+  data$pfa <- population_and_pfa(data)
   
   prep_data <- data %>% rename("PR" = var_to_summarise)
   
   if (admin1_id == 0) {
-    prep_data <- prep_data %>% filter(!is.na(PR)) %>% select(ADMIN2,PR)
+    prep_data <- prep_data %>% filter(!is.na(PR)) %>% select(ADMIN2,PR, pfa)
   } else {
-    prep_data <- prep_data %>% filter(`ADMIN1 GEO_ID` == admin1_id) %>% filter(!is.na(PR)) %>% select(ADMIN2,PR)
+    prep_data <- prep_data %>% filter(`ADMIN1 GEO_ID` == admin1_id) %>% filter(!is.na(PR)) %>% select(ADMIN2,PR, pfa)
   }
   
 
   
-  prep_data$risk_level <- get_risk_level(LANG_TLS,CUT_OFFS,indicator,prep_data$PR, pfa = pfa)
+  prep_data$risk_level <- get_risk_level(LANG_TLS,CUT_OFFS,indicator,prep_data$PR, pfa = data$pfa)
   if (risk != "ALL") {
     prep_data <- prep_data %>% filter(risk_level == lang_label_tls(LANG_TLS,risk))
   }
@@ -280,9 +280,13 @@ ind_get_bar_table <- function(LANG_TLS,CUT_OFFS,data,indicator,admin1_id,risk) {
 }
 
 
-ind_plot_bar_data <- function(LANG_TLS,CUT_OFFS,bar_data,indicator,admin1_id) {
+ind_plot_bar_data <- function(LANG_TLS,CUT_OFFS,bar_data,indicator,admin1_id, pfa_filter) {
   fig <- NULL
-  pfa <- TRUE
+  bar_data <- bar_data %>% 
+    filter(
+      pfa == pfa_filter
+    )
+  print(bar_data)
   
   if (admin1_id != 0) {
     y_axis_title <- str_to_title(lang_label_tls(LANG_TLS,"rep_label_admin2_name_plural"))
@@ -299,19 +303,19 @@ ind_plot_bar_data <- function(LANG_TLS,CUT_OFFS,bar_data,indicator,admin1_id) {
       layout(shapes = list(
         list(type = "rect",fillcolor = "#92d050", line = list(color = "#92d050"),
              opacity = 0.4, layer = "below",
-             x0 = 0, x1 = get_risk_level_point_limit(CUT_OFFS,indicator,"LR", pfa), xref = "x",
+             x0 = 0, x1 = get_risk_level_point_limit(CUT_OFFS,indicator,"LR", pfa_filter), xref = "x",
              y0 = -1, y1 = nrow(bar_data), yref = "y"),
         list(type = "rect",fillcolor = "#fec000", line = list(color = "#fec000"),
              opacity = 0.3, layer = "below",
-             x0 = get_risk_level_point_limit(CUT_OFFS,indicator,"LR", pfa), x1 = get_risk_level_point_limit(CUT_OFFS,indicator,"MR", pfa), xref = "x",
+             x0 = get_risk_level_point_limit(CUT_OFFS,indicator,"LR", pfa_filter), x1 = get_risk_level_point_limit(CUT_OFFS,indicator,"MR", pfa_filter), xref = "x",
              y0 = -1, y1 = nrow(bar_data), yref = "y"),
         list(type = "rect",fillcolor = "#e8132b", line = list(color = "#e8132b"),
              opacity = 0.2, layer = "below",
-             x0 = get_risk_level_point_limit(CUT_OFFS,indicator,"MR", pfa), x1 = get_risk_level_point_limit(CUT_OFFS,indicator,"HR", pfa), xref = "x",
+             x0 = get_risk_level_point_limit(CUT_OFFS,indicator,"MR", pfa_filter), x1 = get_risk_level_point_limit(CUT_OFFS,indicator,"HR", pfa_filter), xref = "x",
              y0 = -1, y1 = nrow(bar_data), yref = "y"),
         list(type = "rect",fillcolor = "#920000", line = list(color = "#920000"),
              opacity = 0.3, layer = "below",
-             x0 = get_risk_level_point_limit(CUT_OFFS,indicator,"HR", pfa), x1 = get_risk_level_point_limit(CUT_OFFS,indicator,"VHR", pfa), xref = "x",
+             x0 = get_risk_level_point_limit(CUT_OFFS,indicator,"HR", pfa_filter), x1 = get_risk_level_point_limit(CUT_OFFS,indicator,"VHR", pfa_filter), xref = "x",
              y0 = -1, y1 = nrow(bar_data), yref = "y")
       )) %>%
       config(displaylogo = FALSE) %>%

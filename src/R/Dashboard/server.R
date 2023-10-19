@@ -177,7 +177,11 @@ function(input, output, session) {
   })
   
   output$indicadores_plot_bar <- renderPlotly({
-    ind_plot_bar_data(LANG_TLS,CUT_OFFS,indicadores_prep_bar_data(),ind_rename(input$indicadores_select_indicador),get_a1_geo_id(input$indicadores_select_admin1))
+    pfa_filter <- case_when(
+      input$general_title_plot_bar_filter == lang_label("population_pfa_filter") ~ TRUE,
+      input$general_title_plot_bar_filter == lang_label("population_pfa_no_filter") ~ FALSE,
+    )
+    ind_plot_bar_data(LANG_TLS,CUT_OFFS,indicadores_prep_bar_data(),ind_rename(input$indicadores_select_indicador),get_a1_geo_id(input$indicadores_select_admin1), pfa_filter)
   })
   
   output$indicadores_plot_multibar <- renderPlotly({

@@ -160,6 +160,14 @@ fluidPage(
                     ##### TOTAL BAR PLOT ----
                     tabPanel(
                       title = lang_label("general_title_plot_bar"),icon = icon("bar-chart"),
+                      selectInput(
+                        "general_title_plot_bar_filter", 
+                        label = "", 
+                        choices = c(
+                          lang_label("population_pfa_filter"),
+                          lang_label("population_pfa_no_filter")
+                        ),
+                      ),
                       shinycssloaders::withSpinner(plotlyOutput("indicadores_plot_bar",height = 595),color = "#1c9ad6", type = "8", size = 0.5)
                     ),
                     ##### PER SCORE BARPLOT ----
