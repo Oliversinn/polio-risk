@@ -170,6 +170,7 @@ function(input, output, session) {
     ind_prep_bar_data(LANG_TLS,CUT_OFFS,scores_data,ind_rename(input$indicadores_select_indicador),get_a1_geo_id(input$indicadores_select_admin1),risk_rename(input$indicadores_select_risk))
   })
   
+  
   output$indicadores_title_bar_box <- renderText({
     text_title <- title_bar_box(input$indicadores_select_indicador,input$indicadores_select_admin1)
     text_title <- paste0(text_title," (",YEAR_1," - ",YEAR_5,")")
@@ -185,7 +186,11 @@ function(input, output, session) {
   })
   
   output$indicadores_plot_multibar <- renderPlotly({
-    ind_plot_multibar_data(LANG_TLS,CUT_OFFS,scores_data,get_a1_geo_id(input$indicadores_select_admin1),ind_rename(input$indicadores_select_indicador),risk_rename(input$indicadores_select_risk))
+    pfa_filter <- case_when(
+      input$general_title_plot_multibar_filter == lang_label("population_pfa_filter") ~ TRUE,
+      input$general_title_plot_multibar_filter == lang_label("population_pfa_no_filter") ~ FALSE,
+    )
+    ind_plot_multibar_data(LANG_TLS,CUT_OFFS,scores_data,get_a1_geo_id(input$indicadores_select_admin1),ind_rename(input$indicadores_select_indicador),risk_rename(input$indicadores_select_risk), pfa_filter)
   })
   
   ### INDICATORS CHEAT SHEET ----

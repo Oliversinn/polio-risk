@@ -286,8 +286,7 @@ ind_plot_bar_data <- function(LANG_TLS,CUT_OFFS,bar_data,indicator,admin1_id, pf
     filter(
       pfa == pfa_filter
     )
-  print(bar_data)
-  
+
   if (admin1_id != 0) {
     y_axis_title <- str_to_title(lang_label_tls(LANG_TLS,"rep_label_admin2_name_plural"))
     x_axis_title <- paste0(lang_label_tls(LANG_TLS,"risk_points")," (",lang_label_tls(LANG_TLS,indicator),")")
@@ -330,20 +329,23 @@ ind_plot_bar_data <- function(LANG_TLS,CUT_OFFS,bar_data,indicator,admin1_id, pf
 }
 
 
-ind_plot_multibar_data <- function(LANG_TLS,CUT_OFFS,bar_data,admin1_id,selected_indicador,risk) {
+ind_plot_multibar_data <- function(LANG_TLS,CUT_OFFS,bar_data,admin1_id,selected_indicador,risk, pfa_filter) {
   fig <- NULL
   y_axis_title <- lang_label_tls(LANG_TLS,"rep_label_admin2_name_plural")
   x_axis_title <- lang_label_tls(LANG_TLS,"risk_points_general")
   indicator = "total_score"
-  max_y_point <- get_risk_level_point_limit(CUT_OFFS,"total_score","VHR")
+  max_y_point <- get_risk_level_point_limit(CUT_OFFS,"total_score","VHR", pfa_filter)
   bar_data <- bar_data %>% filter(`ADMIN1 GEO_ID` == admin1_id) %>% filter(!is.na(total_score))
   bar_data <- bar_data %>% rename(LUGAR = ADMIN2)
+  bar_data$pfa <- population_and_pfa(bar_data)
+  bar_data <- bar_data %>% filter(
+    pfa == pfa_filter
+  )
 
-  pfa <- population_and_pfa(bar_data)
   if (admin1_id != 0) {
     
     if (selected_indicador == "total_score") {
-      bar_data$risk_level <- get_risk_level(LANG_TLS,CUT_OFFS,indicator,bar_data$total_score, pfa = pfa)
+      bar_data$risk_level <- get_risk_level(LANG_TLS,CUT_OFFS,indicator,bar_data$total_score, pfa = bar_data$pfa)
       if (risk != "ALL") {
         bar_data <- bar_data %>% filter(risk_level == lang_label_tls(LANG_TLS,risk))
       }
@@ -361,19 +363,19 @@ ind_plot_multibar_data <- function(LANG_TLS,CUT_OFFS,bar_data,admin1_id,selected
         layout(shapes = list(
           list(type = "rect",fillcolor = "#92d050", line = list(color = "#92d050"),
                opacity = 0.4, layer = "below",
-               x0 = 0, x1 = get_risk_level_point_limit(CUT_OFFS,indicator,"LR"), xref = "x",
+               x0 = 0, x1 = get_risk_level_point_limit(CUT_OFFS,indicator,"LR", pfa_filter), xref = "x",
                y0 = -1, y1 = nrow(bar_data), yref = "y"),
           list(type = "rect",fillcolor = "#fec000", line = list(color = "#fec000"),
                opacity = 0.3, layer = "below",
-               x0 = get_risk_level_point_limit(CUT_OFFS,indicator,"LR"), x1 = get_risk_level_point_limit(CUT_OFFS,indicator,"MR"), xref = "x",
+               x0 = get_risk_level_point_limit(CUT_OFFS,indicator,"LR", pfa_filter), x1 = get_risk_level_point_limit(CUT_OFFS,indicator,"MR", pfa_filter), xref = "x",
                y0 = -1, y1 = nrow(bar_data), yref = "y"),
           list(type = "rect",fillcolor = "#e8132b", line = list(color = "#e8132b"),
                opacity = 0.2, layer = "below",
-               x0 = get_risk_level_point_limit(CUT_OFFS,indicator,"MR"), x1 = get_risk_level_point_limit(CUT_OFFS,indicator,"HR"), xref = "x",
+               x0 = get_risk_level_point_limit(CUT_OFFS,indicator,"MR", pfa_filter), x1 = get_risk_level_point_limit(CUT_OFFS,indicator,"HR", pfa_filter), xref = "x",
                y0 = -1, y1 = nrow(bar_data), yref = "y"),
           list(type = "rect",fillcolor = "#920000", line = list(color = "#920000"),
                opacity = 0.3, layer = "below",
-               x0 = get_risk_level_point_limit(CUT_OFFS,indicator,"HR"), x1 = max_y_point, xref = "x",
+               x0 = get_risk_level_point_limit(CUT_OFFS,indicator,"HR", pfa_filter), x1 = max_y_point, xref = "x",
                y0 = -1, y1 = nrow(bar_data), yref = "y")
         )) %>%
         layout(legend = list(orientation = 'h',x = 0, y = 50, bgcolor = 'rgba(0,0,0,0)', font = list(size = 10))) %>%
@@ -395,9 +397,7 @@ ind_plot_multibar_data <- function(LANG_TLS,CUT_OFFS,bar_data,admin1_id,selected
       bar_data <- bar_data %>% rename(VAR = var_to_summarise)
       bar_data$other_PR <- bar_data$total_score - bar_data$VAR
       
-      pfa <- population_and_pfa(bar_data)
-      
-      bar_data$risk_level <- get_risk_level(LANG_TLS,CUT_OFFS,selected_indicador,bar_data$VAR, pfa = pfa)
+      bar_data$risk_level <- get_risk_level(LANG_TLS,CUT_OFFS,selected_indicador,bar_data$VAR, pfa = bar_data$pfa)
       if (risk != "ALL") {
         bar_data <- bar_data %>% filter(risk_level == lang_label_tls(LANG_TLS,risk))
       }
@@ -413,19 +413,19 @@ ind_plot_multibar_data <- function(LANG_TLS,CUT_OFFS,bar_data,admin1_id,selected
         layout(shapes = list(
           list(type = "rect",fillcolor = "#92d050", line = list(color = "#92d050"),
                opacity = 0.4, layer = "below",
-               x0 = 0, x1 = get_risk_level_point_limit(CUT_OFFS,indicator,"LR"), xref = "x",
+               x0 = 0, x1 = get_risk_level_point_limit(CUT_OFFS,indicator,"LR", pfa_filter), xref = "x",
                y0 = -1, y1 = nrow(bar_data), yref = "y"),
           list(type = "rect",fillcolor = "#fec000", line = list(color = "#fec000"),
                opacity = 0.3, layer = "below",
-               x0 = get_risk_level_point_limit(CUT_OFFS,indicator,"LR"), x1 = get_risk_level_point_limit(CUT_OFFS,indicator,"MR"), xref = "x",
+               x0 = get_risk_level_point_limit(CUT_OFFS,indicator,"LR", pfa_filter), x1 = get_risk_level_point_limit(CUT_OFFS,indicator,"MR", pfa_filter), xref = "x",
                y0 = -1, y1 = nrow(bar_data), yref = "y"),
           list(type = "rect",fillcolor = "#e8132b", line = list(color = "#e8132b"),
                opacity = 0.2, layer = "below",
-               x0 = get_risk_level_point_limit(CUT_OFFS,indicator,"MR"), x1 = get_risk_level_point_limit(CUT_OFFS,indicator,"HR"), xref = "x",
+               x0 = get_risk_level_point_limit(CUT_OFFS,indicator,"MR", pfa_filter), x1 = get_risk_level_point_limit(CUT_OFFS,indicator,"HR", pfa_filter), xref = "x",
                y0 = -1, y1 = nrow(bar_data), yref = "y"),
           list(type = "rect",fillcolor = "#920000", line = list(color = "#920000"),
                opacity = 0.3, layer = "below",
-               x0 = get_risk_level_point_limit(CUT_OFFS,indicator,"HR"), x1 = max_y_point, xref = "x",
+               x0 = get_risk_level_point_limit(CUT_OFFS,indicator,"HR", pfa_filter), x1 = max_y_point, xref = "x",
                y0 = -1, y1 = nrow(bar_data), yref = "y")
         )) %>%
         layout(legend = list(orientation = 'h',x = 0, y = 50, bgcolor = 'rgba(0,0,0,0)', font = list(size = 10))) %>%
