@@ -111,7 +111,6 @@ inmu_title_map <- function(LANG_TLS,YEAR_CAMP_SR,COUNTRY_NAME,YEAR_LIST,admin1,v
     var == "SRP1_PR" ~ paste0(lang_label_tls(LANG_TLS,"inm_title_map_mmr1_pr")," ",admin1_transform(LANG_TLS,COUNTRY_NAME,admin1)," (",YEAR_1," - ",YEAR_5,")"),
     var == "SRP2_PR" ~ paste0(lang_label_tls(LANG_TLS,"inm_title_map_mmr2_pr")," ",admin1_transform(LANG_TLS,COUNTRY_NAME,admin1)," (",YEAR_1," - ",YEAR_5,")"),
     var == "cob_last_camp_PR" ~ paste0(lang_label_tls(LANG_TLS,"inm_title_map_last_camp_pr")," ",admin1_transform(LANG_TLS,COUNTRY_NAME,admin1)," (",YEAR_CAMP_SR,")"),
-    var == "ipv2" ~ paste0(lang_label_tls(LANG_TLS,"immunity_ipv2_cob")," ",admin1_transform(LANG_TLS,COUNTRY_NAME,admin1)," (",YEAR_EVAL,")"),
     var == "p_sospechosos_novac_PR" ~ paste0(lang_label_tls(LANG_TLS,"inm_title_map_novac_pr")," ",admin1_transform(LANG_TLS,COUNTRY_NAME,admin1)," (",YEAR_5,")"),
     var == "cob_last_camp" ~ paste0(lang_label_tls(LANG_TLS,"inm_title_map_last_camp")," ",admin1_transform(LANG_TLS,COUNTRY_NAME,admin1)," (",YEAR_CAMP_SR,")"),
     var == "p_sospechosos_novac" ~ paste0(lang_label_tls(LANG_TLS,"inm_title_map_novac")," ",admin1_transform(LANG_TLS,COUNTRY_NAME,admin1)," (",YEAR_5,")"),
@@ -119,8 +118,10 @@ inmu_title_map <- function(LANG_TLS,YEAR_CAMP_SR,COUNTRY_NAME,YEAR_LIST,admin1,v
     var == "year2" ~ paste0(lang_label_tls(LANG_TLS,"immunity_polio_cob")," ",admin1_transform(LANG_TLS,COUNTRY_NAME,admin1)," (",YEAR_2,")"),
     var == "year3" ~ paste0(lang_label_tls(LANG_TLS,"immunity_polio_cob")," ",admin1_transform(LANG_TLS,COUNTRY_NAME,admin1)," (",YEAR_3,")"),
     var == "year4" ~ paste0(lang_label_tls(LANG_TLS,"immunity_polio_cob")," ",admin1_transform(LANG_TLS,COUNTRY_NAME,admin1)," (",YEAR_4,")"),
-    var == "year5" ~ paste0(lang_label_tls(LANG_TLS,"immunity_polio_cob")," ",admin1_transform(LANG_TLS,COUNTRY_NAME,admin1)," (",YEAR_5,")")
-    )
+    var == "year5" ~ paste0(lang_label_tls(LANG_TLS,"immunity_polio_cob")," ",admin1_transform(LANG_TLS,COUNTRY_NAME,admin1)," (",YEAR_5,")"),
+    var == "ipv2" ~ paste0(lang_label_tls(LANG_TLS,"immunity_ipv2_cob")," ",admin1_transform(LANG_TLS,COUNTRY_NAME,admin1)," (",YEAR_EVAL,")"),
+    var == "effective_campaign" ~ paste0(lang_label_tls(LANG_TLS,"immunity_effective_cob")," ",admin1_transform(LANG_TLS,COUNTRY_NAME,admin1)," (",YEAR_1, "-", YEAR_EVAL,")")
+  )
   return(var_text)
 }
 
@@ -335,33 +336,42 @@ inmu_plot_map_data <- function(LANG_TLS,YEAR_CAMP_SR,COUNTRY_NAME,YEAR_LIST,ZERO
       addLegend(title = lang_label_tls(LANG_TLS,"inm_legend_cob_range"),colors = legend_colors,labels = legend_values, opacity = 0.5, position = 'topright')
     
     
-  } else if (var_to_summarise == "p_sospechosos_novac") {
-    # Casos map
-    map_data <- map_data %>% rename("pcasos"=var_to_summarise)
+  } else if (var_to_summarise == "effective_campaign") {
     
+    # Cob map
+    map_data <- map_data %>% rename("COB"=var_to_summarise)
+    
+
     if (admin1_id == 0) {
-      map_data <- map_data %>% select(GEO_ID,ADMIN1,ADMIN2,pcasos,geometry)
+      map_data <- map_data %>% select(GEO_ID,ADMIN1,ADMIN2,COB,geometry)
     } else {
-      map_data <- map_data %>% filter(`ADMIN1 GEO_ID` == admin1_id) %>% select(GEO_ID,ADMIN1,ADMIN2,pcasos,geometry)
+      map_data <- map_data %>% filter(`ADMIN1 GEO_ID` == admin1_id) %>% select(GEO_ID,ADMIN1,ADMIN2,COB,geometry)
     }
     
     map_data <- map_data %>% mutate(
-      casos_level_num = case_when(
+      var_num = case_when(
         GEO_ID %in% ZERO_POB_LIST ~ 3,
-        is.na(pcasos) ~ 0,
-        pcasos >= 20 ~ 1,
-        pcasos < 20 ~ 2
+        is.na(COB) ~ 0,
+        COB == "Si" ~ 1,
+        COB == "No" ~ 2
+      ),
+      var_word = case_when(
+        GEO_ID %in% ZERO_POB_LIST ~ lang_label_tls(LANG_TLS,"no_hab"),
+        is.na(COB) ~ lang_label_tls(LANG_TLS,"no_data"),
+        COB == "Si" ~ lang_label_tls(LANG_TLS,"yes"),
+        COB == "No" ~ lang_label_tls(LANG_TLS,"no")
       )
     )
-    
+
+
     pal_gradient <- colorNumeric(
-      c("#666666","#e8132b","#92d050","#9bc2e6"),
+      c("#666666","#92d050","#e8132b","#9bc2e6"),
       domain = c(0,3)
     )
     legend_colors = c("#e8132b","#92d050")
-    legend_values = c("≥ 20%","< 20%")
+    legend_values = c(lang_label_tls(LANG_TLS,"no"),lang_label_tls(LANG_TLS,"yes"))
     
-    if (0 %in% map_data$casos_level_num) {
+    if (0 %in% map_data$var_num) {
       legend_colors = c("#666666",legend_colors)
       legend_values = c(lang_label_tls(LANG_TLS,"no_data"),legend_values)
     }
@@ -371,19 +381,18 @@ inmu_plot_map_data <- function(LANG_TLS,YEAR_CAMP_SR,COUNTRY_NAME,YEAR_LIST,ZERO
       legend_values = c(legend_values,lang_label_tls(LANG_TLS,"no_hab"))
     }
     
-    shape_label <- sprintf("<strong>%s</strong>, %s<br/>%s: %s%s",
+    shape_label <- sprintf("<strong>%s</strong>, %s<br/>%s: %s",
                            map_data$ADMIN2,
                            map_data$ADMIN1,
-                           lang_label_tls(LANG_TLS,"proportion"),
-                           map_data$pcasos,
-                           "%"
+                           lang_label_tls(LANG_TLS,"immunity_legend_effective"),
+                           tolower(map_data$var_word)
     ) %>% lapply(HTML)
     
     # MAPA
     map <- leaflet(map_data,options = leafletOptions(doubleClickZoom = T, attributionControl = F, zoomSnap=0.1, zoomDelta=0.1)) %>%
       addProviderTiles(providers$Esri.WorldGrayCanvas) %>%
       addPolygons(
-        fillColor   = ~pal_gradient(casos_level_num),
+        fillColor   = ~pal_gradient(var_num),
         fillOpacity = 0.7,
         dashArray   = "",
         weight      = 1,
@@ -400,8 +409,9 @@ inmu_plot_map_data <- function(LANG_TLS,YEAR_CAMP_SR,COUNTRY_NAME,YEAR_LIST,ZERO
           style = list("font-weight" = "normal", padding = "3px 8px"),
           textsize = "15px",
           direction = "auto")
-      ) %>% addLegend(layerId = "map_title","topright",color = "white", opacity = 0,labels=HTML(paste0("<strong>",inmu_title_map(LANG_TLS,YEAR_CAMP_SR,COUNTRY_NAME,YEAR_LIST,admin1,var_to_summarise),"</strong>"))) %>%
-      addLegend(title = lang_label_tls(LANG_TLS,"inm_legend_prop_cases"),colors = legend_colors,labels = legend_values, opacity = 0.5, position = 'topright')
+      ) %>% 
+      addLegend(layerId = "map_title","topright",color = "white", opacity = 0,labels=HTML(paste0("<strong>",inmu_title_map(LANG_TLS,YEAR_CAMP_SR,COUNTRY_NAME,YEAR_LIST,admin1,var_to_summarise),"</strong>"))) %>%
+      addLegend(title = lang_label_tls(LANG_TLS,"rap_pres_team"),colors = legend_colors,labels = legend_values, opacity = 0.5, position = 'topright')
   }
 
   return(map)
