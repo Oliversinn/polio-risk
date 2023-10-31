@@ -286,6 +286,11 @@ fluidPage(
                   title = lang_label("button_plot"),icon = icon("pie-chart"),
                   br(),
                   shinycssloaders::withSpinner(plotlyOutput("inmunidad_plot_pie"),color = "#1c9ad6", type = "8", size = 0.5)
+                ),
+                tabPanel(
+                  title = lang_label("button_datatable"),icon = icon("table"),
+                  br(),
+                  shinycssloaders::withSpinner(dataTableOutput("inmunidad_table_dist"),color = "#1c9ad6", type = "8", size = 0.5)
                 )
               )
             )
