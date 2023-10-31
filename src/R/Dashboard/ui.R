@@ -242,6 +242,21 @@ fluidPage(
                   icon = icon("square-check"),
                   shinycssloaders::withSpinner(leafletOutput("inmunidad_map_total",height = 600),color = "#1c9ad6", type = "8", size = 0.5),
                   br(),div(style="text-align: center;",downloadButton(outputId = "dl_inmunidad_map_total",lang_label("button_download_map"),icon=icon('camera')))
+                ),
+                tabPanel(
+                  title = lang_label("immunity_polio_cob"),icon = icon("syringe"),
+                  column(width = 12,
+                         selectInput("radio_inmunidad_cob_1", label ="", 
+                                     choices = c(
+                                       paste(lang_label("vac_coverage"),YEAR_1),
+                                       paste(lang_label("vac_coverage"),YEAR_2),
+                                       paste(lang_label("vac_coverage"),YEAR_3),
+                                       paste(lang_label("vac_coverage"),YEAR_4),
+                                       paste(lang_label("vac_coverage"),YEAR_5)
+                                     ),
+                         ),style="z-index:2000;"),
+                  shinycssloaders::withSpinner(leafletOutput("inmunidad_map_cob_1",height = 600),color = "#1c9ad6", type = "8", size = 0.5),
+                  br(),div(style="text-align: center;",downloadButton(outputId = "dl_inmunidad_map_cob_1",lang_label("button_download_map"),icon=icon('camera')))
                 )
               )
             )

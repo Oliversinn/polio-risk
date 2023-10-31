@@ -202,19 +202,55 @@ function(input, output, session) {
     ind_rangos_table(LANG_TLS,CUT_OFFS,ind_rename(input$indicadores_select_indicador), pfa_filter)
   })
   
-  ## IMMUNITY ----
-  ### MAP ----
+  # IMMUNITY ----
+  ## MAP ----
+  ### IMMUNITY SCORE ----
   output$inmunidad_title_map_box <- renderText({
     title_map_box(lang_label("INM_POB"),input$inmunidad_select_admin1)
   })
   
   inmu_map_total <- reactiveValues(dat = 0)
   
-  
   output$inmunidad_map_total <- renderLeaflet({
     inmu_map_total$dat <- inmu_plot_map_data(LANG_TLS,YEAR_CAMP_SR,toupper(COUNTRY_NAME),YEAR_LIST,ZERO_POB_LIST,CUT_OFFS,country_shapes,immunity_scores,"immunity_score",input$inmunidad_select_admin1,get_a1_geo_id(input$inmunidad_select_admin1),admin1_geo_id_df)
     inmu_map_total$dat
   })
+  
+  output$dl_inmunidad_map_total <- downloadHandler(
+    filename = function() {
+      paste0(lang_label("map")," ",input$inmunidad_select_admin1," ",toupper(COUNTRY_NAME)," ",lang_label("INM_POB")," (",YEAR_1,"-",YEAR_5,").png")
+    },
+    content = function(file) {
+      mapshot(inmu_map_total$dat, file = file)
+    }
+  )
+  
+  ### POLIO COVERAGE ----
+  inmu_map_cob_1 <- reactiveValues(dat = 0)
+  
+  output$inmunidad_map_cob_1 <- renderLeaflet({
+    var_srp1 <- case_when(
+      input$radio_inmunidad_cob_1 == paste(lang_label("vac_coverage"),YEAR_1) ~ "year1",
+      input$radio_inmunidad_cob_1 == paste(lang_label("vac_coverage"),YEAR_2) ~ "year2",
+      input$radio_inmunidad_cob_1 == paste(lang_label("vac_coverage"),YEAR_3) ~ "year3",
+      input$radio_inmunidad_cob_1 == paste(lang_label("vac_coverage"),YEAR_4) ~ "year4",
+      input$radio_inmunidad_cob_1 == paste(lang_label("vac_coverage"),YEAR_5) ~ "year5",
+      input$radio_inmunidad_cob_1 == lang_label("risk_points") ~ "SRP1_PR"
+    )
+    inmu_map_cob_1$dat <- inmu_plot_map_data(LANG_TLS,YEAR_CAMP_SR,toupper(COUNTRY_NAME),YEAR_LIST,ZERO_POB_LIST,CUT_OFFS,country_shapes,immunity_scores,var_srp1,input$inmunidad_select_admin1,get_a1_geo_id(input$inmunidad_select_admin1),admin1_geo_id_df)
+    inmu_map_cob_1$dat
+  })
+  
+  output$dl_inmunidad_map_cob_1 <- downloadHandler(
+    filename = function() {
+      paste0(lang_label("map")," ",input$inmunidad_select_admin1," ",toupper(COUNTRY_NAME)," ",lang_label("inm_mmr1_cob")," (",input$radio_inmunidad_cob_1,").png")
+    },
+    content = function(file) {
+      mapshot(inmu_map_cob_1$dat, file = file)
+    }
+  )
+  
+  
   
   
 }

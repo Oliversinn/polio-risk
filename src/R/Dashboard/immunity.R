@@ -114,17 +114,12 @@ inmu_title_map <- function(LANG_TLS,YEAR_CAMP_SR,COUNTRY_NAME,YEAR_LIST,admin1,v
     var == "p_sospechosos_novac_PR" ~ paste0(lang_label_tls(LANG_TLS,"inm_title_map_novac_pr")," ",admin1_transform(LANG_TLS,COUNTRY_NAME,admin1)," (",YEAR_5,")"),
     var == "cob_last_camp" ~ paste0(lang_label_tls(LANG_TLS,"inm_title_map_last_camp")," ",admin1_transform(LANG_TLS,COUNTRY_NAME,admin1)," (",YEAR_CAMP_SR,")"),
     var == "p_sospechosos_novac" ~ paste0(lang_label_tls(LANG_TLS,"inm_title_map_novac")," ",admin1_transform(LANG_TLS,COUNTRY_NAME,admin1)," (",YEAR_5,")"),
-    var == "SRP1_year1" ~ paste0(lang_label_tls(LANG_TLS,"inm_mmr1_cob")," ",admin1_transform(LANG_TLS,COUNTRY_NAME,admin1)," (",YEAR_1,")"),
-    var == "SRP1_year2" ~ paste0(lang_label_tls(LANG_TLS,"inm_mmr1_cob")," ",admin1_transform(LANG_TLS,COUNTRY_NAME,admin1)," (",YEAR_2,")"),
-    var == "SRP1_year3" ~ paste0(lang_label_tls(LANG_TLS,"inm_mmr1_cob")," ",admin1_transform(LANG_TLS,COUNTRY_NAME,admin1)," (",YEAR_3,")"),
-    var == "SRP1_year4" ~ paste0(lang_label_tls(LANG_TLS,"inm_mmr1_cob")," ",admin1_transform(LANG_TLS,COUNTRY_NAME,admin1)," (",YEAR_4,")"),
-    var == "SRP1_year5" ~ paste0(lang_label_tls(LANG_TLS,"inm_mmr1_cob")," ",admin1_transform(LANG_TLS,COUNTRY_NAME,admin1)," (",YEAR_5,")"),
-    var == "SRP2_year1" ~ paste0(lang_label_tls(LANG_TLS,"inm_mmr2_cob")," ",admin1_transform(LANG_TLS,COUNTRY_NAME,admin1)," (",YEAR_1,")"),
-    var == "SRP2_year2" ~ paste0(lang_label_tls(LANG_TLS,"inm_mmr2_cob")," ",admin1_transform(LANG_TLS,COUNTRY_NAME,admin1)," (",YEAR_2,")"),
-    var == "SRP2_year3" ~ paste0(lang_label_tls(LANG_TLS,"inm_mmr2_cob")," ",admin1_transform(LANG_TLS,COUNTRY_NAME,admin1)," (",YEAR_3,")"),
-    var == "SRP2_year4" ~ paste0(lang_label_tls(LANG_TLS,"inm_mmr2_cob")," ",admin1_transform(LANG_TLS,COUNTRY_NAME,admin1)," (",YEAR_4,")"),
-    var == "SRP2_year5" ~ paste0(lang_label_tls(LANG_TLS,"inm_mmr2_cob")," ",admin1_transform(LANG_TLS,COUNTRY_NAME,admin1)," (",YEAR_5,")")
-  )
+    var == "year1" ~ paste0(lang_label_tls(LANG_TLS,"immunity_polio_cob")," ",admin1_transform(LANG_TLS,COUNTRY_NAME,admin1)," (",YEAR_1,")"),
+    var == "year2" ~ paste0(lang_label_tls(LANG_TLS,"immunity_polio_cob")," ",admin1_transform(LANG_TLS,COUNTRY_NAME,admin1)," (",YEAR_2,")"),
+    var == "year3" ~ paste0(lang_label_tls(LANG_TLS,"immunity_polio_cob")," ",admin1_transform(LANG_TLS,COUNTRY_NAME,admin1)," (",YEAR_3,")"),
+    var == "year4" ~ paste0(lang_label_tls(LANG_TLS,"immunity_polio_cob")," ",admin1_transform(LANG_TLS,COUNTRY_NAME,admin1)," (",YEAR_4,")"),
+    var == "year5" ~ paste0(lang_label_tls(LANG_TLS,"immunity_polio_cob")," ",admin1_transform(LANG_TLS,COUNTRY_NAME,admin1)," (",YEAR_5,")")
+    )
   return(var_text)
 }
 
@@ -267,8 +262,7 @@ inmu_plot_map_data <- function(LANG_TLS,YEAR_CAMP_SR,COUNTRY_NAME,YEAR_LIST,ZERO
     }
 
   } else if (var_to_summarise %in% c("cob_last_camp",
-    "SRP1_year1","SRP1_year2","SRP1_year3","SRP1_year4","SRP1_year5",
-    "SRP2_year1","SRP2_year2","SRP2_year3","SRP2_year4","SRP2_year5")) {
+    "year1","year2","year3","year4","year5")) {
     # Cob map
     map_data <- map_data %>% rename("COB"=var_to_summarise)
     map_data$COB <- round(map_data$COB,1)
@@ -442,11 +436,11 @@ inmu_get_data_table <- function(LANG_TLS,YEAR_LIST,CUT_OFFS,data,admin1_id) {
   if (admin1_id == 0) {
     data <- data %>% select(-`ADMIN1 GEO_ID`)
     colnames(data) <- c(lang_label_tls(LANG_TLS,"table_admin1_name"),lang_label_tls(LANG_TLS,"table_admin2_name"),lang_label_tls(LANG_TLS,"total_pr"),lang_label_tls(LANG_TLS,"risk_level"),
-                        paste(lang_label_tls(LANG_TLS,"inm_mmr1_cob"),YEAR_1,"(%)"),
-                        paste(lang_label_tls(LANG_TLS,"inm_mmr1_cob"),YEAR_2,"(%)"),
-                        paste(lang_label_tls(LANG_TLS,"inm_mmr1_cob"),YEAR_3,"(%)"),
-                        paste(lang_label_tls(LANG_TLS,"inm_mmr1_cob"),YEAR_4,"(%)"),
-                        paste(lang_label_tls(LANG_TLS,"inm_mmr1_cob"),YEAR_5,"(%)"),
+                        paste(lang_label_tls(LANG_TLS,"immunity_polio_cob"),YEAR_1,"(%)"),
+                        paste(lang_label_tls(LANG_TLS,"immunity_polio_cob"),YEAR_2,"(%)"),
+                        paste(lang_label_tls(LANG_TLS,"immunity_polio_cob"),YEAR_3,"(%)"),
+                        paste(lang_label_tls(LANG_TLS,"immunity_polio_cob"),YEAR_4,"(%)"),
+                        paste(lang_label_tls(LANG_TLS,"immunity_polio_cob"),YEAR_5,"(%)"),
                         lang_label_tls(LANG_TLS,"inm_mmr1_score"),
                         paste(lang_label_tls(LANG_TLS,"inm_mmr2_cob"),YEAR_1,"(%)"),
                         paste(lang_label_tls(LANG_TLS,"inm_mmr2_cob"),YEAR_2,"(%)"),
@@ -459,11 +453,11 @@ inmu_get_data_table <- function(LANG_TLS,YEAR_LIST,CUT_OFFS,data,admin1_id) {
   } else {
     data <- data %>% filter(`ADMIN1 GEO_ID` == admin1_id) %>% select(-ADMIN1,-`ADMIN1 GEO_ID`)
     colnames(data) <- c(lang_label_tls(LANG_TLS,"table_admin2_name"),lang_label_tls(LANG_TLS,"total_pr"),lang_label_tls(LANG_TLS,"risk_level"),
-                        paste(lang_label_tls(LANG_TLS,"inm_mmr1_cob"),YEAR_1,"(%)"),
-                        paste(lang_label_tls(LANG_TLS,"inm_mmr1_cob"),YEAR_2,"(%)"),
-                        paste(lang_label_tls(LANG_TLS,"inm_mmr1_cob"),YEAR_3,"(%)"),
-                        paste(lang_label_tls(LANG_TLS,"inm_mmr1_cob"),YEAR_4,"(%)"),
-                        paste(lang_label_tls(LANG_TLS,"inm_mmr1_cob"),YEAR_5,"(%)"),
+                        paste(lang_label_tls(LANG_TLS,"immunity_polio_cob"),YEAR_1,"(%)"),
+                        paste(lang_label_tls(LANG_TLS,"immunity_polio_cob"),YEAR_2,"(%)"),
+                        paste(lang_label_tls(LANG_TLS,"immunity_polio_cob"),YEAR_3,"(%)"),
+                        paste(lang_label_tls(LANG_TLS,"immunity_polio_cob"),YEAR_4,"(%)"),
+                        paste(lang_label_tls(LANG_TLS,"immunity_polio_cob"),YEAR_5,"(%)"),
                         lang_label_tls(LANG_TLS,"inm_mmr1_score"),
                         paste(lang_label_tls(LANG_TLS,"inm_mmr2_cob"),YEAR_1,"(%)"),
                         paste(lang_label_tls(LANG_TLS,"inm_mmr2_cob"),YEAR_2,"(%)"),
@@ -476,11 +470,11 @@ inmu_get_data_table <- function(LANG_TLS,YEAR_LIST,CUT_OFFS,data,admin1_id) {
   }
   
   spr_cob_colnames <- c(
-    paste(lang_label_tls(LANG_TLS,"inm_mmr1_cob"),YEAR_1,"(%)"),
-    paste(lang_label_tls(LANG_TLS,"inm_mmr1_cob"),YEAR_2,"(%)"),
-    paste(lang_label_tls(LANG_TLS,"inm_mmr1_cob"),YEAR_3,"(%)"),
-    paste(lang_label_tls(LANG_TLS,"inm_mmr1_cob"),YEAR_4,"(%)"),
-    paste(lang_label_tls(LANG_TLS,"inm_mmr1_cob"),YEAR_5,"(%)"),
+    paste(lang_label_tls(LANG_TLS,"immunity_polio_cob"),YEAR_1,"(%)"),
+    paste(lang_label_tls(LANG_TLS,"immunity_polio_cob"),YEAR_2,"(%)"),
+    paste(lang_label_tls(LANG_TLS,"immunity_polio_cob"),YEAR_3,"(%)"),
+    paste(lang_label_tls(LANG_TLS,"immunity_polio_cob"),YEAR_4,"(%)"),
+    paste(lang_label_tls(LANG_TLS,"immunity_polio_cob"),YEAR_5,"(%)"),
     paste(lang_label_tls(LANG_TLS,"inm_mmr2_cob"),YEAR_1,"(%)"),
     paste(lang_label_tls(LANG_TLS,"inm_mmr2_cob"),YEAR_2,"(%)"),
     paste(lang_label_tls(LANG_TLS,"inm_mmr2_cob"),YEAR_3,"(%)"),
