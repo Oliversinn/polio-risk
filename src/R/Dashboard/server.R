@@ -306,6 +306,15 @@ function(input, output, session) {
     inmu_get_data_table(LANG_TLS,YEAR_LIST,CUT_OFFS,immunity_scores,get_a1_geo_id(input$inmunidad_select_admin1))
   })
   
+  ### CHEAT SHEET ----
+  output$inmu_rangos_table <- renderDataTable(server = FALSE,{
+    pfa_filter <- case_when(
+      input$immunity_limits_table_filter == lang_label("population_pfa_filter") ~ TRUE,
+      input$immunity_limits_table_filter == lang_label("population_pfa_no_filter") ~ FALSE,
+    )
+    ind_rangos_table(LANG_TLS,CUT_OFFS,"immunity_score", pfa_filter)
+  })
+  
   
   
 }
