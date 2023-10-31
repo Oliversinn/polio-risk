@@ -284,6 +284,15 @@ function(input, output, session) {
     }
   )
   
+  ### PIE ----
+  output$inmunidad_title_pie_box <- renderText({
+    title_pie_box(lang_label("INM_POB"),input$inmunidad_select_admin1)
+  })
+  
+  output$inmunidad_plot_pie <- renderPlotly({
+    plot_pie_data(LANG_TLS,ZERO_POB_LIST,CUT_OFFS,"immunity_score",immunity_scores,get_a1_geo_id(input$inmunidad_select_admin1),return_table=F)
+  })
+  
   
   
   

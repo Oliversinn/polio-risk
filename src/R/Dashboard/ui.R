@@ -270,6 +270,24 @@ fluidPage(
                   br(),div(style="text-align: center;",downloadButton(outputId = "dl_inmunidad_map_effective",lang_label("button_download_map"),icon=icon('camera')))
                 )
               )
+            ),
+            
+            #### PIE CHART ----
+            box(
+              width = 5,
+              solidHeader = TRUE,
+              collapsible = TRUE,
+              title = textOutput("inmunidad_title_pie_box"),
+              
+              tabBox(
+                width = 12,
+                height = NULL,
+                tabPanel(
+                  title = lang_label("button_plot"),icon = icon("pie-chart"),
+                  br(),
+                  shinycssloaders::withSpinner(plotlyOutput("inmunidad_plot_pie"),color = "#1c9ad6", type = "8", size = 0.5)
+                )
+              )
             )
           )
           ### NEW TABITEM ----

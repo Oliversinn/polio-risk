@@ -16,7 +16,7 @@ admin1_transform <- function(LANG_TLS,COUNTRY_NAME,admin1) {
 }
 
 plot_pie_data <- function(LANG_TLS,ZERO_POB_LIST,CUT_OFFS,indicator,data,admin1_id,return_table=F) {
-  data$risk_level <- get_risk_level(LANG_TLS,CUT_OFFS,indicator,data$immunity_score)
+  data$risk_level <- get_risk_level(LANG_TLS,CUT_OFFS,indicator,data$immunity_score, data$population_and_pfa_bool)
   
   if (admin1_id == 0) {
     pie_data <- data %>% filter(!is.na(immunity_score)) %>% select(risk_level) %>% count(risk_level)
