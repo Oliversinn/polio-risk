@@ -364,6 +364,12 @@ immunity_scores <- immunity_data %>%
   mutate(
       immunity_score = sum(c_across(matches('score')), na.rm = T) 
   )
+
+immunity_scores <- immunity_scores %>% 
+  mutate(
+    years_score = year1_score + year2_score + year3_score + year4_score + year5_score,
+    .after = year5_score
+  )
   
 ## Adding to scores_data ----
 immunity_scores_join <- immunity_scores %>% 

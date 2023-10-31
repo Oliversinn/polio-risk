@@ -228,70 +228,81 @@ fluidPage(
             h2(lang_label("menuitem_immunity")),
             br(),
             
-            #### MAP ----
-            box(
-              width = 7,
-              solidHeader = TRUE,
-              collapsible = TRUE,
-              title = textOutput("inmunidad_title_map_box"),
-              tabBox(
-                width = 12,
-                height = NULL,
-                tabPanel(
-                  title = lang_label("total_pr"),
-                  icon = icon("square-check"),
-                  shinycssloaders::withSpinner(leafletOutput("inmunidad_map_total",height = 600),color = "#1c9ad6", type = "8", size = 0.5),
-                  br(),div(style="text-align: center;",downloadButton(outputId = "dl_inmunidad_map_total",lang_label("button_download_map"),icon=icon('camera')))
-                ),
-                tabPanel(
-                  title = lang_label("immunity_polio_cob"),icon = icon("syringe"),
-                  column(width = 12,
-                         selectInput("radio_inmunidad_cob_1", label ="", 
-                                     choices = c(
-                                       paste(lang_label("vac_coverage"),YEAR_1),
-                                       paste(lang_label("vac_coverage"),YEAR_2),
-                                       paste(lang_label("vac_coverage"),YEAR_3),
-                                       paste(lang_label("vac_coverage"),YEAR_4),
-                                       paste(lang_label("vac_coverage"),YEAR_5)
-                                     ),
-                         ),style="z-index:2000;"),
-                  shinycssloaders::withSpinner(leafletOutput("inmunidad_map_cob_1",height = 600),color = "#1c9ad6", type = "8", size = 0.5),
-                  br(),div(style="text-align: center;",downloadButton(outputId = "dl_inmunidad_map_cob_1",lang_label("button_download_map"),icon=icon('camera')))
-                ),
-                tabPanel(
-                  title = lang_label("immunity_ipv2_cob"),icon = icon("syringe"),
-                  shinycssloaders::withSpinner(leafletOutput("inmunidad_map_cob_2",height = 600),color = "#1c9ad6", type = "8", size = 0.5),
-                  br(),div(style="text-align: center;",downloadButton(outputId = "dl_inmunidad_map_cob_2",lang_label("button_download_map"),icon=icon('camera')))
-                ),
-                tabPanel(
-                  title = lang_label("immunity_effective_cob"),icon = icon("question-circle"),
-                  p(style="text-align: center;",lang_label("immunity_effective_cob_text")),
-                  shinycssloaders::withSpinner(leafletOutput("inmunidad_map_effective",height = 600),color = "#1c9ad6", type = "8", size = 0.5),
-                  br(),div(style="text-align: center;",downloadButton(outputId = "dl_inmunidad_map_effective",lang_label("button_download_map"),icon=icon('camera')))
+            fluidRow(
+              #### MAP ----
+              box(
+                width = 7,
+                solidHeader = TRUE,
+                collapsible = TRUE,
+                title = textOutput("inmunidad_title_map_box"),
+                tabBox(
+                  width = 12,
+                  height = NULL,
+                  tabPanel(
+                    title = lang_label("total_pr"),
+                    icon = icon("square-check"),
+                    shinycssloaders::withSpinner(leafletOutput("inmunidad_map_total",height = 600),color = "#1c9ad6", type = "8", size = 0.5),
+                    br(),div(style="text-align: center;",downloadButton(outputId = "dl_inmunidad_map_total",lang_label("button_download_map"),icon=icon('camera')))
+                  ),
+                  tabPanel(
+                    title = lang_label("immunity_polio_cob"),icon = icon("syringe"),
+                    column(width = 12,
+                           selectInput("radio_inmunidad_cob_1", label ="", 
+                                       choices = c(
+                                         paste(lang_label("vac_coverage"),YEAR_1),
+                                         paste(lang_label("vac_coverage"),YEAR_2),
+                                         paste(lang_label("vac_coverage"),YEAR_3),
+                                         paste(lang_label("vac_coverage"),YEAR_4),
+                                         paste(lang_label("vac_coverage"),YEAR_5)
+                                       ),
+                           ),style="z-index:2000;"),
+                    shinycssloaders::withSpinner(leafletOutput("inmunidad_map_cob_1",height = 600),color = "#1c9ad6", type = "8", size = 0.5),
+                    br(),div(style="text-align: center;",downloadButton(outputId = "dl_inmunidad_map_cob_1",lang_label("button_download_map"),icon=icon('camera')))
+                  ),
+                  tabPanel(
+                    title = lang_label("immunity_ipv2_cob"),icon = icon("syringe"),
+                    shinycssloaders::withSpinner(leafletOutput("inmunidad_map_cob_2",height = 600),color = "#1c9ad6", type = "8", size = 0.5),
+                    br(),div(style="text-align: center;",downloadButton(outputId = "dl_inmunidad_map_cob_2",lang_label("button_download_map"),icon=icon('camera')))
+                  ),
+                  tabPanel(
+                    title = lang_label("immunity_effective_cob"),icon = icon("question-circle"),
+                    p(style="text-align: center;",lang_label("immunity_effective_cob_text")),
+                    shinycssloaders::withSpinner(leafletOutput("inmunidad_map_effective",height = 600),color = "#1c9ad6", type = "8", size = 0.5),
+                    br(),div(style="text-align: center;",downloadButton(outputId = "dl_inmunidad_map_effective",lang_label("button_download_map"),icon=icon('camera')))
+                  )
+                )
+              ),
+              
+              #### PIE CHART ----
+              box(
+                width = 5,
+                solidHeader = TRUE,
+                collapsible = TRUE,
+                title = textOutput("inmunidad_title_pie_box"),
+                
+                tabBox(
+                  width = 12,
+                  height = NULL,
+                  tabPanel(
+                    title = lang_label("button_plot"),icon = icon("pie-chart"),
+                    br(),
+                    shinycssloaders::withSpinner(plotlyOutput("inmunidad_plot_pie", height = 600),color = "#1c9ad6", type = "8", size = 0.5)
+                  ),
+                  tabPanel(
+                    title = lang_label("button_datatable"),icon = icon("table"),
+                    br(),
+                    shinycssloaders::withSpinner(dataTableOutput("inmunidad_table_dist"),color = "#1c9ad6", type = "8", size = 0.5)
+                  )
                 )
               )
             ),
-            
-            #### PIE CHART ----
-            box(
-              width = 5,
-              solidHeader = TRUE,
-              collapsible = TRUE,
-              title = textOutput("inmunidad_title_pie_box"),
-              
-              tabBox(
-                width = 12,
-                height = NULL,
-                tabPanel(
-                  title = lang_label("button_plot"),icon = icon("pie-chart"),
-                  br(),
-                  shinycssloaders::withSpinner(plotlyOutput("inmunidad_plot_pie"),color = "#1c9ad6", type = "8", size = 0.5)
-                ),
-                tabPanel(
-                  title = lang_label("button_datatable"),icon = icon("table"),
-                  br(),
-                  shinycssloaders::withSpinner(dataTableOutput("inmunidad_table_dist"),color = "#1c9ad6", type = "8", size = 0.5)
-                )
+            #### DATATABLE ----
+            fluidRow(
+              box(width = 12,
+                  solidHeader = TRUE,
+                  collapsible = TRUE,
+                  title = textOutput("inmunidad_title_data_box"),
+                  column(width = 12,shinycssloaders::withSpinner(dataTableOutput("inmunidad_table"),color = "#1c9ad6", type = "8", size = 0.5))
               )
             )
           )

@@ -297,6 +297,14 @@ function(input, output, session) {
     plot_pie_data(LANG_TLS,ZERO_POB_LIST,CUT_OFFS,"immunity_score",immunity_scores,get_a1_geo_id(input$inmunidad_select_admin1),return_table=T)
   })
   
+  ### DATATABLE ----
+  output$inmunidad_title_data_box <- renderText({
+    title_data_box(lang_label("INM_POB"),input$inmunidad_select_admin1)
+  })
+  
+  output$inmunidad_table <- renderDataTable(server = FALSE,{
+    inmu_get_data_table(LANG_TLS,YEAR_LIST,CUT_OFFS,immunity_scores,get_a1_geo_id(input$inmunidad_select_admin1))
+  })
   
   
   

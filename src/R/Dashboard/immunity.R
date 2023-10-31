@@ -421,27 +421,20 @@ inmu_plot_map_data <- function(LANG_TLS,YEAR_CAMP_SR,COUNTRY_NAME,YEAR_LIST,ZERO
 inmu_get_data_table <- function(LANG_TLS,YEAR_LIST,CUT_OFFS,data,admin1_id) {
   YEAR_1=YEAR_LIST[1];YEAR_2=YEAR_LIST[2];YEAR_3=YEAR_LIST[3];YEAR_4=YEAR_LIST[4];YEAR_5=YEAR_LIST[5];
   
-  data$risk_level <- get_risk_level(LANG_TLS,CUT_OFFS,"INM_POB",data$immunity_score)
+  data$risk_level <- get_risk_level(LANG_TLS,CUT_OFFS,"immunity_score",data$immunity_score, data$population_and_pfa_bool)
   
   data <- data %>% 
     select(`ADMIN1 GEO_ID`,
            ADMIN1,ADMIN2,immunity_score,risk_level,
-           SRP1_year1,SRP1_year2,SRP1_year3,SRP1_year4,SRP1_year5,SRP1_PR,
-           SRP2_year1,SRP2_year2,SRP2_year3,SRP2_year4,SRP2_year5,SRP2_PR,
-           cob_last_camp,cob_last_camp_PR,
-           p_sospechosos_novac,p_sospechosos_novac_PR,immunity_score) %>%
+           year1,year2,year3,year4,year5,years_score,
+           ipv2,ipv_score,
+           effective_campaign,effective_campaign_score,immunity_score) %>%
     mutate(
-      SRP1_year1=round(SRP1_year1,0),
-      SRP1_year2=round(SRP1_year2,0),
-      SRP1_year3=round(SRP1_year3,0),
-      SRP1_year4=round(SRP1_year4,0),
-      SRP1_year5=round(SRP1_year5,0),
-      SRP2_year1=round(SRP2_year1,0),
-      SRP2_year2=round(SRP2_year2,0),
-      SRP2_year3=round(SRP2_year3,0),
-      SRP2_year4=round(SRP2_year4,0),
-      SRP2_year5=round(SRP2_year5,0),
-      cob_last_camp=round(cob_last_camp,0)
+      year1=round(year1,0),
+      year2=round(year2,0),
+      year3=round(year3,0),
+      year4=round(year4,0),
+      year5=round(year5,0)
     )
   
   if (admin1_id == 0) {
@@ -452,15 +445,11 @@ inmu_get_data_table <- function(LANG_TLS,YEAR_LIST,CUT_OFFS,data,admin1_id) {
                         paste(lang_label_tls(LANG_TLS,"immunity_polio_cob"),YEAR_3,"(%)"),
                         paste(lang_label_tls(LANG_TLS,"immunity_polio_cob"),YEAR_4,"(%)"),
                         paste(lang_label_tls(LANG_TLS,"immunity_polio_cob"),YEAR_5,"(%)"),
-                        lang_label_tls(LANG_TLS,"inm_mmr1_score"),
-                        paste(lang_label_tls(LANG_TLS,"inm_mmr2_cob"),YEAR_1,"(%)"),
-                        paste(lang_label_tls(LANG_TLS,"inm_mmr2_cob"),YEAR_2,"(%)"),
-                        paste(lang_label_tls(LANG_TLS,"inm_mmr2_cob"),YEAR_3,"(%)"),
-                        paste(lang_label_tls(LANG_TLS,"inm_mmr2_cob"),YEAR_4,"(%)"),
-                        paste(lang_label_tls(LANG_TLS,"inm_mmr2_cob"),YEAR_5,"(%)"),
-                        lang_label_tls(LANG_TLS,"inm_mmr2_score"),
-                        lang_label_tls(LANG_TLS,"inm_cob_last_camp_pct"),lang_label_tls(LANG_TLS,"inm_cob_last_camp_score"),
-                        lang_label_tls(LANG_TLS,"inm_novac_pct"),lang_label_tls(LANG_TLS,"inm_novac_score"))
+                        lang_label_tls(LANG_TLS,"immunity_polio_score"),
+                        lang_label_tls(LANG_TLS, "immunity_ipv2_cob"),
+                        lang_label_tls(LANG_TLS, "immunity_ipv2_score"),
+                        lang_label_tls(LANG_TLS,"immunity_effective_cob"),
+                        lang_label_tls(LANG_TLS,"immunity_effective_score"))
   } else {
     data <- data %>% filter(`ADMIN1 GEO_ID` == admin1_id) %>% select(-ADMIN1,-`ADMIN1 GEO_ID`)
     colnames(data) <- c(lang_label_tls(LANG_TLS,"table_admin2_name"),lang_label_tls(LANG_TLS,"total_pr"),lang_label_tls(LANG_TLS,"risk_level"),
@@ -469,15 +458,11 @@ inmu_get_data_table <- function(LANG_TLS,YEAR_LIST,CUT_OFFS,data,admin1_id) {
                         paste(lang_label_tls(LANG_TLS,"immunity_polio_cob"),YEAR_3,"(%)"),
                         paste(lang_label_tls(LANG_TLS,"immunity_polio_cob"),YEAR_4,"(%)"),
                         paste(lang_label_tls(LANG_TLS,"immunity_polio_cob"),YEAR_5,"(%)"),
-                        lang_label_tls(LANG_TLS,"inm_mmr1_score"),
-                        paste(lang_label_tls(LANG_TLS,"inm_mmr2_cob"),YEAR_1,"(%)"),
-                        paste(lang_label_tls(LANG_TLS,"inm_mmr2_cob"),YEAR_2,"(%)"),
-                        paste(lang_label_tls(LANG_TLS,"inm_mmr2_cob"),YEAR_3,"(%)"),
-                        paste(lang_label_tls(LANG_TLS,"inm_mmr2_cob"),YEAR_4,"(%)"),
-                        paste(lang_label_tls(LANG_TLS,"inm_mmr2_cob"),YEAR_5,"(%)"),
-                        lang_label_tls(LANG_TLS,"inm_mmr2_score"),
-                        lang_label_tls(LANG_TLS,"inm_cob_last_camp_pct"),lang_label_tls(LANG_TLS,"inm_cob_last_camp_score"),
-                        lang_label_tls(LANG_TLS,"inm_novac_pct"),lang_label_tls(LANG_TLS,"inm_novac_score"))
+                        lang_label_tls(LANG_TLS,"immunity_polio_score"),
+                        lang_label_tls(LANG_TLS, "immunity_ipv2_cob"),
+                        lang_label_tls(LANG_TLS, "immunity_ipv2_score"),
+                        lang_label_tls(LANG_TLS,"immunity_effective_cob"),
+                        lang_label_tls(LANG_TLS,"immunity_effective_score"))
   }
   
   spr_cob_colnames <- c(
@@ -486,12 +471,8 @@ inmu_get_data_table <- function(LANG_TLS,YEAR_LIST,CUT_OFFS,data,admin1_id) {
     paste(lang_label_tls(LANG_TLS,"immunity_polio_cob"),YEAR_3,"(%)"),
     paste(lang_label_tls(LANG_TLS,"immunity_polio_cob"),YEAR_4,"(%)"),
     paste(lang_label_tls(LANG_TLS,"immunity_polio_cob"),YEAR_5,"(%)"),
-    paste(lang_label_tls(LANG_TLS,"inm_mmr2_cob"),YEAR_1,"(%)"),
-    paste(lang_label_tls(LANG_TLS,"inm_mmr2_cob"),YEAR_2,"(%)"),
-    paste(lang_label_tls(LANG_TLS,"inm_mmr2_cob"),YEAR_3,"(%)"),
-    paste(lang_label_tls(LANG_TLS,"inm_mmr2_cob"),YEAR_4,"(%)"),
-    paste(lang_label_tls(LANG_TLS,"inm_mmr2_cob"),YEAR_5,"(%)"),
-    lang_label_tls(LANG_TLS,"inm_cob_last_camp_pct")
+    lang_label_tls(LANG_TLS, "immunity_ipv2_cob"),
+    lang_label_tls(LANG_TLS,"immunity_effective_cob")
   )
   
   datos_table <- data %>%
@@ -524,10 +505,9 @@ inmu_get_data_table <- function(LANG_TLS,YEAR_LIST,CUT_OFFS,data,admin1_id) {
           "rgba(232, 19, 43, 0.7)","rgba(146, 0, 0, 0.7)"))
     ) %>% formatStyle(
       c(lang_label_tls(LANG_TLS,"total_pr"),
-        lang_label_tls(LANG_TLS,"inm_mmr1_score"),
-        lang_label_tls(LANG_TLS,"inm_mmr2_score"),
-        lang_label_tls(LANG_TLS,"inm_cob_last_camp_score"),
-        lang_label_tls(LANG_TLS,"inm_novac_score")),
+        lang_label_tls(LANG_TLS,"immunity_polio_score"),
+        lang_label_tls(LANG_TLS,"immunity_ipv2_score"),
+        lang_label_tls(LANG_TLS,"immunity_effective_score")),
       backgroundColor = "#e3e3e3"
     ) %>% formatStyle(
       spr_cob_colnames,
