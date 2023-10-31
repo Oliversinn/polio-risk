@@ -70,7 +70,20 @@ fluidPage(
           ),
           bsTooltip("indicadores_select_risk", lang_label("tooltip_select_risk"), placement = "right", trigger = "hover",options = NULL)
           
-        )
+        ),
+        
+        ### IMMUNITY SCORES ----
+        menuItem(
+          text = lang_label("menuitem_immunity"),
+          tabName = "IMMUNITY",
+          icon = icon("syringe")
+        ),
+        conditionalPanel(
+          'input.sidebarid == "IMMUNITY"',
+          ##### ADMIN1 SELECTOR ----
+          selectInput("inmunidad_select_admin1", label = paste0(lang_label("general_select_admin1"), ":"), choices = admin1_list, selected = admin1_list[1]),
+          bsTooltip("inmunidad_select_admin1", lang_label("tooltip_select_admin1"), placement = "right", trigger = "hover",options = NULL),
+        ) 
       )
     ),
     ## DASHBOARD BODY ----
@@ -207,7 +220,33 @@ fluidPage(
               )
             )
             
+          ),
+          
+          ### TAB IMMUNITY SCORES ----
+          tabItem(
+            tabName = "IMMUNITY",
+            h2(lang_label("menuitem_immunity")),
+            br(),
+            
+            #### MAP ----
+            box(
+              width = 7,
+              solidHeader = TRUE,
+              collapsible = TRUE,
+              title = textOutput("inmunidad_title_map_box"),
+              tabBox(
+                width = 12,
+                height = NULL,
+                tabPanel(
+                  title = lang_label("total_pr"),
+                  icon = icon("square-check"),
+                  shinycssloaders::withSpinner(leafletOutput("inmunidad_map_total",height = 600),color = "#1c9ad6", type = "8", size = 0.5),
+                  br(),div(style="text-align: center;",downloadButton(outputId = "dl_inmunidad_map_total",lang_label("button_download_map"),icon=icon('camera')))
+                )
+              )
+            )
           )
+          ### NEW TABITEM ----
         )
       )
     )

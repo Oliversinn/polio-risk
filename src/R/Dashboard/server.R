@@ -202,5 +202,19 @@ function(input, output, session) {
     ind_rangos_table(LANG_TLS,CUT_OFFS,ind_rename(input$indicadores_select_indicador), pfa_filter)
   })
   
+  ## IMMUNITY ----
+  ### MAP ----
+  output$inmunidad_title_map_box <- renderText({
+    title_map_box(lang_label("INM_POB"),input$inmunidad_select_admin1)
+  })
+  
+  inmu_map_total <- reactiveValues(dat = 0)
+  
+  
+  output$inmunidad_map_total <- renderLeaflet({
+    inmu_map_total$dat <- inmu_plot_map_data(LANG_TLS,YEAR_CAMP_SR,toupper(COUNTRY_NAME),YEAR_LIST,ZERO_POB_LIST,CUT_OFFS,country_shapes,immunity_scores,"immunity_score",input$inmunidad_select_admin1,get_a1_geo_id(input$inmunidad_select_admin1),admin1_geo_id_df)
+    inmu_map_total$dat
+  })
+  
   
 }
