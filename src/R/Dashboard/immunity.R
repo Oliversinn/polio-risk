@@ -113,7 +113,7 @@ inmu_title_map <- function(LANG_TLS,YEAR_CAMP_SR,COUNTRY_NAME,YEAR_LIST,admin1,v
     var == "year3" ~ paste0(lang_label_tls(LANG_TLS,"immunity_polio_cob")," ",admin1_transform(LANG_TLS,COUNTRY_NAME,admin1)," (",YEAR_3,")"),
     var == "year4" ~ paste0(lang_label_tls(LANG_TLS,"immunity_polio_cob")," ",admin1_transform(LANG_TLS,COUNTRY_NAME,admin1)," (",YEAR_4,")"),
     var == "year5" ~ paste0(lang_label_tls(LANG_TLS,"immunity_polio_cob")," ",admin1_transform(LANG_TLS,COUNTRY_NAME,admin1)," (",YEAR_5,")"),
-    var == "ipv2" ~ paste0(lang_label_tls(LANG_TLS,"immunity_ipv2_cob")," ",admin1_transform(LANG_TLS,COUNTRY_NAME,admin1)," (",YEAR_EVAL,")"),
+    var == "ipv2" ~ paste0(lang_label_tls(LANG_TLS,"immunity_ipv2_cob")," ",admin1_transform(LANG_TLS,COUNTRY_NAME,admin1)," (",YEAR_5,")"),
     var == "effective_campaign" ~ paste0(lang_label_tls(LANG_TLS,"immunity_effective_cob")," ",admin1_transform(LANG_TLS,COUNTRY_NAME,admin1)," (",YEAR_1, "-", YEAR_EVAL,")")
   )
   return(var_text)

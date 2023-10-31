@@ -125,7 +125,7 @@ function(input, output, session) {
   
   output$indicadores_title_map_box <- renderText({
     text_title <- title_map_box(input$indicadores_select_indicador,input$indicadores_select_admin1)
-    text_title <- paste0(text_title," (",YEAR_1," - ",YEAR_5,")")
+    text_title <- paste0(text_title," (",YEAR_1," - ",YEAR_EVAL,")")
     text_title
   })
   
@@ -136,7 +136,7 @@ function(input, output, session) {
   
   output$dl_indicadores_plot_map <- downloadHandler(
     filename = function() {
-      paste0(lang_label("map")," ",toupper(COUNTRY_NAME)," ",input$indicadores_select_indicador," (",YEAR_1,"-",YEAR_5,").png")
+      paste0(lang_label("map")," ",toupper(COUNTRY_NAME)," ",input$indicadores_select_indicador," (",YEAR_1,"-",YEAR_EVAL,").png")
     },
     content = function(file) {
       mapshot(ind_map$dat, file = file)
@@ -154,7 +154,7 @@ function(input, output, session) {
   
   output$dl_indicadores_plot_map_2 <- downloadHandler(
     filename = function() {
-      paste0(lang_label("map")," ",input$indicadores_select_admin1," ",toupper(COUNTRY_NAME)," ",input$indicadores_select_indicador," (",YEAR_1,"-",YEAR_5,").png")
+      paste0(lang_label("map")," ",input$indicadores_select_admin1," ",toupper(COUNTRY_NAME)," ",input$indicadores_select_indicador," (",YEAR_1,"-",YEAR_EVAL,").png")
     },
     content = function(file) {
       mapshot(ind_map_2$dat, file = file)

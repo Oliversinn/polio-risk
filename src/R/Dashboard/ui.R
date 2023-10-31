@@ -103,10 +103,10 @@ fluidPage(
             
             #### VALUE BOXES ----
             fluidRow(
-              valueBoxOutput("ind_box_1",width = 3),
-              valueBoxOutput("ind_box_2",width = 3),
+              valueBoxOutput("ind_box_4",width = 3),
               valueBoxOutput("ind_box_3",width = 3),
-              valueBoxOutput("ind_box_4",width = 3)
+              valueBoxOutput("ind_box_2",width = 3),
+              valueBoxOutput("ind_box_1",width = 3)
             ),
             
             #### ADMIN1 == ALL ----
