@@ -243,10 +243,27 @@ function(input, output, session) {
   
   output$dl_inmunidad_map_cob_1 <- downloadHandler(
     filename = function() {
-      paste0(lang_label("map")," ",input$inmunidad_select_admin1," ",toupper(COUNTRY_NAME)," ",lang_label("inm_mmr1_cob")," (",input$radio_inmunidad_cob_1,").png")
+      paste0(lang_label("map")," ",input$inmunidad_select_admin1," ",toupper(COUNTRY_NAME)," ",lang_label("immunity_polio_cob")," (",input$radio_inmunidad_cob_1,").png")
     },
     content = function(file) {
       mapshot(inmu_map_cob_1$dat, file = file)
+    }
+  )
+  
+  ### IPV2 COVERAGE ----
+  inmu_map_cob_2 <- reactiveValues(dat = 0)
+  
+  output$inmunidad_map_cob_2 <- renderLeaflet({
+    inmu_map_cob_2$dat <- inmu_plot_map_data(LANG_TLS,YEAR_CAMP_SR,toupper(COUNTRY_NAME),YEAR_LIST,ZERO_POB_LIST,CUT_OFFS,country_shapes,immunity_scores,"ipv2",input$inmunidad_select_admin1,get_a1_geo_id(input$inmunidad_select_admin1),admin1_geo_id_df)
+    inmu_map_cob_2$dat
+  })
+  
+  output$dl_inmunidad_map_cob_2 <- downloadHandler(
+    filename = function() {
+      paste0(lang_label("map")," ",input$inmunidad_select_admin1," ",toupper(COUNTRY_NAME)," ",lang_label("immunity_ipv2_cob")," (",input$radio_inmunidad_cob_2,").png")
+    },
+    content = function(file) {
+      mapshot(inmu_map_cob_2$dat, file = file)
     }
   )
   

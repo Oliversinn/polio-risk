@@ -111,6 +111,7 @@ inmu_title_map <- function(LANG_TLS,YEAR_CAMP_SR,COUNTRY_NAME,YEAR_LIST,admin1,v
     var == "SRP1_PR" ~ paste0(lang_label_tls(LANG_TLS,"inm_title_map_mmr1_pr")," ",admin1_transform(LANG_TLS,COUNTRY_NAME,admin1)," (",YEAR_1," - ",YEAR_5,")"),
     var == "SRP2_PR" ~ paste0(lang_label_tls(LANG_TLS,"inm_title_map_mmr2_pr")," ",admin1_transform(LANG_TLS,COUNTRY_NAME,admin1)," (",YEAR_1," - ",YEAR_5,")"),
     var == "cob_last_camp_PR" ~ paste0(lang_label_tls(LANG_TLS,"inm_title_map_last_camp_pr")," ",admin1_transform(LANG_TLS,COUNTRY_NAME,admin1)," (",YEAR_CAMP_SR,")"),
+    var == "ipv2" ~ paste0(lang_label_tls(LANG_TLS,"immunity_ipv2_cob")," ",admin1_transform(LANG_TLS,COUNTRY_NAME,admin1)," (",YEAR_EVAL,")"),
     var == "p_sospechosos_novac_PR" ~ paste0(lang_label_tls(LANG_TLS,"inm_title_map_novac_pr")," ",admin1_transform(LANG_TLS,COUNTRY_NAME,admin1)," (",YEAR_5,")"),
     var == "cob_last_camp" ~ paste0(lang_label_tls(LANG_TLS,"inm_title_map_last_camp")," ",admin1_transform(LANG_TLS,COUNTRY_NAME,admin1)," (",YEAR_CAMP_SR,")"),
     var == "p_sospechosos_novac" ~ paste0(lang_label_tls(LANG_TLS,"inm_title_map_novac")," ",admin1_transform(LANG_TLS,COUNTRY_NAME,admin1)," (",YEAR_5,")"),
@@ -261,7 +262,7 @@ inmu_plot_map_data <- function(LANG_TLS,YEAR_CAMP_SR,COUNTRY_NAME,YEAR_LIST,ZERO
         addLegend(title = lang_label_tls(LANG_TLS,"risk_points"),colors = legend_colors,labels = legend_values, opacity = 0.5, position = 'topright')
     }
 
-  } else if (var_to_summarise %in% c("cob_last_camp",
+  } else if (var_to_summarise %in% c("ipv2",
     "year1","year2","year3","year4","year5")) {
     # Cob map
     map_data <- map_data %>% rename("COB"=var_to_summarise)

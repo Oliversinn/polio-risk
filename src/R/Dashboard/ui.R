@@ -257,7 +257,12 @@ fluidPage(
                          ),style="z-index:2000;"),
                   shinycssloaders::withSpinner(leafletOutput("inmunidad_map_cob_1",height = 600),color = "#1c9ad6", type = "8", size = 0.5),
                   br(),div(style="text-align: center;",downloadButton(outputId = "dl_inmunidad_map_cob_1",lang_label("button_download_map"),icon=icon('camera')))
-                )
+                ),
+                tabPanel(
+                  title = lang_label("immunity_ipv2_cob"),icon = icon("syringe"),
+                  shinycssloaders::withSpinner(leafletOutput("inmunidad_map_cob_2",height = 500),color = "#1c9ad6", type = "8", size = 0.5),
+                  br(),div(style="text-align: center;",downloadButton(outputId = "dl_inmunidad_map_cob_2",lang_label("button_download_map"),icon=icon('camera')))
+                ),
               )
             )
           )
