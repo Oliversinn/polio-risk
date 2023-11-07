@@ -369,7 +369,13 @@ fluidPage(
                     title = lang_label("total_pr"),icon = icon("square-check"),
                     shinycssloaders::withSpinner(leafletOutput("calidad_map_total",height = 600),color = "#1c9ad6", type = "8", size = 0.5),
                     br(),div(style="text-align: center;",downloadButton(outputId = "dl_surveillance_map_total",lang_label("button_download_map"),icon=icon('camera')))
-    
+                  ),
+                  
+                  ##### REPORTING UNITS ----
+                  tabPanel(
+                    title = lang_label("surveillance_reporting_units"),icon = icon("house-medical"),
+                    shinycssloaders::withSpinner(leafletOutput("calidad_map_2",height = 600),color = "#1c9ad6", type = "8", size = 0.5),
+                    br(),div(style="text-align: center;",downloadButton(outputId = "dl_calidad_map_2",lang_label("button_download_map"),icon=icon('camera')))
                   )
                 )
               )
