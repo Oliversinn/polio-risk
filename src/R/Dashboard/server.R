@@ -13,7 +13,7 @@ function(input, output, session) {
     renamed <- case_when(
       lang_label("menuitem_general_label") == selected_ind ~ "total_score",
       lang_label("menuitem_immunity") == selected_ind ~ "immunity_score",
-      lang_label("menuitem_survaillance") == selected_ind ~ "survaillance_score",
+      lang_label("menuitem_surveillance") == selected_ind ~ "surveillance_score",
       lang_label("menuitem_determinants") == selected_ind ~ "determinants_score",
       lang_label("menuitem_outbreaks") == selected_ind ~ "outbreaks_score"
     )
@@ -326,7 +326,7 @@ function(input, output, session) {
   cal_map_total <- reactiveValues(dat = 0)
   
   output$calidad_map_total <- renderLeaflet({
-    cal_map_total$dat <- cal_plot_map_data(LANG_TLS,toupper(COUNTRY_NAME),YEAR_LIST,ZERO_POB_LIST,CUT_OFFS,country_shapes,survaillance_scores,"TOTAL_PR",input$surveillance_select_admin1,get_a1_geo_id(input$calidad_select_admin1),admin1_geo_id_df)
+    cal_map_total$dat <- cal_plot_map_data(LANG_TLS,toupper(COUNTRY_NAME),YEAR_LIST,ZERO_POB_LIST,CUT_OFFS,country_shapes,surveillance_scores,"TOTAL_PR",input$surveillance_select_admin1,get_a1_geo_id(input$calidad_select_admin1),admin1_geo_id_df)
     cal_map_total$dat
   })
   

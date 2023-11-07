@@ -132,7 +132,7 @@ ind_prep_bar_data <- function(LANG_TLS,CUT_OFFS,data,indicator,admin1_id,risk) {
   var_to_summarise <- case_when(
     indicator == "total_score" ~ "total_score",
     indicator == "immunity_score" ~ "immunity_score",
-    indicator == "survaillance_score" ~ "survaillance_score",
+    indicator == "surveillance_score" ~ "surveillance_score",
     indicator == "determinants_score" ~ "determinants_score",
     indicator == "outbreaks_score" ~ "outbreaks_score"
   )
@@ -163,7 +163,7 @@ ind_prep_map_data <- function(LANG_TLS,ZERO_POB_LIST,CUT_OFFS,map_data,data,indi
   var_to_summarise <- case_when(
     indicator == "total_score" ~ "total_score",
     indicator == "immunity_score" ~ "immunity_score",
-    indicator == "survaillance_score" ~ "survaillance_score",
+    indicator == "surveillance_score" ~ "surveillance_score",
     indicator == "determinants_score" ~ "determinants_score",
     indicator == "outbreaks_score" ~ "outbreaks_score"
   )
@@ -189,7 +189,7 @@ ind_get_bar_table <- function(LANG_TLS,CUT_OFFS,data,indicator,admin1_id,risk) {
   var_to_summarise <- case_when(
     indicator == "total_score" ~ "total_score",
     indicator == "immunity_score" ~ "immunity_score",
-    indicator == "survaillance_score" ~ "survaillance_score",
+    indicator == "surveillance_score" ~ "surveillance_score",
     indicator == "determinants_score" ~ "determinants_score",
     indicator == "outbreaks_score" ~ "outbreaks_score"
   )
@@ -221,9 +221,9 @@ ind_get_bar_table <- function(LANG_TLS,CUT_OFFS,data,indicator,admin1_id,risk) {
     )
   } else {
     if (admin1_id == 0) {
-      data <- data %>% select(ADMIN1,ADMIN2,immunity_score,survaillance_score,determinants_score,outbreaks_score,total_score)
+      data <- data %>% select(ADMIN1,ADMIN2,immunity_score,surveillance_score,determinants_score,outbreaks_score,total_score)
     } else {
-      data <- data %>% filter(`ADMIN1 GEO_ID` == admin1_id) %>% select(ADMIN1,ADMIN2,immunity_score,survaillance_score,determinants_score,outbreaks_score,total_score)
+      data <- data %>% filter(`ADMIN1 GEO_ID` == admin1_id) %>% select(ADMIN1,ADMIN2,immunity_score,surveillance_score,determinants_score,outbreaks_score,total_score)
       data <- data %>% arrange(desc(ADMIN2))
     }
     data$risk_level <- get_risk_level(LANG_TLS,CUT_OFFS,indicator,data$total_score, pfa = pfa)
@@ -235,7 +235,7 @@ ind_get_bar_table <- function(LANG_TLS,CUT_OFFS,data,indicator,admin1_id,risk) {
       lang_label_tls(LANG_TLS,"table_admin1_name"),
       lang_label_tls(LANG_TLS,"table_admin2_name"),
       lang_label_tls(LANG_TLS,"menuitem_immunity"),
-      lang_label_tls(LANG_TLS,"menuitem_survaillance"),
+      lang_label_tls(LANG_TLS,"menuitem_surveillance"),
       lang_label_tls(LANG_TLS,"menuitem_determinants"),
       lang_label_tls(LANG_TLS,"menuitem_outbreaks"),
       lang_label_tls(LANG_TLS,"risk_points"),
@@ -352,7 +352,7 @@ ind_plot_multibar_data <- function(LANG_TLS,CUT_OFFS,bar_data,admin1_id,selected
 
       fig <- plot_ly(bar_data, type = 'bar',orientation = 'h',y = ~LUGAR,
                      x = ~immunity_score, name = lang_label_tls(LANG_TLS,"menuitem_immunity"),marker = list(color = "#8DB1CC"),text = ~immunity_score, textposition = 'inside',textangle = 0) %>%
-        add_trace(x = ~survaillance_score, name = lang_label_tls(LANG_TLS,"menuitem_survaillance"), marker = list(color = "#2165A4"),text = ~survaillance_score, textposition = 'inside') %>%
+        add_trace(x = ~surveillance_score, name = lang_label_tls(LANG_TLS,"menuitem_surveillance"), marker = list(color = "#2165A4"),text = ~surveillance_score, textposition = 'inside') %>%
         add_trace(x = ~determinants_score, name = lang_label_tls(LANG_TLS,"menuitem_determinants"), marker = list(color = "#253E80"),text = ~determinants_score, textposition = 'inside') %>%
         add_trace(x = ~outbreaks_score, name = lang_label_tls(LANG_TLS,"menuitem_outbreaks"), marker = list(color = "#6436A5"),text = ~outbreaks_score, textposition = 'inside') %>% 
 
@@ -554,7 +554,7 @@ ind_prep_box_data <- function(LANG_TLS,CUT_OFFS,data,indicator,admin1_id) {
   var_to_summarise <- case_when(
     indicator == "total_score" ~ "total_score",
     indicator == "immunity_score" ~ "immunity_score",
-    indicator == "survaillance_score" ~ "survaillance_score",
+    indicator == "surveillance_score" ~ "surveillance_score",
     indicator == "determinants_score" ~ "determinants_score",
     indicator == "outbreaks_score" ~ "outbreaks_score"
   )
@@ -610,7 +610,7 @@ ind_rename <- function(selected_ind) {
     case_when(
       lang_label("menuitem_general_label") == selected_ind ~ "GENERAL",
       lang_label("menuitem_immunity") == selected_ind ~ "immunity_score",
-      lang_label("menuitem_survaillance") == selected_ind ~ "survaillance_score",
+      lang_label("menuitem_surveillance") == selected_ind ~ "surveillance_score",
       lang_label("menuitem_determinants") == selected_ind ~ "determinants_score",
       lang_label("menuitem_outbreaks") == selected_ind ~ "outbreaks_score"
     )

@@ -50,7 +50,7 @@ fluidPage(
                       choices = c(
                         lang_label("menuitem_general_label"),
                         lang_label("menuitem_immunity"),
-                        lang_label("menuitem_survaillance"),
+                        lang_label("menuitem_surveillance"),
                         lang_label("menuitem_determinants"),
                         lang_label("menuitem_outbreaks")
                       ),
@@ -88,7 +88,7 @@ fluidPage(
         
         ### SURVEILLANCE SCORES ----
         menuItem(
-          text = lang_label("menuitem_survaillance"),
+          text = lang_label("menuitem_surveillance"),
           tabName = "SURVEILLANCE",
           icon = icon("eye",class="fa-solid fa-eye")
         ),

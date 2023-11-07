@@ -159,77 +159,77 @@ score_effective_campaign <- function(population_inmunity_df) {
 ## Survaillance ----
 
 # Score reporting units
-score_compliant_units <- function(survaillance_df) {
-  population_and_pfa = population_and_pfa(survaillance_df)
+score_compliant_units <- function(surveillance_df) {
+  population_and_pfa = population_and_pfa(surveillance_df)
   score = case_when(
-    survaillance_df[["compliant_units_percent"]] < 80 ~ 8,
-    survaillance_df[["compliant_units_percent"]] >= 80 ~ 0,
+    surveillance_df[["compliant_units_percent"]] < 80 ~ 8,
+    surveillance_df[["compliant_units_percent"]] >= 80 ~ 0,
     TRUE ~ 8
   )
   return(score)
 }
 
 # Score PFA rate
-score_pfa_rate <- function(survaillance_df) {
-  population_and_pfa <- population_and_pfa(survaillance_df)
+score_pfa_rate <- function(surveillance_df) {
+  population_and_pfa <- population_and_pfa(surveillance_df)
   score <- case_when(
-    population_and_pfa & survaillance_df[['pfa_rate']] < 1 ~ 8,
-    population_and_pfa & survaillance_df[['pfa_rate']] >= 1 ~ 0,
+    population_and_pfa & surveillance_df[['pfa_rate']] < 1 ~ 8,
+    population_and_pfa & surveillance_df[['pfa_rate']] >= 1 ~ 0,
     TRUE ~ NA
   )
   return(score)
 }
 
 # Score PFA notified < 14 days
-score_pfa_notified <- function(survaillance_df) {
-  population_and_pfa <- population_and_pfa(survaillance_df)
+score_pfa_notified <- function(surveillance_df) {
+  population_and_pfa <- population_and_pfa(surveillance_df)
   score <- case_when(
-    population_and_pfa & survaillance_df[["pfa_notified_percent"]] < 80 ~ 5,
-    population_and_pfa & survaillance_df[["pfa_notified_percent"]] >= 80 ~ 0,
+    population_and_pfa & surveillance_df[["pfa_notified_percent"]] < 80 ~ 5,
+    population_and_pfa & surveillance_df[["pfa_notified_percent"]] >= 80 ~ 0,
     TRUE ~ NA
   )
   return(score)
 }
 
 # Score PFA investigated < 48 hr
-score_pfa_investigated <- function(survaillance_df) {
-  population_and_pfa <- population_and_pfa(survaillance_df)
+score_pfa_investigated <- function(surveillance_df) {
+  population_and_pfa <- population_and_pfa(surveillance_df)
   score <- case_when(
-    population_and_pfa & survaillance_df[["pfa_investigated_percent"]] < 80 ~ 5,
-    population_and_pfa & survaillance_df[["pfa_investigated_percent"]] >= 80 ~ 0,
+    population_and_pfa & surveillance_df[["pfa_investigated_percent"]] < 80 ~ 5,
+    population_and_pfa & surveillance_df[["pfa_investigated_percent"]] >= 80 ~ 0,
     TRUE ~ NA
   )
   return(score)
 }
 
 # Score suitable samples
-score_suitable_samples <- function(survaillance_df) {
-  population_and_pfa <- population_and_pfa(survaillance_df)
+score_suitable_samples <- function(surveillance_df) {
+  population_and_pfa <- population_and_pfa(surveillance_df)
   score <- case_when(
-    population_and_pfa & survaillance_df[["suitable_samples_percent"]] < 80 ~ 5,
-    population_and_pfa & survaillance_df[["suitable_samples_percent"]] >= 80 ~ 0,
+    population_and_pfa & surveillance_df[["suitable_samples_percent"]] < 80 ~ 5,
+    population_and_pfa & surveillance_df[["suitable_samples_percent"]] >= 80 ~ 0,
     TRUE ~ NA
   )
   return(score)
 }
 
 # Score followups
-score_followups <- function(survaillance_df) {
-  population_and_pfa <- population_and_pfa(survaillance_df)
+score_followups <- function(surveillance_df) {
+  population_and_pfa <- population_and_pfa(surveillance_df)
   score <- case_when(
-    population_and_pfa & survaillance_df[["followups_percent"]] < 80 ~ 5,
-    population_and_pfa & survaillance_df[["followups_percent"]] >= 80 ~ 0,
+    population_and_pfa & surveillance_df[["followups_percent"]] < 80 ~ 5,
+    population_and_pfa & surveillance_df[["followups_percent"]] >= 80 ~ 0,
     TRUE ~ NA
   )
   return(score)
 }
 
 # Score active search
-score_active_search <- function(survaillance_df) {
-  population_and_pfa <- population_and_pfa(survaillance_df)
+score_active_search <- function(surveillance_df) {
+  population_and_pfa <- population_and_pfa(surveillance_df)
   score <- case_when(
-    !population_and_pfa & survaillance_df[["active_search"]] == lang_label("no") ~ 12,
-    !population_and_pfa & survaillance_df[["active_search"]] == lang_label("yes") ~ 0,
+    !population_and_pfa & surveillance_df[["active_search"]] == lang_label("no") ~ 12,
+    !population_and_pfa & surveillance_df[["active_search"]] == lang_label("yes") ~ 0,
     TRUE ~ NA
   )
   return(score)
@@ -387,42 +387,42 @@ scores_data <- left_join(scores_data, immunity_scores_join)
 # SURVAILLANCE ----
 
 ## Read data ----
-survaillance_data <- read_excel(PATH_country_data, sheet = 4, skip = 2, col_names = FALSE)
-colnames(survaillance_data) <- c('ADMIN1 GEO_ID', 'GEO_ID', 'ADMIN1', 'ADMIN2', 
+surveillance_data <- read_excel(PATH_country_data, sheet = 4, skip = 2, col_names = FALSE)
+colnames(surveillance_data) <- c('ADMIN1 GEO_ID', 'GEO_ID', 'ADMIN1', 'ADMIN2', 
                                  'POB1', 'POB5', 'POB15', 'pfa', 'compliant_units_percent', 'pfa_rate', 
                            'pfa_notified_percent', 'pfa_investigated_percent', 
                            'suitable_samples_percent', 'followups_percent', 'active_search')
-survaillance_data <- admin_normalizer(survaillance_data)
+surveillance_data <- admin_normalizer(surveillance_data)
 
 ## Filtering missing GEO codes ----
-survaillance_data <- geocodes_cleansing(survaillance_data)
+surveillance_data <- geocodes_cleansing(surveillance_data)
 
 ## Scores calculation ----
-survaillance_scores <- survaillance_data %>% 
+surveillance_scores <- surveillance_data %>% 
   mutate_at(
     vars(contains('percent')), ~ round(.,digits = 0)
   ) %>% 
   mutate(
-    compliant_units_score = score_compliant_units(survaillance_data),
-    pfa_rate_score = score_pfa_rate(survaillance_data),
-    pfa_notified_score = score_pfa_notified(survaillance_data),
-    pfa_investigated_score = score_pfa_investigated(survaillance_data),
-    suitable_samples_score = score_suitable_samples(survaillance_data),
-    followups_score = score_followups(survaillance_data),
-    active_search_score = score_active_search(survaillance_data)
+    compliant_units_score = score_compliant_units(surveillance_data),
+    pfa_rate_score = score_pfa_rate(surveillance_data),
+    pfa_notified_score = score_pfa_notified(surveillance_data),
+    pfa_investigated_score = score_pfa_investigated(surveillance_data),
+    suitable_samples_score = score_suitable_samples(surveillance_data),
+    followups_score = score_followups(surveillance_data),
+    active_search_score = score_active_search(surveillance_data)
   ) %>% 
   rowwise() %>% 
   mutate(
-    survaillance_score = sum(c_across(matches('score')), na.rm = T) 
+    surveillance_score = sum(c_across(matches('score')), na.rm = T) 
   )
   
 ## Adding to scores_data ----
-survaillance_scores_join <- survaillance_scores %>% 
+surveillance_scores_join <- surveillance_scores %>% 
   select(
     'GEO_ID',
-    'survaillance_score'
+    'surveillance_score'
   )
-scores_data <- left_join(scores_data, survaillance_scores_join)
+scores_data <- left_join(scores_data, surveillance_scores_join)
 
 # DETERMINANTS ----
 
@@ -557,14 +557,14 @@ hardcoded_columns <- as.data.frame(country_shapes) %>%
 #   full_join(hardcoded_columns, ., by = c("ADMIN1" = "ADMIN1", "ADMIN2" = "ADMIN2"))
 # 
 # ## SURVAILLANCE ----
-# survaillance_scores <- survaillance_scores %>% 
+# surveillance_scores <- surveillance_scores %>% 
 #   select(
 #     -`ADMIN1 GEO_ID`,
 #     -GEO_ID
 #   ) %>% 
 #   full_join(hardcoded_columns, ., by = c("ADMIN1" = "ADMIN1", "ADMIN2" = "ADMIN2"))
 # 
-# survaillance_data <- survaillance_data %>% 
+# surveillance_data <- surveillance_data %>% 
 #   select(
 #     -`ADMIN1 GEO_ID`,
 #     -GEO_ID
@@ -625,7 +625,7 @@ admin1_geo_id_df <- rbind(admin1_geo_id_df,c(0,toupper(lang_label("rep_label_all
 rm(determinants_scores_join,
    immunity_scores_join,
    outbreaks_scores_join,
-   survaillance_scores_join,
+   surveillance_scores_join,
    sheet_cut_off)
 save.image(file = "POLIO.RData")
 
