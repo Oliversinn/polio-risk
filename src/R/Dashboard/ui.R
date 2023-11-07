@@ -1,4 +1,5 @@
-# AUTORSHIP ----
+# AUTHORSHIP ----
+
 # Pan American Health Organization
 # Author: Oliver Mazariegos
 # Last Update: 2023-10-09
@@ -83,6 +84,19 @@ fluidPage(
           ##### ADMIN1 SELECTOR ----
           selectInput("inmunidad_select_admin1", label = paste0(lang_label("general_select_admin1"), ":"), choices = admin1_list, selected = admin1_list[1]),
           bsTooltip("inmunidad_select_admin1", lang_label("tooltip_select_admin1"), placement = "right", trigger = "hover",options = NULL),
+        ),
+        
+        ### SURVEILLANCE SCORES ----
+        menuItem(
+          text = lang_label("menuitem_survaillance"),
+          tabName = "SURVEILLANCE",
+          icon = icon("eye",class="fa-solid fa-eye")
+        ),
+        conditionalPanel(
+          'input.sidebarid == "SURVEILLANCE"',
+          ##### ADMIN1 SELECTOR ----
+          selectInput("surveillance_select_admin1", label = paste0(lang_label("general_select_admin1"), ":"), choices = admin1_list, selected = admin1_list[1]),
+          bsTooltip("surveillance_select_admin1", lang_label("tooltip_select_admin1"), placement = "right", trigger = "hover",options = NULL),
         ) 
       )
     ),
@@ -238,12 +252,15 @@ fluidPage(
                 tabBox(
                   width = 12,
                   height = NULL,
+                  ##### TOTLA PR ----
                   tabPanel(
                     title = lang_label("total_pr"),
                     icon = icon("square-check"),
                     shinycssloaders::withSpinner(leafletOutput("inmunidad_map_total",height = 600),color = "#1c9ad6", type = "8", size = 0.5),
                     br(),div(style="text-align: center;",downloadButton(outputId = "dl_inmunidad_map_total",lang_label("button_download_map"),icon=icon('camera')))
                   ),
+                  
+                  ##### POLIO COB ----
                   tabPanel(
                     title = lang_label("immunity_polio_cob"),icon = icon("syringe"),
                     column(width = 12,
@@ -259,11 +276,15 @@ fluidPage(
                     shinycssloaders::withSpinner(leafletOutput("inmunidad_map_cob_1",height = 600),color = "#1c9ad6", type = "8", size = 0.5),
                     br(),div(style="text-align: center;",downloadButton(outputId = "dl_inmunidad_map_cob_1",lang_label("button_download_map"),icon=icon('camera')))
                   ),
+                  
+                  ##### IPV2 COB ----
                   tabPanel(
                     title = lang_label("immunity_ipv2_cob"),icon = icon("syringe"),
                     shinycssloaders::withSpinner(leafletOutput("inmunidad_map_cob_2",height = 600),color = "#1c9ad6", type = "8", size = 0.5),
                     br(),div(style="text-align: center;",downloadButton(outputId = "dl_inmunidad_map_cob_2",lang_label("button_download_map"),icon=icon('camera')))
                   ),
+                  
+                  ##### EFFECTIVE CAMPAIGN ----
                   tabPanel(
                     title = lang_label("immunity_effective_cob"),icon = icon("question-circle"),
                     p(style="text-align: center;",lang_label("immunity_effective_cob_text")),
@@ -322,6 +343,36 @@ fluidPage(
                 shinycssloaders::withSpinner(dataTableOutput("inmu_rangos_table"),color = "#1c9ad6", type = "8", size = 0.3)
               )
               
+            )
+          ),
+          
+          ### TAB SURVEILLANCE ----
+          tabItem(
+            tabName = "SURVEILLANCE",
+            h2(lang_label("menuitem_surveillance")),
+            br(),
+            
+            fluidRow(
+              
+              #### MAP ----
+              box(
+                width = 7,
+                solidHeader = TRUE,
+                collapsible = TRUE,
+                title = textOutput("surveillance_title_map_box"),
+                tabBox(
+                  width = 12,
+                  height = NULL,
+                  
+                  ##### TOTAL PR ----
+                  tabPanel(
+                    title = lang_label("total_pr"),icon = icon("square-check"),
+                    shinycssloaders::withSpinner(leafletOutput("calidad_map_total",height = 600),color = "#1c9ad6", type = "8", size = 0.5),
+                    br(),div(style="text-align: center;",downloadButton(outputId = "dl_calidad_map_total",lang_label("button_download_map"),icon=icon('camera')))
+    
+                  )
+                )
+              )
             )
           )
           ### NEW TABITEM ----

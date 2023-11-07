@@ -1,4 +1,5 @@
-# AUTORSHIP ----
+# AUTHORSHIP ----
+
 # Pan American Health Organization
 # Author: Oliver Mazariegos
 # Last Update: 2023-10-09

@@ -1,4 +1,5 @@
-# AUTORSHIP ----
+# AUTHORSHIP ----
+
 # Pan American Health Organization
 # Author: Oliver Mazariegos
 # Last Update: 2023-10-09
@@ -284,7 +285,7 @@ function(input, output, session) {
     }
   )
   
-  ### PIE ----
+  ## PIE ----
   output$inmunidad_title_pie_box <- renderText({
     title_pie_box(lang_label("INM_POB"),input$inmunidad_select_admin1)
   })
@@ -297,7 +298,7 @@ function(input, output, session) {
     plot_pie_data(LANG_TLS,ZERO_POB_LIST,CUT_OFFS,"immunity_score",immunity_scores,get_a1_geo_id(input$inmunidad_select_admin1),return_table=T)
   })
   
-  ### DATATABLE ----
+  ## DATATABLE ----
   output$inmunidad_title_data_box <- renderText({
     title_data_box(lang_label("INM_POB"),input$inmunidad_select_admin1)
   })
@@ -306,7 +307,7 @@ function(input, output, session) {
     inmu_get_data_table(LANG_TLS,YEAR_LIST,CUT_OFFS,immunity_scores,get_a1_geo_id(input$inmunidad_select_admin1))
   })
   
-  ### CHEAT SHEET ----
+  ## CHEAT SHEET ----
   output$inmu_rangos_table <- renderDataTable(server = FALSE,{
     pfa_filter <- case_when(
       input$immunity_limits_table_filter == lang_label("population_pfa_filter") ~ TRUE,
@@ -314,6 +315,22 @@ function(input, output, session) {
     )
     ind_rangos_table(LANG_TLS,CUT_OFFS,"immunity_score", pfa_filter)
   })
+  
+  # SURVEILLANCE ----
+  ## MAP ----
+  output$surveillance_title_map_box <- renderText({
+    title_map_box(lang_label("SURV_QUAL"),input$surveillance_select_admin1)
+  })
+  
+  ### SURVEILLANCE SCORE ----
+  cal_map_total <- reactiveValues(dat = 0)
+  
+  output$calidad_map_total <- renderLeaflet({
+    cal_map_total$dat <- cal_plot_map_data(LANG_TLS,toupper(COUNTRY_NAME),YEAR_LIST,ZERO_POB_LIST,CUT_OFFS,country_shapes,survaillance_scores,"TOTAL_PR",input$surveillance_select_admin1,get_a1_geo_id(input$calidad_select_admin1),admin1_geo_id_df)
+    cal_map_total$dat
+  })
+  
+  
   
   
   

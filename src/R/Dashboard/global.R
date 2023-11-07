@@ -1,4 +1,5 @@
-# AUTORSHIP ----
+# AUTHORSHIP ----
+
 # Pan American Health Organization
 # Author: Luiz Quezada & Oliver Mazariegos
 # Last Update: 2023-10-09
@@ -105,3 +106,4 @@ title_pie_box <- function(indicator,admin1) {
 # SOURCE ----
 source("general.R")
 source("immunity.R")
+source("surveillance.R")

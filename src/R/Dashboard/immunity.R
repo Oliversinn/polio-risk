@@ -1,10 +1,9 @@
-##############################################################
-# Herramienta digital Análisis de Riesgo SR - inm_pob.R
-# Organización Panamericana de la Salud
-# Autor: Luis Quezada
-# Última fecha de modificación: 2023-08-17
-# R 4.3.0
-##############################################################
+# AUTHORSHIP ----
+
+# Pan American Health Organization
+# Author: Oliver Mazariegos & Luis Quezada
+# Última fecha de modificación: 2023-11-06
+# R 4.3.1
 
 # Utils ----
 admin1_transform <- function(LANG_TLS,COUNTRY_NAME,admin1) {

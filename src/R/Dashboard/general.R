@@ -1,7 +1,7 @@
 # AUTHORSHIP ----
 
 # Pan American Health Organization
-# Author: Luis Quezada & Oliver Mazariegos
+# Author: Oliver Mazariegos & Luis Quezada
 # Last Update: 2023-10-09
 # R 4.3.1
 
