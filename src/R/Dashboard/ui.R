@@ -376,6 +376,13 @@ fluidPage(
                     title = lang_label("surveillance_reporting_units"),icon = icon("house-medical"),
                     shinycssloaders::withSpinner(leafletOutput("calidad_map_2",height = 600),color = "#1c9ad6", type = "8", size = 0.5),
                     br(),div(style="text-align: center;",downloadButton(outputId = "dl_calidad_map_2",lang_label("button_download_map"),icon=icon('camera')))
+                  ),
+                  
+                  ##### PFA RATE ----
+                  tabPanel(
+                    title = lang_label("surveillance_pfa_rate"),icon = icon("calculator"),
+                    shinycssloaders::withSpinner(leafletOutput("calidad_map_3",height = 600),color = "#1c9ad6", type = "8", size = 0.5),
+                    br(),div(style="text-align: center;",downloadButton(outputId = "dl_calidad_map_3",lang_label("button_download_map"),icon=icon('camera')))
                   )
                 )
               )

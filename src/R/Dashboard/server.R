@@ -332,7 +332,7 @@ function(input, output, session) {
   
   output$dl_surveillance_map_total <- downloadHandler(
     filename = function() {
-      paste0(lang_label("map")," ",input$calidad_select_admin1," ",toupper(COUNTRY_NAME)," ",lang_label("SURV_QUAL")," (",YEAR_1,"-",YEAR_5,").png")
+      paste0(lang_label("map")," ",input$surveillance_select_admin1," ",toupper(COUNTRY_NAME)," ",lang_label("SURV_QUAL")," (",YEAR_5,").png")
     },
     content = function(file) {
       mapshot(cal_map_total$dat, file = file)
@@ -348,10 +348,26 @@ function(input, output, session) {
   
   output$dl_calidad_map_2 <- downloadHandler(
     filename = function() {
-      paste0(lang_label("map")," ",input$calidad_select_admin1," ",toupper(COUNTRY_NAME)," ",lang_label("Proporción de unidades notificadoras que enviaron información en todas las semanas")," (",YEAR_5,").png")
+      paste0(lang_label("map")," ",input$surveillance_select_admin1," ",toupper(COUNTRY_NAME)," ",lang_label("surveillance_title_map_reporting_units")," (",YEAR_5,").png")
     },
     content = function(file) {
       mapshot(cal_map_2$dat, file = file)
+    }
+  )
+  
+  ### PFA RATE ----
+  cal_map_3 <- reactiveValues(dat = 0)
+  output$calidad_map_3 <- renderLeaflet({
+    cal_map_3$dat <- cal_plot_map_data(LANG_TLS,toupper(COUNTRY_NAME),YEAR_LIST,ZERO_POB_LIST,CUT_OFFS,country_shapes,surveillance_scores,"pfa_rate",input$surveillance_select_admin1,get_a1_geo_id(input$surveillance_select_admin1),admin1_geo_id_df)
+    cal_map_3$dat
+  })
+  
+  output$dl_calidad_map_3 <- downloadHandler(
+    filename = function() {
+      paste0(lang_label("map")," ",input$surveillance_select_admin1," ",toupper(COUNTRY_NAME)," ",lang_label("surveillance_pfa_rate")," (",YEAR_5,").png")
+    },
+    content = function(file) {
+      mapshot(cal_map_3$dat, file = file)
     }
   )
   
