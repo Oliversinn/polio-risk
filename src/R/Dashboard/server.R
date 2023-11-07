@@ -346,6 +346,15 @@ function(input, output, session) {
     cal_map_2$dat
   })
   
+  output$dl_calidad_map_2 <- downloadHandler(
+    filename = function() {
+      paste0(lang_label("map")," ",input$calidad_select_admin1," ",toupper(COUNTRY_NAME)," ",lang_label("Proporción de unidades notificadoras que enviaron información en todas las semanas")," (",YEAR_5,").png")
+    },
+    content = function(file) {
+      mapshot(cal_map_2$dat, file = file)
+    }
+  )
+  
   
   
   
