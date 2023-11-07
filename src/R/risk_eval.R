@@ -403,6 +403,7 @@ surveillance_scores <- surveillance_data %>%
     vars(contains('percent')), ~ round(.,digits = 0)
   ) %>% 
   mutate(
+    population_and_pfa_bool = population_and_pfa(surveillance_data),
     compliant_units_score = score_compliant_units(surveillance_data),
     pfa_rate_score = score_pfa_rate(surveillance_data),
     pfa_notified_score = score_pfa_notified(surveillance_data),

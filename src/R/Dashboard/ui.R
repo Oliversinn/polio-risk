@@ -368,7 +368,7 @@ fluidPage(
                   tabPanel(
                     title = lang_label("total_pr"),icon = icon("square-check"),
                     shinycssloaders::withSpinner(leafletOutput("calidad_map_total",height = 600),color = "#1c9ad6", type = "8", size = 0.5),
-                    br(),div(style="text-align: center;",downloadButton(outputId = "dl_calidad_map_total",lang_label("button_download_map"),icon=icon('camera')))
+                    br(),div(style="text-align: center;",downloadButton(outputId = "dl_surveillance_map_total",lang_label("button_download_map"),icon=icon('camera')))
     
                   )
                 )

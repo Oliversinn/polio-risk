@@ -9,7 +9,7 @@
 cal_title_map <- function(LANG_TLS,COUNTRY_NAME,YEAR_LIST,admin1,var) {
   YEAR_1=YEAR_LIST[1];YEAR_2=YEAR_LIST[2];YEAR_3=YEAR_LIST[3];YEAR_4=YEAR_LIST[4];YEAR_5=YEAR_LIST[5];
   var_text <- case_when(
-    var == "TOTAL_PR" ~ paste0(lang_label_tls(LANG_TLS,"surv_title_map_total_pr")," ",admin1_transform(LANG_TLS,COUNTRY_NAME,admin1)," (",YEAR_5,")"),
+    var == "surveillance_score" ~ paste0(lang_label_tls(LANG_TLS,"surv_title_map_total_pr")," ",admin1_transform(LANG_TLS,COUNTRY_NAME,admin1)," (",YEAR_5,")"),
     var == "tasa_casos" ~ paste0(lang_label_tls(LANG_TLS,"surv_rate_novac")," ",admin1_transform(LANG_TLS,COUNTRY_NAME,admin1)," (",YEAR_5,")"),
     var == "p_casos_inv" ~ paste0(lang_label_tls(LANG_TLS,"surv_adeq_inv")," ",admin1_transform(LANG_TLS,COUNTRY_NAME,admin1)," (",YEAR_5,")"),
     var == "p_casos_muestra" ~ paste0(lang_label_tls(LANG_TLS,"surv_adeq_sample")," ",admin1_transform(LANG_TLS,COUNTRY_NAME,admin1)," (",YEAR_5,")"),
@@ -20,8 +20,8 @@ cal_title_map <- function(LANG_TLS,COUNTRY_NAME,YEAR_LIST,admin1,var) {
 
 
 cal_plot_map_data <- function(LANG_TLS,COUNTRY_NAME,YEAR_LIST,ZERO_POB_LIST,CUT_OFFS,map_data,data,var_to_summarise,admin1,admin1_id,admin1_geo_id_df) {
-  
-  indicator <- "SURV_QUAL"
+
+  indicator <- "surveillance_score"
   data <- data %>% select(-ADMIN1,-ADMIN2)
   if ("ADMIN1 GEO_ID" %in% colnames(data)) {
     data <- data %>% select(-`ADMIN1 GEO_ID`)
@@ -32,14 +32,14 @@ cal_plot_map_data <- function(LANG_TLS,COUNTRY_NAME,YEAR_LIST,ZERO_POB_LIST,CUT_
   
   if (var_to_summarise != "tasa_casos") {
     
-    if (var_to_summarise == "TOTAL_PR") {
-      map_data$risk_level <- get_risk_level(LANG_TLS,CUT_OFFS,indicator,map_data$TOTAL_PR)
+    if (var_to_summarise == "surveillance_score") {
+      map_data$risk_level <- get_risk_level(LANG_TLS,CUT_OFFS,indicator,map_data$surveillance_score, map_data$population_and_pfa_bool)
       map_data$risk_level[map_data$GEO_ID %in% ZERO_POB_LIST] <- "NO_HAB"
       
       if (admin1_id == 0) {
-        map_data <- map_data %>% select(GEO_ID,ADMIN1,ADMIN2,TOTAL_PR,risk_level,geometry)
+        map_data <- map_data %>% select(GEO_ID,ADMIN1,ADMIN2,surveillance_score,risk_level,geometry)
       } else {
-        map_data <- map_data %>% filter(`ADMIN1 GEO_ID` == admin1_id) %>% select(GEO_ID,ADMIN1,ADMIN2,TOTAL_PR,risk_level,geometry)
+        map_data <- map_data %>% filter(`ADMIN1 GEO_ID` == admin1_id) %>% select(GEO_ID,ADMIN1,ADMIN2,surveillance_score,risk_level,geometry)
       }
       
       map_data <- map_data %>% mutate(
@@ -83,7 +83,7 @@ cal_plot_map_data <- function(LANG_TLS,COUNTRY_NAME,YEAR_LIST,ZERO_POB_LIST,CUT_
                              map_data$ADMIN2,
                              map_data$ADMIN1,
                              lang_label_tls(LANG_TLS,"risk_points"),
-                             map_data$TOTAL_PR,
+                             map_data$surveillance_score,
                              lang_label_tls(LANG_TLS,"risk_level"),
                              map_data$risk_level_word
       ) %>% lapply(HTML)
@@ -270,8 +270,8 @@ cal_plot_map_data <- function(LANG_TLS,COUNTRY_NAME,YEAR_LIST,ZERO_POB_LIST,CUT_
 
 cal_get_data_table <- function(LANG_TLS,CUT_OFFS,data,admin1_id) {
   
-  data$risk_level <- get_risk_level(LANG_TLS,CUT_OFFS,"SURV_QUAL",data$TOTAL_PR)
-  data <- data %>% select(`ADMIN1 GEO_ID`,ADMIN1,ADMIN2,TOTAL_PR,risk_level,Suspected_Case,POB,tasa_casos, tasa_casos_PR, p_casos_inv, p_casos_inv_PR, p_casos_muestra, p_casos_muestra_PR, p_muestras_lab, p_muestras_lab_PR) %>% 
+  data$risk_level <- get_risk_level(LANG_TLS,CUT_OFFS,"SURV_QUAL",data$surveillance_score)
+  data <- data %>% select(`ADMIN1 GEO_ID`,ADMIN1,ADMIN2,surveillance_score,risk_level,Suspected_Case,POB,tasa_casos, tasa_casos_PR, p_casos_inv, p_casos_inv_PR, p_casos_muestra, p_casos_muestra_PR, p_muestras_lab, p_muestras_lab_PR) %>% 
     mutate(
       POB = cFormat(POB,0),
       tasa_casos = round((tasa_casos),1),
@@ -282,7 +282,7 @@ cal_get_data_table <- function(LANG_TLS,CUT_OFFS,data,admin1_id) {
       p_casos_muestra_PR = round((p_casos_muestra_PR),0),
       p_muestras_lab = round((p_muestras_lab),1),
       p_muestras_lab_PR = round((p_muestras_lab_PR),0),
-      TOTAL_PR = round((TOTAL_PR),0)
+      surveillance_score = round((surveillance_score),0)
     )
   
   if (admin1_id == 0) {
