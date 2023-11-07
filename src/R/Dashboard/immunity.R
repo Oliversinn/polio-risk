@@ -143,7 +143,6 @@ inmu_plot_map_data <- function(LANG_TLS,YEAR_CAMP_SR,COUNTRY_NAME,YEAR_LIST,ZERO
       map_data <- map_data %>% filter(`ADMIN1 GEO_ID` == admin1_id) %>% select(GEO_ID,ADMIN1,ADMIN2,PR,risk_level,geometry)
     }
     
-    
     if (var_to_summarise == "immunity_score") {
       
       map_data <- map_data %>% mutate(
@@ -268,7 +267,7 @@ inmu_plot_map_data <- function(LANG_TLS,YEAR_CAMP_SR,COUNTRY_NAME,YEAR_LIST,ZERO
     } else {
       map_data <- map_data %>% filter(`ADMIN1 GEO_ID` == admin1_id) %>% select(GEO_ID,ADMIN1,ADMIN2,COB,geometry)
     }
-    
+
     map_data <- map_data %>% mutate(
       cob_level_num = case_when(
         GEO_ID %in% ZERO_POB_LIST ~ 5,
@@ -276,16 +275,17 @@ inmu_plot_map_data <- function(LANG_TLS,YEAR_CAMP_SR,COUNTRY_NAME,YEAR_LIST,ZERO
         COB < 80 ~ 4,
         COB >= 80 & COB < 90 ~ 3,
         COB >= 90 & COB < 95 ~ 2,
-        COB >= 95 ~ 1
+        COB >= 95 & COB <= 100 ~ 1,
+        COB > 100 ~ 6
       )
     )
     
     pal_gradient <- colorNumeric(
-      c("#666666","#92d050","#fec000","#e8132b","#920000","#9bc2e6"),
-      domain = c(0,5)
+      c("#666666","#92d050","#fec000","#e8132b","#920000","#9bc2e6", "#0097e6"),
+      domain = c(0,6)
     )
     legend_colors = c("#920000","#e8132b","#fec000","#92d050")
-    legend_values = c("< 80%","≥ 80% <b>;</b> < 90%","≥ 90% <b>;</b> < 95%","≥ 95%")
+    legend_values = c("< 80%","≥ 80% <b>;</b> < 90%","≥ 90% <b>;</b> < 95%","≥ 95% <b>;</b> ≤ 100%")
     
     if (0 %in% map_data$cob_level_num) {
       legend_colors = c("#666666",legend_colors)
@@ -295,6 +295,12 @@ inmu_plot_map_data <- function(LANG_TLS,YEAR_CAMP_SR,COUNTRY_NAME,YEAR_LIST,ZERO
     if (length(ZERO_POB_LIST) > 0) {
       legend_colors = c(legend_colors,"#9bc2e6")
       legend_values = c(legend_values,lang_label_tls(LANG_TLS,"no_hab"))
+    }
+    
+    if (6 %in% map_data$cob_level_num) {
+      legend_colors = c(legend_colors, "#0097e6")
+      legend_values = c(legend_values,lang_label_tls(LANG_TLS,"over_100"))
+
     }
     
     shape_label <- sprintf("<strong>%s</strong>, %s<br/>%s: %s%s",
