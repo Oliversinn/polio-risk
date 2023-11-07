@@ -396,10 +396,34 @@ fluidPage(
                   
                   ##### PFA INVESTIGTED ----
                   tabPanel(
-                    title = lang_label("surveillance_pfa_investigated"),icon = icon("house-medical-circle-check", class = "fa-solid fa-house-medical-circle-check"),
+                    title = lang_label("surveillance_pfa_investigated"),icon = icon("search-plus"),
                     p(style="text-align: center;",lang_label("surveillance_pfa_population_text")),
                     shinycssloaders::withSpinner(leafletOutput("calidad_map_5",height = 600),color = "#1c9ad6", type = "8", size = 0.5),
                     br(),div(style="text-align: center;",downloadButton(outputId = "dl_calidad_map_5",lang_label("button_download_map"),icon=icon('camera')))
+                  ),
+                  
+                  ##### SUITABLE SAMPLES ----
+                  tabPanel(
+                    title = lang_label("surveillance_suitable_samples"),icon = icon("vials"),
+                    p(style="text-align: center;",lang_label("surveillance_pfa_population_text")),
+                    shinycssloaders::withSpinner(leafletOutput("calidad_map_6",height = 600),color = "#1c9ad6", type = "8", size = 0.5),
+                    br(),div(style="text-align: center;",downloadButton(outputId = "dl_calidad_map_6",lang_label("button_download_map"),icon=icon('camera')))
+                  ),
+                  
+                  ##### FOLLOWUPS ----
+                  tabPanel(
+                    title = lang_label("surveillance_followups"),icon = icon("notes-medical"),
+                    p(style="text-align: center;",lang_label("surveillance_pfa_population_text")),
+                    shinycssloaders::withSpinner(leafletOutput("calidad_map_7",height = 600),color = "#1c9ad6", type = "8", size = 0.5),
+                    br(),div(style="text-align: center;",downloadButton(outputId = "dl_calidad_map_7",lang_label("button_download_map"),icon=icon('camera')))
+                  ),
+                  
+                  ##### ACTIVE SEARCH ----
+                  tabPanel(
+                    title = lang_label("surveillance_active_search"),icon = icon("magnifying-glass-location"),
+                    p(style="text-align: center;",lang_label("surveillance_active_search_text")),
+                    shinycssloaders::withSpinner(leafletOutput("calidad_map_8",height = 600),color = "#1c9ad6", type = "8", size = 0.5),
+                    br(),div(style="text-align: center;",downloadButton(outputId = "dl_calidad_map_8",lang_label("button_download_map"),icon=icon('camera')))
                   )
                 )
               )

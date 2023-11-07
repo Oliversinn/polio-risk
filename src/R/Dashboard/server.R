@@ -403,6 +403,52 @@ function(input, output, session) {
     }
   )
   
+  ### SUITABLE SAMPLES ----
+  cal_map_6 <- reactiveValues(dat = 0)
+  output$calidad_map_6 <- renderLeaflet({
+    cal_map_6$dat <- cal_plot_map_data(LANG_TLS,toupper(COUNTRY_NAME),YEAR_LIST,ZERO_POB_LIST,CUT_OFFS,country_shapes,surveillance_scores,"suitable_samples_percent",input$surveillance_select_admin1,get_a1_geo_id(input$surveillance_select_admin1),admin1_geo_id_df)
+    cal_map_6$dat
+  })
   
+  output$dl_calidad_map_6 <- downloadHandler(
+    filename = function() {
+      paste0(lang_label("map")," ",input$surveillance_select_admin1," ",toupper(COUNTRY_NAME)," ",lang_label("surveillance_suitable_samples")," (",YEAR_5,").png")
+    },
+    content = function(file) {
+      mapshot(cal_map_6$dat, file = file)
+    }
+  )
+  
+  ### FOLLOWUPS ----
+  cal_map_7 <- reactiveValues(dat = 0)
+  output$calidad_map_7 <- renderLeaflet({
+    cal_map_7$dat <- cal_plot_map_data(LANG_TLS,toupper(COUNTRY_NAME),YEAR_LIST,ZERO_POB_LIST,CUT_OFFS,country_shapes,surveillance_scores,"followups_percent",input$surveillance_select_admin1,get_a1_geo_id(input$surveillance_select_admin1),admin1_geo_id_df)
+    cal_map_7$dat
+  })
+  
+  output$dl_calidad_map_7 <- downloadHandler(
+    filename = function() {
+      paste0(lang_label("map")," ",input$surveillance_select_admin1," ",toupper(COUNTRY_NAME)," ",lang_label("surveillance_followups")," (",YEAR_5,").png")
+    },
+    content = function(file) {
+      mapshot(cal_map_7$dat, file = file)
+    }
+  )
+  
+  ### ACTIVE SEARCH ----
+  cal_map_8 <- reactiveValues(dat = 0)
+  output$calidad_map_8 <- renderLeaflet({
+    cal_map_8$dat <- cal_plot_map_data(LANG_TLS,toupper(COUNTRY_NAME),YEAR_LIST,ZERO_POB_LIST,CUT_OFFS,country_shapes,surveillance_scores,"active_search",input$surveillance_select_admin1,get_a1_geo_id(input$surveillance_select_admin1),admin1_geo_id_df)
+    cal_map_8$dat
+  })
+  
+  output$dl_calidad_map_8 <- downloadHandler(
+    filename = function() {
+      paste0(lang_label("map")," ",input$surveillance_select_admin1," ",toupper(COUNTRY_NAME)," ",lang_label("surveillance_active_search")," (",YEAR_5,").png")
+    },
+    content = function(file) {
+      mapshot(cal_map_8$dat, file = file)
+    }
+  )
   
 }
