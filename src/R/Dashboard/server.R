@@ -371,6 +371,37 @@ function(input, output, session) {
     }
   )
   
+  ### PFA NOTIFICATION ----
+  cal_map_4 <- reactiveValues(dat = 0)
+  output$calidad_map_4 <- renderLeaflet({
+    cal_map_4$dat <- cal_plot_map_data(LANG_TLS,toupper(COUNTRY_NAME),YEAR_LIST,ZERO_POB_LIST,CUT_OFFS,country_shapes,surveillance_scores,"pfa_notified_percent",input$surveillance_select_admin1,get_a1_geo_id(input$surveillance_select_admin1),admin1_geo_id_df)
+    cal_map_4$dat
+  })
+  
+  output$dl_calidad_map_4 <- downloadHandler(
+    filename = function() {
+      paste0(lang_label("map")," ",input$surveillance_select_admin1," ",toupper(COUNTRY_NAME)," ",lang_label("surveillance_pfa_notification")," (",YEAR_5,").png")
+    },
+    content = function(file) {
+      mapshot(cal_map_4$dat, file = file)
+    }
+  )
+  
+  ### PFA INVESTIGATED ----
+  cal_map_5 <- reactiveValues(dat = 0)
+  output$calidad_map_5 <- renderLeaflet({
+    cal_map_5$dat <- cal_plot_map_data(LANG_TLS,toupper(COUNTRY_NAME),YEAR_LIST,ZERO_POB_LIST,CUT_OFFS,country_shapes,surveillance_scores,"pfa_investigated_percent",input$surveillance_select_admin1,get_a1_geo_id(input$surveillance_select_admin1),admin1_geo_id_df)
+    cal_map_5$dat
+  })
+  
+  output$dl_calidad_map_5 <- downloadHandler(
+    filename = function() {
+      paste0(lang_label("map")," ",input$surveillance_select_admin1," ",toupper(COUNTRY_NAME)," ",lang_label("surveillance_pfa_investigated")," (",YEAR_5,").png")
+    },
+    content = function(file) {
+      mapshot(cal_map_5$dat, file = file)
+    }
+  )
   
   
   

@@ -12,6 +12,8 @@ cal_title_map <- function(LANG_TLS,COUNTRY_NAME,YEAR_LIST,admin1,var) {
     var == "surveillance_score" ~ paste0(lang_label_tls(LANG_TLS,"surv_title_map_total_pr")," ",admin1_transform(LANG_TLS,COUNTRY_NAME,admin1)," (",YEAR_5,")"),
     var == "compliant_units_percent" ~ paste0(lang_label_tls(LANG_TLS,"surveillance_title_map_reporting_units")," ",admin1_transform(LANG_TLS,COUNTRY_NAME,admin1)," (",YEAR_5,")"),
     var == "pfa_rate" ~ paste0(lang_label_tls(LANG_TLS,"surveillance_title_map_pfa_rate")," ",admin1_transform(LANG_TLS,COUNTRY_NAME,admin1)," (",YEAR_5,")"),
+    var == "pfa_notified_percent" ~ paste0(lang_label_tls(LANG_TLS,"surveillance_title_map_pfa_notification")," ",admin1_transform(LANG_TLS,COUNTRY_NAME,admin1)," (",YEAR_5,")"),
+    var == "pfa_investigated_percent" ~ paste0(lang_label_tls(LANG_TLS,"surveillance_title_map_pfa_investigated")," ",admin1_transform(LANG_TLS,COUNTRY_NAME,admin1)," (",YEAR_5,")"),
     var == "tasa_casos" ~ paste0(lang_label_tls(LANG_TLS,"surv_rate_novac")," ",admin1_transform(LANG_TLS,COUNTRY_NAME,admin1)," (",YEAR_5,")"),
     var == "p_casos_inv" ~ paste0(lang_label_tls(LANG_TLS,"surv_adeq_inv")," ",admin1_transform(LANG_TLS,COUNTRY_NAME,admin1)," (",YEAR_5,")"),
     var == "p_casos_muestra" ~ paste0(lang_label_tls(LANG_TLS,"surv_adeq_sample")," ",admin1_transform(LANG_TLS,COUNTRY_NAME,admin1)," (",YEAR_5,")"),
@@ -121,13 +123,9 @@ cal_plot_map_data <- function(LANG_TLS,COUNTRY_NAME,YEAR_LIST,ZERO_POB_LIST,CUT_
       map_data <- map_data %>% rename("var"=var_to_summarise)
       map_data$var <- round(map_data$var,1)
       
-      if (var_to_summarise %in% c("p_casos_inv","p_casos_muestra")) {
-        legend_title = lang_label_tls(LANG_TLS,"surv_prop_cases")
-      } else if (var_to_summarise == "p_muestras_lab") {
-        legend_title = lang_label_tls(LANG_TLS,"surv_prop_sample")
-      } else if (var_to_summarise == "compliant_units_percent") {
+      if (var_to_summarise == "compliant_units_percent") {
         legend_title = lang_label_tls(LANG_TLS,"surveillance_prop_reporting_units")
-      }
+      } 
       
       if (admin1_id == 0) {
         map_data <- map_data %>% select(GEO_ID,ADMIN1,ADMIN2,var,geometry)
@@ -202,7 +200,7 @@ cal_plot_map_data <- function(LANG_TLS,COUNTRY_NAME,YEAR_LIST,ZERO_POB_LIST,CUT_
       if (admin1_id == 0) {
         map_data <- map_data %>% select(GEO_ID,ADMIN1,ADMIN2,population_and_pfa_bool, var,geometry)
       } else {
-        map_data <- map_data %>% filter(`ADMIN1 GEO_ID` == admin1_id) %>% select(GEO_ID,ADMIN1,ADMIN2,var,geometry)
+        map_data <- map_data %>% filter(`ADMIN1 GEO_ID` == admin1_id) %>% select(GEO_ID,ADMIN1,ADMIN2,var,geometry, population_and_pfa_bool)
       }
       
       map_data <- map_data %>% mutate(
@@ -270,7 +268,90 @@ cal_plot_map_data <- function(LANG_TLS,COUNTRY_NAME,YEAR_LIST,ZERO_POB_LIST,CUT_
         addLegend(title = legend_title,colors = legend_colors,labels = legend_values, opacity = 0.5, position = 'topright')
       
       
-    }
+      } else if (var_to_summarise %in% c("pfa_notified_percent", "pfa_investigated_percent", 
+                                         "suitable_samples_percent", "followups_percent")) {
+        # % de casos o muestras
+        map_data <- map_data %>% rename("var"=var_to_summarise)
+        map_data$var <- round(map_data$var,1)
+        
+        if (var_to_summarise == "pfa_notified_percent") {
+          legend_title = lang_label_tls(LANG_TLS,"surveillance_prop_pfa_cases")
+        } else if (var_to_summarise == "pfa_investigated_percent") {
+          legend_title = lang_label_tls(LANG_TLS,"surveillance_prop_pfa_cases")
+        }
+        
+        if (admin1_id == 0) {
+          map_data <- map_data %>% select(GEO_ID,ADMIN1,ADMIN2,var,geometry, population_and_pfa_bool)
+        } else {
+          map_data <- map_data %>% filter(`ADMIN1 GEO_ID` == admin1_id) %>% select(GEO_ID,ADMIN1,ADMIN2,var,geometry, population_and_pfa_bool)
+        }
+        
+        map_data <- map_data %>% mutate(
+          var_level_num = case_when(
+            !population_and_pfa_bool ~ 4,
+            GEO_ID %in% ZERO_POB_LIST ~ 3,
+            is.na(var) ~ 0,
+            var < 80 ~ 1,
+            var >= 80 ~ 2
+          )
+        )
+        
+        pal_gradient <- colorNumeric(
+          c("#666666","#e8132b","#92d050","#9bc2e6", "#111111"),
+          domain = c(0,4)
+        )
+        legend_colors = c("#e8132b","#92d050")
+        legend_values = c("< 80%","≥ 80%")
+        
+        if (0 %in% map_data$var_level_num) {
+          legend_colors = c("#666666",legend_colors)
+          legend_values = c(lang_label_tls(LANG_TLS,"no_data"),legend_values)
+        }
+        
+        if (length(ZERO_POB_LIST) > 0) {
+          legend_colors = c(legend_colors,"#9bc2e6")
+          legend_values = c(legend_values,lang_label_tls(LANG_TLS,"no_hab"))
+        }
+        
+        if (FALSE %in% map_data$population_and_pfa_bool) {
+          legend_colors = c(legend_colors,"#111111")
+          legend_values = c(legend_values,lang_label_tls(LANG_TLS,"na"))
+        }
+        
+        shape_label <- sprintf("<strong>%s</strong>, %s<br/>%s: %s%s",
+                               map_data$ADMIN2,
+                               map_data$ADMIN1,
+                               lang_label_tls(LANG_TLS,"proportion"),
+                               map_data$var,
+                               "%"
+        ) %>% lapply(HTML)
+        
+        # MAPA
+        map <- leaflet(map_data,options = leafletOptions(doubleClickZoom = T, attributionControl = F, zoomSnap=0.1, zoomDelta=0.1)) %>%
+          addProviderTiles(providers$Esri.WorldGrayCanvas) %>%
+          addPolygons(
+            fillColor   = ~pal_gradient(var_level_num),
+            fillOpacity = 0.7,
+            dashArray   = "",
+            weight      = 1,
+            color       = "#333333",
+            opacity     = 1,
+            highlight = highlightOptions(
+              weight = 2,
+              color = "#333333",
+              dashArray = "",
+              fillOpacity = 1,
+              bringToFront = TRUE),
+            label = shape_label,
+            labelOptions = labelOptions(
+              style = list("font-weight" = "normal", padding = "3px 8px"),
+              textsize = "15px",
+              direction = "auto")
+          ) %>% 
+          addLegend(layerId = "map_title","topright",color = "white", opacity = 0,labels=HTML(paste0("<strong>",cal_title_map(LANG_TLS,COUNTRY_NAME,YEAR_LIST,admin1,var_to_summarise),"</strong>"))) %>%
+          addLegend(title = legend_title,colors = legend_colors,labels = legend_values, opacity = 0.5, position = 'topright')
+        
+      }
     
   } else {
     map_data <- map_data %>% rename("var"=var_to_summarise)

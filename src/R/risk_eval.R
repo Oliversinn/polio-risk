@@ -631,6 +631,6 @@ rm(determinants_scores_join,
 save.image(file = "POLIO.RData")
 
 # CLEAN ----
-rm(list = ls())
+#rm(list = ls())
 
 
