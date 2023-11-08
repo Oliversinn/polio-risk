@@ -464,5 +464,13 @@ function(input, output, session) {
     plot_pie_data(LANG_TLS,ZERO_POB_LIST,CUT_OFFS,"surveillance_score",surveillance_scores,get_a1_geo_id(input$surveillance_select_admin1),return_table=T)
   })
   
+  ## DATATABLE ----
+  output$calidad_title_data_box <- renderText({
+    title_data_box(lang_label("SURV_QUAL"),input$surveillance_select_admin1)
+  })
+  
+  output$calidad_table <- renderDataTable(server = FALSE,{
+    cal_get_data_table(LANG_TLS,CUT_OFFS,surveillance_scores,get_a1_geo_id(input$surveillance_select_admin1))
+  })
   
 }

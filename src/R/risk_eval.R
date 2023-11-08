@@ -229,7 +229,9 @@ score_active_search <- function(surveillance_df) {
   population_and_pfa <- population_and_pfa(surveillance_df)
   score <- case_when(
     !population_and_pfa & surveillance_df[["active_search"]] == lang_label("no") ~ 12,
+    !population_and_pfa & surveillance_df[["active_search"]] == lang_label("no_upper") ~ 12,
     !population_and_pfa & surveillance_df[["active_search"]] == lang_label("yes") ~ 0,
+    !population_and_pfa & surveillance_df[["active_search"]] == lang_label("yes_upper") ~ 0,
     TRUE ~ NA
   )
   return(score)
@@ -410,7 +412,12 @@ surveillance_scores <- surveillance_data %>%
     pfa_investigated_score = score_pfa_investigated(surveillance_data),
     suitable_samples_score = score_suitable_samples(surveillance_data),
     followups_score = score_followups(surveillance_data),
-    active_search_score = score_active_search(surveillance_data)
+    active_search = case_when(
+      population_and_pfa_bool ~ NA,
+      !population_and_pfa_bool ~ active_search
+    ),
+    active_search_score = score_active_search(surveillance_data),
+    
   ) %>% 
   rowwise() %>% 
   mutate(

@@ -509,39 +509,69 @@ cal_plot_map_data <- function(LANG_TLS,COUNTRY_NAME,YEAR_LIST,ZERO_POB_LIST,CUT_
 
 cal_get_data_table <- function(LANG_TLS,CUT_OFFS,data,admin1_id) {
   
-  data$risk_level <- get_risk_level(LANG_TLS,CUT_OFFS,"SURV_QUAL",data$surveillance_score)
-  data <- data %>% select(`ADMIN1 GEO_ID`,ADMIN1,ADMIN2,surveillance_score,risk_level,Suspected_Case,POB,tasa_casos, tasa_casos_PR, p_casos_inv, p_casos_inv_PR, p_casos_muestra, p_casos_muestra_PR, p_muestras_lab, p_muestras_lab_PR) %>% 
+  data$risk_level <- get_risk_level(LANG_TLS,CUT_OFFS,"surveillance_score",data$surveillance_score, data$population_and_pfa_bool)
+  data <- data %>% 
+    select(
+      `ADMIN1 GEO_ID`, ADMIN1, ADMIN2, surveillance_score, risk_level, POB1, POB5,
+      POB15, population_and_pfa_bool, compliant_units_percent, compliant_units_score,
+      pfa_rate, pfa_rate_score, pfa_notified_percent, pfa_notified_score,
+      pfa_investigated_percent, pfa_investigated_score, suitable_samples_percent,
+      suitable_samples_score, followups_percent, followups_score, active_search,
+      active_search_score
+      ) %>% 
     mutate(
-      POB = cFormat(POB,0),
-      tasa_casos = round((tasa_casos),1),
-      tasa_casos_PR = round((tasa_casos_PR),0),
-      p_casos_inv = round((p_casos_inv),1),
-      p_casos_inv_PR = round((p_casos_inv_PR),0),
-      p_casos_muestra = round((p_casos_muestra),1),
-      p_casos_muestra_PR = round((p_casos_muestra_PR),0),
-      p_muestras_lab = round((p_muestras_lab),1),
-      p_muestras_lab_PR = round((p_muestras_lab_PR),0),
-      surveillance_score = round((surveillance_score),0)
+      POB1 = cFormat(POB1,0),
+      POB5 = cFormat(POB5,0),
+      POB15 = cFormat(POB15,0),
+      population_and_pfa_bool = case_when(
+        population_and_pfa_bool ~ lang_label("yes"),
+        !population_and_pfa_bool ~ lang_label("no"),
+        is.na(population_and_pfa_bool) ~ lang_label("no_data")
+      ),
+      compliant_units_percent = round(compliant_units_percent, 0),
+      pfa_rate = round(pfa_rate, 2),
+      pfa_notified_percent = round(pfa_notified_percent, 0),
+      pfa_investigated_percent = round(pfa_investigated_percent, 0),
+      suitable_samples_percent = round(suitable_samples_percent, 0),
+      followups_percent = round(followups_percent, 0),
+      active_search = case_when(
+        active_search == lang_label("yes") ~ lang_label("yes"),
+        active_search == lang_label("yes_upper") ~ lang_label("yes"),
+        active_search == lang_label("no") ~ lang_label("no"),
+        active_search == lang_label("no_upper") ~ lang_label("no"),
+        # population_and_pfa_bool == lang_label("yes") ~ lang_label("na"),
+        # is.na(active_search) ~ lang_label("no_data")
+      )
     )
   
   if (admin1_id == 0) {
     data <- data %>% select(-`ADMIN1 GEO_ID`)
-    colnames(data) <- c(lang_label_tls(LANG_TLS,"table_admin1_name"),lang_label_tls(LANG_TLS,"table_admin2_name"),
-                        lang_label_tls(LANG_TLS,"total_pr"),lang_label_tls(LANG_TLS,"risk_level"),
-                        lang_label_tls(LANG_TLS,"surv_table_cases"),lang_label_tls(LANG_TLS,"surv_table_pob"),
-                        lang_label_tls(LANG_TLS,"surv_table_rate"),lang_label_tls(LANG_TLS,"surv_table_rate_pr"),
-                        lang_label_tls(LANG_TLS,"surv_table_adeq_inv"),lang_label_tls(LANG_TLS,"surv_table_adeq_inv_pr"),
-                        lang_label_tls(LANG_TLS,"surv_table_adeq_sample"),lang_label_tls(LANG_TLS,"surv_table_adeq_sample_pr"),
-                        lang_label_tls(LANG_TLS,"surv_table_timely_lab"),lang_label_tls(LANG_TLS,"surv_table_timely_lab_pr"))
+    colnames(data) <- c(
+      lang_label_tls(LANG_TLS,"table_admin1_name"),lang_label_tls(LANG_TLS,"table_admin2_name"),
+      lang_label_tls(LANG_TLS,"total_pr"),lang_label_tls(LANG_TLS,"risk_level"),
+      "POB1", "POB5", "POB15", lang_label_tls(LANG_TLS, "population_and_pfa"),
+      lang_label_tls(LANG_TLS,"surveillance_title_map_reporting_units"),lang_label_tls(LANG_TLS,"surveillance_reporting_units_score"),
+      lang_label_tls(LANG_TLS,"surveillance_pfa_rate"),lang_label_tls(LANG_TLS,"surveillance_pfa_rate_score"),
+      lang_label_tls(LANG_TLS,"surveillance_title_map_pfa_notification"),lang_label_tls(LANG_TLS,"surveillance_pfa_notification_score"),
+      lang_label_tls(LANG_TLS,"surveillance_title_map_pfa_investigated"),lang_label_tls(LANG_TLS,"surveillance_pfa_investigated_score"),
+      lang_label_tls(LANG_TLS,"surveillance_title_map_suitable_samples"),lang_label_tls(LANG_TLS,"surveillance_suitable_samples_score"),
+      lang_label_tls(LANG_TLS,"surveillance_title_map_followups"),lang_label_tls(LANG_TLS,"surveillance_followups_score"),
+      lang_label_tls(LANG_TLS,"surveillance_title_map_active_search"),lang_label_tls(LANG_TLS,"surveillance_active_search_score")
+    )
   } else {
     data <- data %>% filter(`ADMIN1 GEO_ID` == admin1_id) %>% select(-ADMIN1,-`ADMIN1 GEO_ID`)
-    colnames(data) <- c(lang_label_tls(LANG_TLS,"table_admin2_name"),
-                        lang_label_tls(LANG_TLS,"total_pr"),lang_label_tls(LANG_TLS,"risk_level"),
-                        lang_label_tls(LANG_TLS,"surv_table_cases"),lang_label_tls(LANG_TLS,"surv_table_pob"),
-                        lang_label_tls(LANG_TLS,"surv_table_rate"),lang_label_tls(LANG_TLS,"surv_table_rate_pr"),
-                        lang_label_tls(LANG_TLS,"surv_table_adeq_inv"),lang_label_tls(LANG_TLS,"surv_table_adeq_inv_pr"),
-                        lang_label_tls(LANG_TLS,"surv_table_adeq_sample"),lang_label_tls(LANG_TLS,"surv_table_adeq_sample_pr"),
-                        lang_label_tls(LANG_TLS,"surv_table_timely_lab"),lang_label_tls(LANG_TLS,"surv_table_timely_lab_pr"))
+    colnames(data) <- c(
+      lang_label_tls(LANG_TLS,"table_admin2_name"),
+      lang_label_tls(LANG_TLS,"total_pr"),lang_label_tls(LANG_TLS,"risk_level"),
+      "POB1", "POB5", "POB15", lang_label_tls(LANG_TLS, "population_and_pfa"),
+      lang_label_tls(LANG_TLS,"surveillance_title_map_reporting_units"),lang_label_tls(LANG_TLS,"surveillance_reporting_units_score"),
+      lang_label_tls(LANG_TLS,"surveillance_pfa_rate"),lang_label_tls(LANG_TLS,"surveillance_pfa_rate_score"),
+      lang_label_tls(LANG_TLS,"surveillance_title_map_pfa_notification"),lang_label_tls(LANG_TLS,"surveillance_pfa_notification_score"),
+      lang_label_tls(LANG_TLS,"surveillance_title_map_pfa_investigated"),lang_label_tls(LANG_TLS,"surveillance_pfa_investigated_score"),
+      lang_label_tls(LANG_TLS,"surveillance_title_map_suitable_samples"),lang_label_tls(LANG_TLS,"surveillance_suitable_samples_score"),
+      lang_label_tls(LANG_TLS,"surveillance_title_map_followups"),lang_label_tls(LANG_TLS,"surveillance_followups_score"),
+      lang_label_tls(LANG_TLS,"surveillance_title_map_active_search"),lang_label_tls(LANG_TLS,"surveillance_active_search_score")
+    )
   }
   
   datos_table <- data %>%
@@ -573,9 +603,16 @@ cal_get_data_table <- function(LANG_TLS,CUT_OFFS,data,admin1_id) {
         c("rgba(146, 208, 80, 0.7)","rgba(254, 192, 0, 0.7)",
           "rgba(232, 19, 43, 0.7)","rgba(146, 0, 0, 0.7)"))
     ) %>% formatStyle(
-      c(lang_label_tls(LANG_TLS,"total_pr"),
-        lang_label_tls(LANG_TLS,"surv_table_rate_pr"),lang_label_tls(LANG_TLS,"surv_table_adeq_inv_pr"),
-        lang_label_tls(LANG_TLS,"surv_table_adeq_sample_pr"),lang_label_tls(LANG_TLS,"surv_table_timely_lab_pr")),
+      c(
+        lang_label_tls(LANG_TLS,"total_pr"),
+        lang_label_tls(LANG_TLS,"surveillance_reporting_units_score"),
+        lang_label_tls(LANG_TLS,"surveillance_pfa_rate_score"),
+        lang_label_tls(LANG_TLS,"surveillance_pfa_notification_score"),
+        lang_label_tls(LANG_TLS,"surveillance_pfa_investigated_score"),
+        lang_label_tls(LANG_TLS,"surveillance_suitable_samples_score"),
+        lang_label_tls(LANG_TLS,"surveillance_followups_score"),
+        lang_label_tls(LANG_TLS,"surveillance_active_search_score")
+      ),
       backgroundColor = "#e3e3e3"
     )
   

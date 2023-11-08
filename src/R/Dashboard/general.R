@@ -8,6 +8,9 @@
 
 # Utils ----
 cFormat <- function(x,n) {
+  if (is.na(x)) {
+    return(NA)
+  }
   cf <- format(round(as.numeric(x),n), nsmall = n, big.mark = ",")
   return(cf)
 }
