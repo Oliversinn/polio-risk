@@ -473,4 +473,13 @@ function(input, output, session) {
     cal_get_data_table(LANG_TLS,CUT_OFFS,surveillance_scores,get_a1_geo_id(input$surveillance_select_admin1))
   })
   
+  ## CHEAT SHEET ----
+  output$surveillance_rangos_table <- renderDataTable(server = FALSE,{
+    pfa_filter <- case_when(
+      input$surveillance_limits_table_filter == lang_label("population_pfa_filter") ~ TRUE,
+      input$surveillance_limits_table_filter == lang_label("population_pfa_no_filter") ~ FALSE,
+    )
+    ind_rangos_table(LANG_TLS,CUT_OFFS,"surveillance_score", pfa_filter)
+  })
+  
 }
