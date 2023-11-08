@@ -451,4 +451,18 @@ function(input, output, session) {
     }
   )
   
+  ## PIE ----
+  output$surveillance_title_pie_box <- renderText({
+    title_pie_box(lang_label("SURV_QUAL"),input$surveillance_select_admin1)
+  })
+  
+  output$calidad_plot_pie <- renderPlotly({
+    plot_pie_data(LANG_TLS,ZERO_POB_LIST,CUT_OFFS,"surveillance_score",surveillance_scores,get_a1_geo_id(input$surveillance_select_admin1),return_table=F)
+  })
+  
+  output$calidad_table_dist <- renderDataTable(server = FALSE,{
+    plot_pie_data(LANG_TLS,ZERO_POB_LIST,CUT_OFFS,"surveillance_score",surveillance_scores,get_a1_geo_id(input$surveillance_select_admin1),return_table=T)
+  })
+  
+  
 }

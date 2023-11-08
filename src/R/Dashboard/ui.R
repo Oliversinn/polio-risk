@@ -426,6 +426,29 @@ fluidPage(
                     br(),div(style="text-align: center;",downloadButton(outputId = "dl_calidad_map_8",lang_label("button_download_map"),icon=icon('camera')))
                   )
                 )
+              ),
+              
+              ### PIE CHART ----
+              box(
+                width = 5,
+                solidHeader = TRUE,
+                collapsible = TRUE,
+                title = textOutput("surveillance_title_pie_box"),
+                
+                tabBox(
+                  width = 12,
+                  height = NULL,
+                  tabPanel(
+                    title = lang_label("button_plot"),icon = icon("pie-chart"),
+                    br(),
+                    shinycssloaders::withSpinner(plotlyOutput("calidad_plot_pie", height = 600),color = "#1c9ad6", type = "8", size = 0.5)
+                  ),
+                  tabPanel(
+                    title = lang_label("button_datatable"),icon = icon("table"),
+                    br(),
+                    shinycssloaders::withSpinner(dataTableOutput("calidad_table_dist"),color = "#1c9ad6", type = "8", size = 0.5)
+                  )
+                )
               )
             )
           )
