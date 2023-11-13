@@ -58,7 +58,7 @@ function(input, output, session) {
     box_data$at <- new_box_data[5]
   })
   
-  observeEvent(input$indicadores_select_admin1, {
+  observeEvent(input$admin1_filter, {
     new_box_data <- datos_boxes(LANG_TLS,indicadores_prep_box_data())
     box_data$a1 <- new_box_data[1]
     box_data$a2 <- new_box_data[2]
@@ -72,13 +72,13 @@ function(input, output, session) {
                       CUT_OFFS,
                       scores_data,
                       ind_rename(input$indicadores_select_indicador),
-                      unique(get_a1_geo_id(input$indicadores_select_admin1)))
+                      unique(get_a1_geo_id(input$admin1_filter)))
   })
   
   output$ind_box_1 <- renderValueBox({
     valueBox(
       VB_style(get_box_text(box_data$a1,box_data$at,"LR"),"font-size: 90%;"),
-      VB_style(paste(lang_label("box_LR_admin2"),box_lugar(input$indicadores_select_admin1)),"font-size: 95%;"),
+      VB_style(paste(lang_label("box_LR_admin2"),box_lugar(input$admin1_filter)),"font-size: 95%;"),
       icon = icon('ok-sign', lib = 'glyphicon'),
       color = "purple"
     )
@@ -87,7 +87,7 @@ function(input, output, session) {
   output$ind_box_2 <- renderValueBox({
     valueBox(
       VB_style(get_box_text(box_data$a2,box_data$at,"MR"),"font-size: 85%;"),
-      VB_style(paste(lang_label("box_MR_admin2"),box_lugar(input$indicadores_select_admin1)),"font-size: 95%;"),
+      VB_style(paste(lang_label("box_MR_admin2"),box_lugar(input$admin1_filter)),"font-size: 95%;"),
       icon = icon('minus-sign', lib = 'glyphicon'),
       color = "purple"
     )
@@ -96,7 +96,7 @@ function(input, output, session) {
   output$ind_box_3 <- renderValueBox({
     valueBox(
       VB_style(get_box_text(box_data$a3,box_data$at,"HR"),"font-size: 85%;"),
-      VB_style(paste(lang_label("box_HR_admin2"),box_lugar(input$indicadores_select_admin1)),"font-size: 95%;"),
+      VB_style(paste(lang_label("box_HR_admin2"),box_lugar(input$admin1_filter)),"font-size: 95%;"),
       icon = icon('exclamation-sign', lib = 'glyphicon'),
       color = "purple"
     )
@@ -105,7 +105,7 @@ function(input, output, session) {
   output$ind_box_4 <- renderValueBox({
     valueBox(
       VB_style(get_box_text(box_data$a4,box_data$at,"VHR"),"font-size: 85%;"),
-      VB_style(paste(lang_label("box_VHR_admin2"),box_lugar(input$indicadores_select_admin1)),"font-size: 95%;"),
+      VB_style(paste(lang_label("box_VHR_admin2"),box_lugar(input$admin1_filter)),"font-size: 95%;"),
       icon = icon('alert', lib = 'glyphicon'),
       color = "purple"
     )
@@ -117,7 +117,7 @@ function(input, output, session) {
   
   #### MAP ----
   indicadores_prep_map_data <- reactive({
-    ind_prep_map_data(LANG_TLS,ZERO_POB_LIST,CUT_OFFS,country_shapes,scores_data,ind_rename(input$indicadores_select_indicador),get_a1_geo_id(input$indicadores_select_admin1),risk_rename(input$indicadores_select_risk))
+    ind_prep_map_data(LANG_TLS,ZERO_POB_LIST,CUT_OFFS,country_shapes,scores_data,ind_rename(input$indicadores_select_indicador),get_a1_geo_id(input$admin1_filter),risk_rename(input$indicadores_select_risk))
   })
   
   ind_map <- reactiveValues(dat = 0)
@@ -125,13 +125,13 @@ function(input, output, session) {
   
   
   output$indicadores_title_map_box <- renderText({
-    text_title <- title_map_box(input$indicadores_select_indicador,input$indicadores_select_admin1)
+    text_title <- title_map_box(input$indicadores_select_indicador,input$admin1_filter)
     text_title <- paste0(text_title," (",YEAR_1," - ",YEAR_EVAL,")")
     text_title
   })
   
   output$indicadores_plot_map <- renderLeaflet({
-    ind_map$dat <- ind_plot_map_data(LANG_TLS,ZERO_POB_LIST,CUT_OFFS,indicadores_prep_map_data(),ind_rename(input$indicadores_select_indicador),get_a1_geo_id(input$indicadores_select_admin1),risk_rename(input$indicadores_select_risk))
+    ind_map$dat <- ind_plot_map_data(LANG_TLS,ZERO_POB_LIST,CUT_OFFS,indicadores_prep_map_data(),ind_rename(input$indicadores_select_indicador),get_a1_geo_id(input$admin1_filter),risk_rename(input$indicadores_select_risk))
     ind_map$dat
   })
   
@@ -145,17 +145,17 @@ function(input, output, session) {
   )
   
   output$indicadores_table <- renderDataTable(server = FALSE,{
-    ind_get_bar_table(LANG_TLS,CUT_OFFS,scores_data,ind_rename(input$indicadores_select_indicador),get_a1_geo_id(input$indicadores_select_admin1),risk_rename(input$indicadores_select_risk))
+    ind_get_bar_table(LANG_TLS,CUT_OFFS,scores_data,ind_rename(input$indicadores_select_indicador),get_a1_geo_id(input$admin1_filter),risk_rename(input$indicadores_select_risk))
   })
   
   output$indicadores_plot_map_2 <- renderLeaflet({
-    ind_map_2$dat <- ind_plot_map_data(LANG_TLS,ZERO_POB_LIST,CUT_OFFS,indicadores_prep_map_data(),ind_rename(input$indicadores_select_indicador),get_a1_geo_id(input$indicadores_select_admin1),risk_rename(input$indicadores_select_risk))
+    ind_map_2$dat <- ind_plot_map_data(LANG_TLS,ZERO_POB_LIST,CUT_OFFS,indicadores_prep_map_data(),ind_rename(input$indicadores_select_indicador),get_a1_geo_id(input$admin1_filter),risk_rename(input$indicadores_select_risk))
     ind_map_2$dat
   })
   
   output$dl_indicadores_plot_map_2 <- downloadHandler(
     filename = function() {
-      paste0(lang_label("map")," ",input$indicadores_select_admin1," ",toupper(COUNTRY_NAME)," ",input$indicadores_select_indicador," (",YEAR_1,"-",YEAR_EVAL,").png")
+      paste0(lang_label("map")," ",input$admin1_filter," ",toupper(COUNTRY_NAME)," ",input$indicadores_select_indicador," (",YEAR_1,"-",YEAR_EVAL,").png")
     },
     content = function(file) {
       mapshot(ind_map_2$dat, file = file)
@@ -163,17 +163,17 @@ function(input, output, session) {
   )
   
   output$indicadores_table_2 <- renderDataTable(server = FALSE,{
-    ind_get_bar_table(LANG_TLS,CUT_OFFS,scores_data,ind_rename(input$indicadores_select_indicador),get_a1_geo_id(input$indicadores_select_admin1),risk_rename(input$indicadores_select_risk))
+    ind_get_bar_table(LANG_TLS,CUT_OFFS,scores_data,ind_rename(input$indicadores_select_indicador),get_a1_geo_id(input$admin1_filter),risk_rename(input$indicadores_select_risk))
   })
   
   ### TOTAL POINTS ----
   indicadores_prep_bar_data <- reactive({
-    ind_prep_bar_data(LANG_TLS,CUT_OFFS,scores_data,ind_rename(input$indicadores_select_indicador),get_a1_geo_id(input$indicadores_select_admin1),risk_rename(input$indicadores_select_risk))
+    ind_prep_bar_data(LANG_TLS,CUT_OFFS,scores_data,ind_rename(input$indicadores_select_indicador),get_a1_geo_id(input$admin1_filter),risk_rename(input$indicadores_select_risk))
   })
   
   
   output$indicadores_title_bar_box <- renderText({
-    text_title <- title_bar_box(input$indicadores_select_indicador,input$indicadores_select_admin1)
+    text_title <- title_bar_box(input$indicadores_select_indicador,input$admin1_filter)
     text_title <- paste0(text_title," (",YEAR_1," - ",YEAR_5,")")
     text_title
   })
@@ -183,7 +183,7 @@ function(input, output, session) {
       input$general_title_plot_bar_filter == lang_label("population_pfa_filter") ~ TRUE,
       input$general_title_plot_bar_filter == lang_label("population_pfa_no_filter") ~ FALSE,
     )
-    ind_plot_bar_data(LANG_TLS,CUT_OFFS,indicadores_prep_bar_data(),ind_rename(input$indicadores_select_indicador),get_a1_geo_id(input$indicadores_select_admin1), pfa_filter)
+    ind_plot_bar_data(LANG_TLS,CUT_OFFS,indicadores_prep_bar_data(),ind_rename(input$indicadores_select_indicador),get_a1_geo_id(input$admin1_filter), pfa_filter)
   })
   
   output$indicadores_plot_multibar <- renderPlotly({
@@ -191,7 +191,7 @@ function(input, output, session) {
       input$general_title_plot_multibar_filter == lang_label("population_pfa_filter") ~ TRUE,
       input$general_title_plot_multibar_filter == lang_label("population_pfa_no_filter") ~ FALSE,
     )
-    ind_plot_multibar_data(LANG_TLS,CUT_OFFS,scores_data,get_a1_geo_id(input$indicadores_select_admin1),ind_rename(input$indicadores_select_indicador),risk_rename(input$indicadores_select_risk), pfa_filter)
+    ind_plot_multibar_data(LANG_TLS,CUT_OFFS,scores_data,get_a1_geo_id(input$admin1_filter),ind_rename(input$indicadores_select_indicador),risk_rename(input$indicadores_select_risk), pfa_filter)
   })
   
   ### INDICATORS CHEAT SHEET ----
@@ -207,19 +207,19 @@ function(input, output, session) {
   ## MAP ----
   ### IMMUNITY SCORE ----
   output$inmunidad_title_map_box <- renderText({
-    title_map_box(lang_label("INM_POB"),input$inmunidad_select_admin1)
+    title_map_box(lang_label("INM_POB"),input$admin1_filter)
   })
   
   inmu_map_total <- reactiveValues(dat = 0)
   
   output$inmunidad_map_total <- renderLeaflet({
-    inmu_map_total$dat <- inmu_plot_map_data(LANG_TLS,YEAR_CAMP_SR,toupper(COUNTRY_NAME),YEAR_LIST,ZERO_POB_LIST,CUT_OFFS,country_shapes,immunity_scores,"immunity_score",input$inmunidad_select_admin1,get_a1_geo_id(input$inmunidad_select_admin1),admin1_geo_id_df)
+    inmu_map_total$dat <- inmu_plot_map_data(LANG_TLS,YEAR_CAMP_SR,toupper(COUNTRY_NAME),YEAR_LIST,ZERO_POB_LIST,CUT_OFFS,country_shapes,immunity_scores,"immunity_score",input$admin1_filter,get_a1_geo_id(input$admin1_filter),admin1_geo_id_df)
     inmu_map_total$dat
   })
   
   output$dl_inmunidad_map_total <- downloadHandler(
     filename = function() {
-      paste0(lang_label("map")," ",input$inmunidad_select_admin1," ",toupper(COUNTRY_NAME)," ",lang_label("INM_POB")," (",YEAR_1,"-",YEAR_5,").png")
+      paste0(lang_label("map")," ",input$admin1_filter," ",toupper(COUNTRY_NAME)," ",lang_label("INM_POB")," (",YEAR_1,"-",YEAR_5,").png")
     },
     content = function(file) {
       mapshot(inmu_map_total$dat, file = file)
@@ -238,13 +238,13 @@ function(input, output, session) {
       input$radio_inmunidad_cob_1 == paste(lang_label("vac_coverage"),YEAR_5) ~ "year5",
       input$radio_inmunidad_cob_1 == lang_label("risk_points") ~ "SRP1_PR"
     )
-    inmu_map_cob_1$dat <- inmu_plot_map_data(LANG_TLS,YEAR_CAMP_SR,toupper(COUNTRY_NAME),YEAR_LIST,ZERO_POB_LIST,CUT_OFFS,country_shapes,immunity_scores,var_srp1,input$inmunidad_select_admin1,get_a1_geo_id(input$inmunidad_select_admin1),admin1_geo_id_df)
+    inmu_map_cob_1$dat <- inmu_plot_map_data(LANG_TLS,YEAR_CAMP_SR,toupper(COUNTRY_NAME),YEAR_LIST,ZERO_POB_LIST,CUT_OFFS,country_shapes,immunity_scores,var_srp1,input$admin1_filter,get_a1_geo_id(input$admin1_filter),admin1_geo_id_df)
     inmu_map_cob_1$dat
   })
   
   output$dl_inmunidad_map_cob_1 <- downloadHandler(
     filename = function() {
-      paste0(lang_label("map")," ",input$inmunidad_select_admin1," ",toupper(COUNTRY_NAME)," ",lang_label("immunity_polio_cob")," (",input$radio_inmunidad_cob_1,").png")
+      paste0(lang_label("map")," ",input$admin1_filter," ",toupper(COUNTRY_NAME)," ",lang_label("immunity_polio_cob")," (",input$radio_inmunidad_cob_1,").png")
     },
     content = function(file) {
       mapshot(inmu_map_cob_1$dat, file = file)
@@ -255,13 +255,13 @@ function(input, output, session) {
   inmu_map_cob_2 <- reactiveValues(dat = 0)
   
   output$inmunidad_map_cob_2 <- renderLeaflet({
-    inmu_map_cob_2$dat <- inmu_plot_map_data(LANG_TLS,YEAR_CAMP_SR,toupper(COUNTRY_NAME),YEAR_LIST,ZERO_POB_LIST,CUT_OFFS,country_shapes,immunity_scores,"ipv2",input$inmunidad_select_admin1,get_a1_geo_id(input$inmunidad_select_admin1),admin1_geo_id_df)
+    inmu_map_cob_2$dat <- inmu_plot_map_data(LANG_TLS,YEAR_CAMP_SR,toupper(COUNTRY_NAME),YEAR_LIST,ZERO_POB_LIST,CUT_OFFS,country_shapes,immunity_scores,"ipv2",input$admin1_filter,get_a1_geo_id(input$admin1_filter),admin1_geo_id_df)
     inmu_map_cob_2$dat
   })
   
   output$dl_inmunidad_map_cob_2 <- downloadHandler(
     filename = function() {
-      paste0(lang_label("map")," ",input$inmunidad_select_admin1," ",toupper(COUNTRY_NAME)," ",lang_label("immunity_ipv2_cob")," (",YEAR_EVAL,").png")
+      paste0(lang_label("map")," ",input$admin1_filter," ",toupper(COUNTRY_NAME)," ",lang_label("immunity_ipv2_cob")," (",YEAR_EVAL,").png")
     },
     content = function(file) {
       mapshot(inmu_map_cob_2$dat, file = file)
@@ -272,13 +272,13 @@ function(input, output, session) {
   inmu_map_effective <- reactiveValues(dat = 0)
   
   output$inmunidad_map_effective <- renderLeaflet({
-    inmu_map_effective$dat <- inmu_plot_map_data(LANG_TLS,YEAR_CAMP_SR,toupper(COUNTRY_NAME),YEAR_LIST,ZERO_POB_LIST,CUT_OFFS,country_shapes,immunity_scores,"effective_campaign",input$inmunidad_select_admin1,get_a1_geo_id(input$inmunidad_select_admin1),admin1_geo_id_df)
+    inmu_map_effective$dat <- inmu_plot_map_data(LANG_TLS,YEAR_CAMP_SR,toupper(COUNTRY_NAME),YEAR_LIST,ZERO_POB_LIST,CUT_OFFS,country_shapes,immunity_scores,"effective_campaign",input$admin1_filter,get_a1_geo_id(input$admin1_filter),admin1_geo_id_df)
     inmu_map_effective$dat
   })
   
   output$dl_inmunidad_map_cob_2 <- downloadHandler(
     filename = function() {
-      paste0(lang_label("map")," ",input$inmunidad_select_admin1," ",toupper(COUNTRY_NAME)," ",lang_label("immunity_effective_cob")," (",YEAR_1, "-", YEAR_EVAL,").png")
+      paste0(lang_label("map")," ",input$admin1_filter," ",toupper(COUNTRY_NAME)," ",lang_label("immunity_effective_cob")," (",YEAR_1, "-", YEAR_EVAL,").png")
     },
     content = function(file) {
       mapshot(inmu_map_effective$dat, file = file)
@@ -287,24 +287,24 @@ function(input, output, session) {
   
   ## PIE ----
   output$inmunidad_title_pie_box <- renderText({
-    title_pie_box(lang_label("INM_POB"),input$inmunidad_select_admin1)
+    title_pie_box(lang_label("INM_POB"),input$admin1_filter)
   })
   
   output$inmunidad_plot_pie <- renderPlotly({
-    plot_pie_data(LANG_TLS,ZERO_POB_LIST,CUT_OFFS,"immunity_score",immunity_scores,get_a1_geo_id(input$inmunidad_select_admin1),return_table = F)
+    plot_pie_data(LANG_TLS,ZERO_POB_LIST,CUT_OFFS,"immunity_score",immunity_scores,get_a1_geo_id(input$admin1_filter),return_table = F)
   })
   
   output$inmunidad_table_dist <- renderDataTable(server = FALSE,{
-    plot_pie_data(LANG_TLS,ZERO_POB_LIST,CUT_OFFS,"immunity_score",immunity_scores,get_a1_geo_id(input$inmunidad_select_admin1),return_table = T)
+    plot_pie_data(LANG_TLS,ZERO_POB_LIST,CUT_OFFS,"immunity_score",immunity_scores,get_a1_geo_id(input$admin1_filter),return_table = T)
   })
   
   ## DATATABLE ----
   output$inmunidad_title_data_box <- renderText({
-    title_data_box(lang_label("INM_POB"),input$inmunidad_select_admin1)
+    title_data_box(lang_label("INM_POB"),input$admin1_filter)
   })
   
   output$inmunidad_table <- renderDataTable(server = FALSE,{
-    inmu_get_data_table(LANG_TLS,YEAR_LIST,CUT_OFFS,immunity_scores,get_a1_geo_id(input$inmunidad_select_admin1))
+    inmu_get_data_table(LANG_TLS,YEAR_LIST,CUT_OFFS,immunity_scores,get_a1_geo_id(input$admin1_filter))
   })
   
   ## CHEAT SHEET ----
@@ -319,20 +319,20 @@ function(input, output, session) {
   # SURVEILLANCE ----
   ## MAP ----
   output$surveillance_title_map_box <- renderText({
-    title_map_box(lang_label("SURV_QUAL"),input$surveillance_select_admin1)
+    title_map_box(lang_label("SURV_QUAL"),input$admin1_filter)
   })
   
   ### SURVEILLANCE SCORE ----
   cal_map_total <- reactiveValues(dat = 0)
   
   output$calidad_map_total <- renderLeaflet({
-    cal_map_total$dat <- cal_plot_map_data(LANG_TLS,toupper(COUNTRY_NAME),YEAR_LIST,ZERO_POB_LIST,CUT_OFFS,country_shapes,surveillance_scores,"surveillance_score",input$surveillance_select_admin1,get_a1_geo_id(input$surveillance_select_admin1),admin1_geo_id_df)
+    cal_map_total$dat <- cal_plot_map_data(LANG_TLS,toupper(COUNTRY_NAME),YEAR_LIST,ZERO_POB_LIST,CUT_OFFS,country_shapes,surveillance_scores,"surveillance_score",input$admin1_filter,get_a1_geo_id(input$admin1_filter),admin1_geo_id_df)
     cal_map_total$dat
   })
   
   output$dl_surveillance_map_total <- downloadHandler(
     filename = function() {
-      paste0(lang_label("map")," ",input$surveillance_select_admin1," ",toupper(COUNTRY_NAME)," ",lang_label("SURV_QUAL")," (",YEAR_5,").png")
+      paste0(lang_label("map")," ",input$admin1_filter," ",toupper(COUNTRY_NAME)," ",lang_label("SURV_QUAL")," (",YEAR_5,").png")
     },
     content = function(file) {
       mapshot(cal_map_total$dat, file = file)
@@ -342,13 +342,13 @@ function(input, output, session) {
   ### REPORTING UNITS ----
   cal_map_2 <- reactiveValues(dat = 0)
   output$calidad_map_2 <- renderLeaflet({
-    cal_map_2$dat <- cal_plot_map_data(LANG_TLS,toupper(COUNTRY_NAME),YEAR_LIST,ZERO_POB_LIST,CUT_OFFS,country_shapes,surveillance_scores,"compliant_units_percent",input$surveillance_select_admin1,get_a1_geo_id(input$surveillance_select_admin1),admin1_geo_id_df)
+    cal_map_2$dat <- cal_plot_map_data(LANG_TLS,toupper(COUNTRY_NAME),YEAR_LIST,ZERO_POB_LIST,CUT_OFFS,country_shapes,surveillance_scores,"compliant_units_percent",input$admin1_filter,get_a1_geo_id(input$admin1_filter),admin1_geo_id_df)
     cal_map_2$dat
   })
   
   output$dl_calidad_map_2 <- downloadHandler(
     filename = function() {
-      paste0(lang_label("map")," ",input$surveillance_select_admin1," ",toupper(COUNTRY_NAME)," ",lang_label("surveillance_title_map_reporting_units")," (",YEAR_5,").png")
+      paste0(lang_label("map")," ",input$admin1_filter," ",toupper(COUNTRY_NAME)," ",lang_label("surveillance_title_map_reporting_units")," (",YEAR_5,").png")
     },
     content = function(file) {
       mapshot(cal_map_2$dat, file = file)
@@ -358,13 +358,13 @@ function(input, output, session) {
   ### PFA RATE ----
   cal_map_3 <- reactiveValues(dat = 0)
   output$calidad_map_3 <- renderLeaflet({
-    cal_map_3$dat <- cal_plot_map_data(LANG_TLS,toupper(COUNTRY_NAME),YEAR_LIST,ZERO_POB_LIST,CUT_OFFS,country_shapes,surveillance_scores,"pfa_rate",input$surveillance_select_admin1,get_a1_geo_id(input$surveillance_select_admin1),admin1_geo_id_df)
+    cal_map_3$dat <- cal_plot_map_data(LANG_TLS,toupper(COUNTRY_NAME),YEAR_LIST,ZERO_POB_LIST,CUT_OFFS,country_shapes,surveillance_scores,"pfa_rate",input$admin1_filter,get_a1_geo_id(input$admin1_filter),admin1_geo_id_df)
     cal_map_3$dat
   })
   
   output$dl_calidad_map_3 <- downloadHandler(
     filename = function() {
-      paste0(lang_label("map")," ",input$surveillance_select_admin1," ",toupper(COUNTRY_NAME)," ",lang_label("surveillance_pfa_rate")," (",YEAR_5,").png")
+      paste0(lang_label("map")," ",input$admin1_filter," ",toupper(COUNTRY_NAME)," ",lang_label("surveillance_pfa_rate")," (",YEAR_5,").png")
     },
     content = function(file) {
       mapshot(cal_map_3$dat, file = file)
@@ -374,13 +374,13 @@ function(input, output, session) {
   ### PFA NOTIFICATION ----
   cal_map_4 <- reactiveValues(dat = 0)
   output$calidad_map_4 <- renderLeaflet({
-    cal_map_4$dat <- cal_plot_map_data(LANG_TLS,toupper(COUNTRY_NAME),YEAR_LIST,ZERO_POB_LIST,CUT_OFFS,country_shapes,surveillance_scores,"pfa_notified_percent",input$surveillance_select_admin1,get_a1_geo_id(input$surveillance_select_admin1),admin1_geo_id_df)
+    cal_map_4$dat <- cal_plot_map_data(LANG_TLS,toupper(COUNTRY_NAME),YEAR_LIST,ZERO_POB_LIST,CUT_OFFS,country_shapes,surveillance_scores,"pfa_notified_percent",input$admin1_filter,get_a1_geo_id(input$admin1_filter),admin1_geo_id_df)
     cal_map_4$dat
   })
   
   output$dl_calidad_map_4 <- downloadHandler(
     filename = function() {
-      paste0(lang_label("map")," ",input$surveillance_select_admin1," ",toupper(COUNTRY_NAME)," ",lang_label("surveillance_pfa_notification")," (",YEAR_5,").png")
+      paste0(lang_label("map")," ",input$admin1_filter," ",toupper(COUNTRY_NAME)," ",lang_label("surveillance_pfa_notification")," (",YEAR_5,").png")
     },
     content = function(file) {
       mapshot(cal_map_4$dat, file = file)
@@ -390,13 +390,13 @@ function(input, output, session) {
   ### PFA INVESTIGATED ----
   cal_map_5 <- reactiveValues(dat = 0)
   output$calidad_map_5 <- renderLeaflet({
-    cal_map_5$dat <- cal_plot_map_data(LANG_TLS,toupper(COUNTRY_NAME),YEAR_LIST,ZERO_POB_LIST,CUT_OFFS,country_shapes,surveillance_scores,"pfa_investigated_percent",input$surveillance_select_admin1,get_a1_geo_id(input$surveillance_select_admin1),admin1_geo_id_df)
+    cal_map_5$dat <- cal_plot_map_data(LANG_TLS,toupper(COUNTRY_NAME),YEAR_LIST,ZERO_POB_LIST,CUT_OFFS,country_shapes,surveillance_scores,"pfa_investigated_percent",input$admin1_filter,get_a1_geo_id(input$admin1_filter),admin1_geo_id_df)
     cal_map_5$dat
   })
   
   output$dl_calidad_map_5 <- downloadHandler(
     filename = function() {
-      paste0(lang_label("map")," ",input$surveillance_select_admin1," ",toupper(COUNTRY_NAME)," ",lang_label("surveillance_pfa_investigated")," (",YEAR_5,").png")
+      paste0(lang_label("map")," ",input$admin1_filter," ",toupper(COUNTRY_NAME)," ",lang_label("surveillance_pfa_investigated")," (",YEAR_5,").png")
     },
     content = function(file) {
       mapshot(cal_map_5$dat, file = file)
@@ -406,13 +406,13 @@ function(input, output, session) {
   ### SUITABLE SAMPLES ----
   cal_map_6 <- reactiveValues(dat = 0)
   output$calidad_map_6 <- renderLeaflet({
-    cal_map_6$dat <- cal_plot_map_data(LANG_TLS,toupper(COUNTRY_NAME),YEAR_LIST,ZERO_POB_LIST,CUT_OFFS,country_shapes,surveillance_scores,"suitable_samples_percent",input$surveillance_select_admin1,get_a1_geo_id(input$surveillance_select_admin1),admin1_geo_id_df)
+    cal_map_6$dat <- cal_plot_map_data(LANG_TLS,toupper(COUNTRY_NAME),YEAR_LIST,ZERO_POB_LIST,CUT_OFFS,country_shapes,surveillance_scores,"suitable_samples_percent",input$admin1_filter,get_a1_geo_id(input$admin1_filter),admin1_geo_id_df)
     cal_map_6$dat
   })
   
   output$dl_calidad_map_6 <- downloadHandler(
     filename = function() {
-      paste0(lang_label("map")," ",input$surveillance_select_admin1," ",toupper(COUNTRY_NAME)," ",lang_label("surveillance_suitable_samples")," (",YEAR_5,").png")
+      paste0(lang_label("map")," ",input$admin1_filter," ",toupper(COUNTRY_NAME)," ",lang_label("surveillance_suitable_samples")," (",YEAR_5,").png")
     },
     content = function(file) {
       mapshot(cal_map_6$dat, file = file)
@@ -422,13 +422,13 @@ function(input, output, session) {
   ### FOLLOWUPS ----
   cal_map_7 <- reactiveValues(dat = 0)
   output$calidad_map_7 <- renderLeaflet({
-    cal_map_7$dat <- cal_plot_map_data(LANG_TLS,toupper(COUNTRY_NAME),YEAR_LIST,ZERO_POB_LIST,CUT_OFFS,country_shapes,surveillance_scores,"followups_percent",input$surveillance_select_admin1,get_a1_geo_id(input$surveillance_select_admin1),admin1_geo_id_df)
+    cal_map_7$dat <- cal_plot_map_data(LANG_TLS,toupper(COUNTRY_NAME),YEAR_LIST,ZERO_POB_LIST,CUT_OFFS,country_shapes,surveillance_scores,"followups_percent",input$admin1_filter,get_a1_geo_id(input$admin1_filter),admin1_geo_id_df)
     cal_map_7$dat
   })
   
   output$dl_calidad_map_7 <- downloadHandler(
     filename = function() {
-      paste0(lang_label("map")," ",input$surveillance_select_admin1," ",toupper(COUNTRY_NAME)," ",lang_label("surveillance_followups")," (",YEAR_5,").png")
+      paste0(lang_label("map")," ",input$admin1_filter," ",toupper(COUNTRY_NAME)," ",lang_label("surveillance_followups")," (",YEAR_5,").png")
     },
     content = function(file) {
       mapshot(cal_map_7$dat, file = file)
@@ -438,13 +438,13 @@ function(input, output, session) {
   ### ACTIVE SEARCH ----
   cal_map_8 <- reactiveValues(dat = 0)
   output$calidad_map_8 <- renderLeaflet({
-    cal_map_8$dat <- cal_plot_map_data(LANG_TLS,toupper(COUNTRY_NAME),YEAR_LIST,ZERO_POB_LIST,CUT_OFFS,country_shapes,surveillance_scores,"active_search",input$surveillance_select_admin1,get_a1_geo_id(input$surveillance_select_admin1),admin1_geo_id_df)
+    cal_map_8$dat <- cal_plot_map_data(LANG_TLS,toupper(COUNTRY_NAME),YEAR_LIST,ZERO_POB_LIST,CUT_OFFS,country_shapes,surveillance_scores,"active_search",input$admin1_filter,get_a1_geo_id(input$admin1_filter),admin1_geo_id_df)
     cal_map_8$dat
   })
   
   output$dl_calidad_map_8 <- downloadHandler(
     filename = function() {
-      paste0(lang_label("map")," ",input$surveillance_select_admin1," ",toupper(COUNTRY_NAME)," ",lang_label("surveillance_active_search")," (",YEAR_5,").png")
+      paste0(lang_label("map")," ",input$admin1_filter," ",toupper(COUNTRY_NAME)," ",lang_label("surveillance_active_search")," (",YEAR_5,").png")
     },
     content = function(file) {
       mapshot(cal_map_8$dat, file = file)
@@ -453,24 +453,24 @@ function(input, output, session) {
   
   ## PIE ----
   output$surveillance_title_pie_box <- renderText({
-    title_pie_box(lang_label("SURV_QUAL"),input$surveillance_select_admin1)
+    title_pie_box(lang_label("SURV_QUAL"),input$admin1_filter)
   })
   
   output$calidad_plot_pie <- renderPlotly({
-    plot_pie_data(LANG_TLS,ZERO_POB_LIST,CUT_OFFS,"surveillance_score",surveillance_scores,get_a1_geo_id(input$surveillance_select_admin1),return_table = F)
+    plot_pie_data(LANG_TLS,ZERO_POB_LIST,CUT_OFFS,"surveillance_score",surveillance_scores,get_a1_geo_id(input$admin1_filter),return_table = F)
   })
   
   output$calidad_table_dist <- renderDataTable(server = FALSE,{
-    plot_pie_data(LANG_TLS,ZERO_POB_LIST,CUT_OFFS,"surveillance_score",surveillance_scores,get_a1_geo_id(input$surveillance_select_admin1),return_table = T)
+    plot_pie_data(LANG_TLS,ZERO_POB_LIST,CUT_OFFS,"surveillance_score",surveillance_scores,get_a1_geo_id(input$admin1_filter),return_table = T)
   })
   
   ## DATATABLE ----
   output$calidad_title_data_box <- renderText({
-    title_data_box(lang_label("SURV_QUAL"),input$surveillance_select_admin1)
+    title_data_box(lang_label("SURV_QUAL"),input$admin1_filter)
   })
   
   output$calidad_table <- renderDataTable(server = FALSE,{
-    cal_get_data_table(LANG_TLS,CUT_OFFS,surveillance_scores,get_a1_geo_id(input$surveillance_select_admin1))
+    cal_get_data_table(LANG_TLS,CUT_OFFS,surveillance_scores,get_a1_geo_id(input$admin1_filter))
   })
   
   ## CHEAT SHEET ----

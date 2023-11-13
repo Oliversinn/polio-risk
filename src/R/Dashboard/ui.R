@@ -33,8 +33,8 @@ fluidPage(
       sidebarMenu(
         id = "sidebarid",
         
-        ## GENERAL FILTERS ----
-        ### ADMIN1 ----
+        ### GLOBAL FILTERS ----
+        #### ADMIN1 ----
         selectInput(
           "admin1_filter", 
           label = paste0(lang_label("general_select_admin1"), ":"),
@@ -47,7 +47,7 @@ fluidPage(
           placement = "right", trigger = "hover",options = NULL
         ),
         
-        ### POPULATION15 ----
+        #### POPULATION15 ----
         selectInput("population15_filter",
                     label = paste0(lang_label("population15_filter"), ":"),
                     choices = c(
@@ -62,6 +62,18 @@ fluidPage(
           lang_label("tooltip_population15_filter"), 
           placement = "right", trigger = "hover",options = NULL
         ),
+        
+        #### CUT OFF SELECTOR
+        selectInput("indicadores_select_risk",label = paste0(lang_label("general_select_risk"),":"),
+                    choices = c(toupper(lang_label("rep_label_all")),
+                                lang_label("cut_offs_VHR"),
+                                lang_label("cut_offs_HR"),
+                                lang_label("cut_offs_MR"),
+                                lang_label("cut_offs_LR")
+                    )
+        ),
+        bsTooltip("indicadores_select_risk", lang_label("tooltip_select_risk"), placement = "right", trigger = "hover",options = NULL),
+        
         
         ### GENERAL SCORES ----
         menuItem(
@@ -87,19 +99,6 @@ fluidPage(
                       selected = lang_label("menuitem_general_label")
           ),
           bsTooltip("indicadores_select_indicador", lang_label("tooltip_select_ind"), placement = "right", trigger = "hover",options = NULL),
-          ##### ADMIN1 SELECTOR ----
-          selectInput("indicadores_select_admin1", label = paste0(lang_label("general_select_admin1"), ":"), choices = admin1_list, selected = admin1_list[1]),
-          bsTooltip("indicadores_select_admin1", lang_label("tooltip_select_admin1"), placement = "right", trigger = "hover",options = NULL),
-          #### CUT OFF SELECTOR
-          selectInput("indicadores_select_risk",label = paste0(lang_label("general_select_risk"),":"),
-                      choices = c(toupper(lang_label("rep_label_all")),
-                                  lang_label("cut_offs_VHR"),
-                                  lang_label("cut_offs_HR"),
-                                  lang_label("cut_offs_MR"),
-                                  lang_label("cut_offs_LR")
-                      )
-          ),
-          bsTooltip("indicadores_select_risk", lang_label("tooltip_select_risk"), placement = "right", trigger = "hover",options = NULL)
           
         ),
         
@@ -109,24 +108,13 @@ fluidPage(
           tabName = "IMMUNITY",
           icon = icon("syringe")
         ),
-        conditionalPanel(
-          'input.sidebarid == "IMMUNITY"',
-          ##### ADMIN1 SELECTOR ----
-          selectInput("inmunidad_select_admin1", label = paste0(lang_label("general_select_admin1"), ":"), choices = admin1_list, selected = admin1_list[1]),
-          bsTooltip("inmunidad_select_admin1", lang_label("tooltip_select_admin1"), placement = "right", trigger = "hover",options = NULL),
-        ),
+        
         
         ### SURVEILLANCE SCORES ----
         menuItem(
           text = lang_label("menuitem_surveillance"),
           tabName = "SURVEILLANCE",
           icon = icon("eye",class = "fa-solid fa-eye")
-        ),
-        conditionalPanel(
-          'input.sidebarid == "SURVEILLANCE"',
-          ##### ADMIN1 SELECTOR ----
-          selectInput("surveillance_select_admin1", label = paste0(lang_label("general_select_admin1"), ":"), choices = admin1_list, selected = admin1_list[1]),
-          bsTooltip("surveillance_select_admin1", lang_label("tooltip_select_admin1"), placement = "right", trigger = "hover",options = NULL),
         ),
         
         ### DETERMINANTS SCORES ----
@@ -162,7 +150,7 @@ fluidPage(
             
             #### ADMIN1 == ALL ----
             conditionalPanel(
-              paste0('input.indicadores_select_admin1 == "',toupper(lang_label("rep_label_all")),'"'),
+              paste0('input.admin1_filter == "',toupper(lang_label("rep_label_all")),'"'),
               fluidRow(
                 box(
                   width = 12,
@@ -190,7 +178,7 @@ fluidPage(
             
             #### ADMIN1 != ALL ----
             conditionalPanel(
-              paste0('input.indicadores_select_admin1 != "',toupper(lang_label("rep_label_all")),'"'),
+              paste0('input.admin1_filter != "',toupper(lang_label("rep_label_all")),'"'),
               fluidRow(
                 box(
                   width = 6,
