@@ -496,4 +496,30 @@ function(input, output, session) {
     determinants_map_total$dat
   })
   
+  output$dl_determinants_map_total <- downloadHandler(
+    filename = function() {
+      paste0(lang_label("map")," ",input$admin1_filter," ",toupper(COUNTRY_NAME)," ",lang_label("determinants_score")," (",YEAR_1,"-",YEAR_5,").png")
+    },
+    content = function(file) {
+      mapshot(determinants_map_total$dat, file = file)
+    }
+  )
+  
+  ### DRINKING WATER ----
+  determinants_map_water <- reactiveValues(dat = 0)
+  
+  output$determinants_map_water <- renderLeaflet({
+    determinants_map_water$dat <- determinants_plot_map_data(LANG_TLS,toupper(COUNTRY_NAME),YEAR_LIST,ZERO_POB_LIST,CUT_OFFS,country_shapes,determinants_scores,"drinking_water_percent",input$admin1_filter,get_a1_geo_id(input$admin1_filter),admin1_geo_id_df)
+    determinants_map_water$dat
+  })
+  
+  output$dl_determinants_map_water <- downloadHandler(
+    filename = function() {
+      paste0(lang_label("map")," ",input$admin1_filter," ",toupper(COUNTRY_NAME)," ",lang_label("determinants_drinking_water")," (", YEAR_5,").png")
+    },
+    content = function(file) {
+      mapshot(determinants_map_water$dat, file = file)
+    }
+  )
+  
 }

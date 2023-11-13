@@ -8,6 +8,7 @@
 determinants_title_map <- function(LANG_TLS,COUNTRY_NAME,YEAR_LIST,admin1,var) {
   var_text <- case_when(
     var == "determinants_score" ~ paste0(lang_label_tls(LANG_TLS,"determinants_title_map_total_pr")," ",admin1_transform(LANG_TLS,COUNTRY_NAME,admin1)," (",YEAR_LIST[5],")"),
+    var == "drinking_water_percent" ~ paste0(lang_label_tls(LANG_TLS,"determinants_title_map_water")," ",admin1_transform(LANG_TLS,COUNTRY_NAME,admin1)," (",YEAR_LIST[5],")"),
   )
   return(var_text)
 }
@@ -105,6 +106,82 @@ determinants_plot_map_data <- function(LANG_TLS,COUNTRY_NAME,YEAR_LIST,ZERO_POB_
       ) %>%
       addLegend(layerId = "map_title","topright",color = "white", opacity = 0,labels=HTML(paste0("<strong>",determinants_title_map(LANG_TLS,COUNTRY_NAME,YEAR_LIST,admin1,var_to_summarise),"</strong>"))) %>%
       addLegend(title = lang_label_tls(LANG_TLS,"legend_risk_class"),colors = legend_colors,labels = legend_values, opacity = 0.5, position = 'topright')
+  } 
+  else if (var_to_summarise %in% c("drinking_water_percent", "sanitation_services_percent")) {
+    # Cob map
+    map_data <- map_data %>% rename("COB"=var_to_summarise)
+    
+    
+    if (admin1_id == 0) {
+      map_data <- map_data %>% select(GEO_ID,ADMIN1,ADMIN2,COB,geometry)
+    } else {
+      map_data <- map_data %>% filter(`ADMIN1 GEO_ID` == admin1_id) %>% select(GEO_ID,ADMIN1,ADMIN2,COB,geometry)
+    }
+    
+    map_data <- map_data %>% mutate(
+      var_num = case_when(
+        GEO_ID %in% ZERO_POB_LIST ~ 3,
+        is.na(COB) ~ 0,
+        COB < 90 ~ 2,
+        COB >= 90 ~ 1
+      ),
+      var_word = case_when(
+        GEO_ID %in% ZERO_POB_LIST ~ lang_label_tls(LANG_TLS,"no_hab"),
+        is.na(COB) ~ lang_label_tls(LANG_TLS,"no_data"),
+        COB < 90 ~ "<90%",
+        COB >= 90 ~ ">90%"
+      )
+    )
+    
+    
+    pal_gradient <- colorNumeric(
+      c("#666666","#92d050","#e8132b","#9bc2e6"),
+      domain = c(0,3)
+    )
+    legend_colors = c("#e8132b","#92d050")
+    legend_values = c("<90%","≥90%")
+    
+    if (0 %in% map_data$var_num) {
+      legend_colors = c("#666666",legend_colors)
+      legend_values = c(lang_label_tls(LANG_TLS,"no_data"),legend_values)
+    }
+    
+    if (length(ZERO_POB_LIST) > 0) {
+      legend_colors = c(legend_colors,"#9bc2e6")
+      legend_values = c(legend_values,lang_label_tls(LANG_TLS,"no_hab"))
+    }
+    
+    shape_label <- sprintf("<strong>%s</strong>, %s<br/>%s: %s",
+                           map_data$ADMIN2,
+                           map_data$ADMIN1,
+                           lang_label_tls(LANG_TLS,"determinants_population_legend"),
+                           tolower(map_data$var_word)
+    ) %>% lapply(HTML)
+    
+    # MAPA
+    map <- leaflet(map_data,options = leafletOptions(doubleClickZoom = T, attributionControl = F, zoomSnap=0.1, zoomDelta=0.1)) %>%
+      addProviderTiles(providers$Esri.WorldGrayCanvas) %>%
+      addPolygons(
+        fillColor   = ~pal_gradient(var_num),
+        fillOpacity = 0.7,
+        dashArray   = "",
+        weight      = 1,
+        color       = "#333333",
+        opacity     = 1,
+        highlight = highlightOptions(
+          weight = 2,
+          color = "#333333",
+          dashArray = "",
+          fillOpacity = 1,
+          bringToFront = TRUE),
+        label = shape_label,
+        labelOptions = labelOptions(
+          style = list("font-weight" = "normal", padding = "3px 8px"),
+          textsize = "15px",
+          direction = "auto")
+      ) %>% 
+      addLegend(layerId = "map_title","topright",color = "white", opacity = 0,labels=HTML(paste0("<strong>",determinants_title_map(LANG_TLS,COUNTRY_NAME,YEAR_LIST,admin1,var_to_summarise),"</strong>"))) %>%
+      addLegend(title = lang_label_tls(LANG_TLS,"determinants_population_legend"),colors = legend_colors,labels = legend_values, opacity = 0.5, position = 'topright')
   }
   
   return(map)

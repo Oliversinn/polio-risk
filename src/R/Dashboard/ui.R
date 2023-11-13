@@ -540,6 +540,14 @@ fluidPage(
                     icon = icon("square-check"),
                     shinycssloaders::withSpinner(leafletOutput("determinants_map_total",height = 600),color = "#1c9ad6", type = "8", size = 0.5),
                     br(),div(style = "text-align: center;",downloadButton(outputId = "dl_determinants_map_total",lang_label("button_download_map"),icon = icon('camera')))
+                  ),
+                  
+                  ##### DRINKING WATER ----
+                  tabPanel(
+                    title = lang_label("determinants_drinking_water"),
+                    icon = icon("bottle-water"),
+                    shinycssloaders::withSpinner(leafletOutput("determinants_map_water",height = 600),color = "#1c9ad6", type = "8", size = 0.5),
+                    br(),div(style = "text-align: center;",downloadButton(outputId = "dl_determinants_map_water",lang_label("button_download_map"),icon = icon('camera')))
                   )
                 )
               )
