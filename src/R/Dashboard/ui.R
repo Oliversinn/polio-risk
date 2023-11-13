@@ -582,8 +582,17 @@ fluidPage(
                   )
                 )
               )
-              
-              
+            ),
+            
+            #### DATATABLE ----
+            fluidRow(
+              box(
+                width = 12,
+                solidHeader = TRUE,
+                collapsible = TRUE,
+                title = textOutput("determinants_title_data_box"),
+                column(width = 12,shinycssloaders::withSpinner(dataTableOutput("determinants_table"),color = "#1c9ad6", type = "8", size = 0.5))
+              )
             )
           )
           ### NEW TABITEM ----

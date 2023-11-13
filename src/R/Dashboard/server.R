@@ -556,4 +556,13 @@ function(input, output, session) {
     plot_pie_data(LANG_TLS,ZERO_POB_LIST,CUT_OFFS,"determinants_score",determinants_scores,get_a1_geo_id(input$admin1_filter),return_table = T)
   })
   
+  ## DATATABLE ----
+  output$determinants_title_data_box <- renderText({
+    title_data_box(lang_label("determinants_score"),input$admin1_filter)
+  })
+  
+  output$determinants_table <- renderDataTable(server = FALSE,{
+    determinants_get_data_table(LANG_TLS,CUT_OFFS,determinants_scores,get_a1_geo_id(input$admin1_filter))
+  })
+  
 }

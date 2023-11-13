@@ -188,3 +188,82 @@ determinants_plot_map_data <- function(LANG_TLS,COUNTRY_NAME,YEAR_LIST,ZERO_POB_
   
   return(map)
 }
+
+
+
+determinants_get_data_table <- function(LANG_TLS,CUT_OFFS,data,admin1_id) {
+
+  data$risk_level <- get_risk_level(LANG_TLS,CUT_OFFS,"determinants_score",data$determinants_score, data$population_and_pfa_bool)
+  
+  data <- data %>% 
+    select(`ADMIN1 GEO_ID`,
+           ADMIN1,ADMIN2,determinants_score,risk_level, POB1, POB5, POB15,
+           drinking_water_percent, drinking_water_score,
+           sanitation_services_percent, sanitation_services_score) 
+  
+  if (admin1_id == 0) {
+    data <- data %>% select(-`ADMIN1 GEO_ID`)
+    colnames(data) <- c(lang_label_tls(LANG_TLS,"table_admin1_name"),lang_label_tls(LANG_TLS,"table_admin2_name"),lang_label_tls(LANG_TLS,"total_pr"),lang_label_tls(LANG_TLS,"risk_level"),
+                        "POB1", "POB5", "POB15",
+                        paste(lang_label_tls(LANG_TLS,"determinants_water_column"),"(%)"),
+                        paste(lang_label_tls(LANG_TLS,"determinants_water_score")),
+                        paste(lang_label_tls(LANG_TLS,"determinants_sanitation_column"),"(%)"),
+                        paste(lang_label_tls(LANG_TLS,"determinants_sanitation_score"))
+                        )
+  } else {
+    data <- data %>% filter(`ADMIN1 GEO_ID` == admin1_id) %>% select(-ADMIN1,-`ADMIN1 GEO_ID`)
+    colnames(data) <- c(lang_label_tls(LANG_TLS,"table_admin2_name"),lang_label_tls(LANG_TLS,"total_pr"),lang_label_tls(LANG_TLS,"risk_level"),
+                        "POB1", "POB5", "POB15",
+                        paste(lang_label_tls(LANG_TLS,"determinants_water_column"),"(%)"),
+                        paste(lang_label_tls(LANG_TLS,"determinants_water_score")),
+                        paste(lang_label_tls(LANG_TLS,"determinants_sanitation_column"),"(%)"),
+                        paste(lang_label_tls(LANG_TLS,"determinants_sanitation_score"))
+                        )
+  }
+  
+  spr_cob_colnames <- c(
+    paste(lang_label_tls(LANG_TLS,"determinants_water_column"),"(%)"),
+    paste(lang_label_tls(LANG_TLS,"determinants_sanitation_column"),"(%)")
+    )
+  
+  datos_table <- data %>%
+    datatable(
+      rownames = F,
+      extensions = 'Buttons',
+      options = list(
+        scrollX=TRUE, scrollCollapse=TRUE,
+        language = list(
+          info = paste0(lang_label_tls(LANG_TLS,"data_table_showing")," _START_ ",lang_label_tls(LANG_TLS,"data_table_to")," _END_ ",lang_label_tls(LANG_TLS,"data_table_of")," _TOTAL_ ",lang_label_tls(LANG_TLS,"data_table_rows")),
+          paginate = list(previous = lang_label_tls(LANG_TLS,"data_table_prev"), `next` = lang_label_tls(LANG_TLS,"data_table_next"))
+        ),
+        searching = TRUE,fixedColumns = TRUE,autoWidth = FALSE,
+        ordering = TRUE,scrollY = TRUE, scrollX = TRUE,pageLength = 8,
+        columnDefs = list(list(className = 'dt-right', targets = 0:(ncol(data)-1))),
+        dom = 'Brtip',
+        buttons = list(
+          list(extend = "copy",text = lang_label_tls(LANG_TLS,"button_copy")),
+          list(extend='csv',filename=paste(lang_label_tls(LANG_TLS,"data"),lang_label_tls(LANG_TLS,"determinants_score"),admin1_id)),
+          list(extend='excel', filename=paste(lang_label_tls(LANG_TLS,"data"),lang_label_tls(LANG_TLS,"determinants_score"),admin1_id))
+        ),
+        class = "display"
+      )
+    ) %>% formatStyle(
+      lang_label_tls(LANG_TLS,"risk_level"),
+      backgroundColor = styleEqual(
+        c(lang_label_tls(LANG_TLS,"LR"),lang_label_tls(LANG_TLS,"MR"),
+          lang_label_tls(LANG_TLS,"HR"),lang_label_tls(LANG_TLS,"VHR")),
+        c("rgba(146, 208, 80, 0.7)","rgba(254, 192, 0, 0.7)",
+          "rgba(232, 19, 43, 0.7)","rgba(146, 0, 0, 0.7)"))
+    ) %>% formatStyle(
+      c(lang_label_tls(LANG_TLS,"total_pr"),
+        lang_label_tls(LANG_TLS,"determinants_water_score"),
+        lang_label_tls(LANG_TLS,"determinants_sanitation_score")
+        ),
+      backgroundColor = "#e3e3e3"
+    ) %>% formatStyle(
+      spr_cob_colnames,
+      color = styleInterval(c(100),c("black","#0097e6"))
+    )
+  
+  return(datos_table)
+}
