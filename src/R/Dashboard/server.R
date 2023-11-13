@@ -539,4 +539,21 @@ function(input, output, session) {
     }
   )
   
+  ## PIE ----
+  output$determinants_title_pie_box <- renderText({
+    title_pie_box(lang_label("determinants_score"),input$admin1_filter)
+  })
+  
+  output$determinants_title_pie_box <- renderText({
+    title_pie_box(lang_label("determinants_score"),input$admin1_filter)
+  })
+  
+  output$determinants_plot_pie <- renderPlotly({
+    plot_pie_data(LANG_TLS,ZERO_POB_LIST,CUT_OFFS,"determinants_score",determinants_scores,get_a1_geo_id(input$admin1_filter),return_table = F)
+  })
+  
+  output$determinants_table_dist <- renderDataTable(server = FALSE,{
+    plot_pie_data(LANG_TLS,ZERO_POB_LIST,CUT_OFFS,"determinants_score",determinants_scores,get_a1_geo_id(input$admin1_filter),return_table = T)
+  })
+  
 }
