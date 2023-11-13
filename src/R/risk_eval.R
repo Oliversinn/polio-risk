@@ -445,13 +445,18 @@ determinants_data <- geocodes_cleansing(determinants_data)
 
 ## Scores calculation ----
 determinants_scores <-  determinants_data %>% 
-  mutate_at(
-    vars(contains('percent')), ~ round(.,digits = 0)
-  ) %>% 
   mutate(
+    drinking_water_percent = case_when(
+      mean(drinking_water_percent) < 1 ~ round(drinking_water_percent*100, digits = 0),
+      T ~ round(drinking_water_percent,digits = 0)
+    ),
+    sanitation_services_percent = case_when(
+      mean(sanitation_services_percent) < 1 ~ round(sanitation_services_percent*100, digits = 0),
+      T ~ round(sanitation_services_percent,digits = 0)
+    ),
     population_and_pfa_bool = population_and_pfa(determinants_data),
     drinking_water_score = score_drinking_water(determinants_data),
-    sanitation_services = score_sanitation_services(determinants_data)
+    sanitation_services_score = score_sanitation_services(determinants_data)
   ) %>% 
   rowwise() %>% 
   mutate(
