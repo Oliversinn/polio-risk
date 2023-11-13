@@ -122,7 +122,7 @@ ind_rangos_table <- function(LANG_TLS,CUT_OFFS,indicator, pfa) {
 }
 
 
-ind_prep_bar_data <- function(LANG_TLS,CUT_OFFS,data,indicator,admin1_id,risk) {
+ind_prep_bar_data <- function(LANG_TLS,CUT_OFFS,data,indicator,admin1_id,risk, pop_filter) {
   
   var_to_summarise <- case_when(
     indicator == "total_score" ~ "total_score",
@@ -134,8 +134,19 @@ ind_prep_bar_data <- function(LANG_TLS,CUT_OFFS,data,indicator,admin1_id,risk) {
   
   data$pfa <- population_and_pfa(data)
   
-  prep_data <- data %>% rename("PR" = var_to_summarise)
+  if (pop_filter != lang_label("filter_all")) {
+    if (pop_filter == lang_label("less_than_100000")) {
+      data <- data %>% filter(POB15 < 100000)
+    } else if (pop_filter == lang_label("greater_than_100000")) {
+      data <- data %>% filter(POB15 >= 100000)
+    }
+  }
   
+  prep_data <- data %>%
+    rename("PR" = var_to_summarise) 
+    
+
+
   if (admin1_id == 0) {
     prep_data <- prep_data %>% filter(!is.na(PR)) %>% select(ADMIN2,PR, pfa)
   } else {
@@ -152,8 +163,15 @@ ind_prep_bar_data <- function(LANG_TLS,CUT_OFFS,data,indicator,admin1_id,risk) {
   return(prep_data)
 }
 
-ind_prep_map_data <- function(LANG_TLS,ZERO_POB_LIST,CUT_OFFS,map_data,data,indicator,admin1_id,risk) {
+ind_prep_map_data <- function(LANG_TLS,ZERO_POB_LIST,CUT_OFFS,map_data,data,indicator,admin1_id,risk, pop_filter) {
   data <- data %>% select(-ADMIN1,-ADMIN2)
+  if (pop_filter != lang_label("filter_all")) {
+    if (pop_filter == lang_label("less_than_100000")) {
+      data <- data %>% filter(POB15 < 100000)
+    } else if (pop_filter == lang_label("greater_than_100000")) {
+      data <- data %>% filter(POB15 >= 100000)
+    }
+  }
   map_data <- full_join(map_data,data,by = c("GEO_ID" = "GEO_ID", "ADMIN1 GEO_ID" = "ADMIN1 GEO_ID") )
   var_to_summarise <- case_when(
     indicator == "total_score" ~ "total_score",
@@ -176,6 +194,8 @@ ind_prep_map_data <- function(LANG_TLS,ZERO_POB_LIST,CUT_OFFS,map_data,data,indi
     map_data$PR[map_data$risk_level != lang_label_tls(LANG_TLS,risk)] <- NA
     map_data$risk_level[map_data$risk_level != lang_label_tls(LANG_TLS,risk)] <- NA
   }
+  
+  
   return(map_data)
 }
 
@@ -324,7 +344,7 @@ ind_plot_bar_data <- function(LANG_TLS,CUT_OFFS,bar_data,indicator,admin1_id, pf
 }
 
 
-ind_plot_multibar_data <- function(LANG_TLS,CUT_OFFS,bar_data,admin1_id,selected_indicador,risk, pfa_filter) {
+ind_plot_multibar_data <- function(LANG_TLS,CUT_OFFS,bar_data,admin1_id,selected_indicador,risk, pfa_filter, pop_filter) {
   fig <- NULL
   y_axis_title <- lang_label_tls(LANG_TLS,"rep_label_admin2_name_plural")
   x_axis_title <- lang_label_tls(LANG_TLS,"risk_points_general")
@@ -336,6 +356,14 @@ ind_plot_multibar_data <- function(LANG_TLS,CUT_OFFS,bar_data,admin1_id,selected
   bar_data <- bar_data %>% filter(
     pfa == pfa_filter
   )
+  
+  if (pop_filter != lang_label("filter_all")) {
+    if (pop_filter == lang_label("less_than_100000")) {
+      bar_data <- bar_data %>% filter(POB15 < 100000)
+    } else if (pop_filter == lang_label("greater_than_100000")) {
+      bar_data <- bar_data %>% filter(POB15 >= 100000)
+    }
+  }
 
   if (admin1_id != 0) {
     
@@ -545,7 +573,7 @@ ind_plot_map_data <- function(LANG_TLS,ZERO_POB_LIST,CUT_OFFS,map_data,indicator
 
 
 
-ind_prep_box_data <- function(LANG_TLS,CUT_OFFS,data,indicator,admin1_id) {
+ind_prep_box_data <- function(LANG_TLS,CUT_OFFS,data,indicator,admin1_id,pop_filter) {
   var_to_summarise <- case_when(
     indicator == "total_score" ~ "total_score",
     indicator == "immunity_score" ~ "immunity_score",
@@ -553,14 +581,26 @@ ind_prep_box_data <- function(LANG_TLS,CUT_OFFS,data,indicator,admin1_id) {
     indicator == "determinants_score" ~ "determinants_score",
     indicator == "outbreaks_score" ~ "outbreaks_score"
   )
+  
   pfa <- population_and_pfa(data)
   prep_data <- data %>% rename("PR" = var_to_summarise)
+  
   if (admin1_id == 0) {
-    prep_data <- prep_data %>% filter(!is.na(PR)) %>% select(LUGAR = ADMIN2,PR)
+    prep_data <- prep_data %>% filter(!is.na(PR)) %>% select(LUGAR = ADMIN2,PR, POB15)
   } else {
-    prep_data <- prep_data %>% filter(`ADMIN1 GEO_ID` == admin1_id) %>% filter(!is.na(PR)) %>% select(LUGAR = ADMIN2,PR)
+    prep_data <- prep_data %>% filter(`ADMIN1 GEO_ID` == admin1_id) %>% filter(!is.na(PR)) %>% select(LUGAR = ADMIN2,PR,POB15)
   }
+  
   prep_data$risk_level <- get_risk_level(LANG_TLS,CUT_OFFS,indicator,prep_data$PR, pfa = pfa)
+  
+  
+  if (pop_filter != lang_label("filter_all")) {
+    if (pop_filter == lang_label("less_than_100000")) {
+      prep_data <- prep_data %>% filter(POB15 < 100000)
+    } else if (pop_filter == lang_label("greater_than_100000")) {
+      prep_data <- prep_data %>% filter(POB15 >= 100000)
+    }
+  }
 
   
   return(prep_data)

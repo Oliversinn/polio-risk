@@ -67,12 +67,22 @@ function(input, output, session) {
     box_data$at <- new_box_data[5]
   })
   
+  observeEvent(input$population15_filter, {
+    new_box_data <- datos_boxes(LANG_TLS,indicadores_prep_box_data())
+    box_data$a1 <- new_box_data[1]
+    box_data$a2 <- new_box_data[2]
+    box_data$a3 <- new_box_data[3]
+    box_data$a4 <- new_box_data[4]
+    box_data$at <- new_box_data[5]
+  })
+  
   indicadores_prep_box_data <- reactive({
     ind_prep_box_data(LANG_TLS,
                       CUT_OFFS,
                       scores_data,
                       ind_rename(input$indicadores_select_indicador),
-                      unique(get_a1_geo_id(input$admin1_filter)))
+                      unique(get_a1_geo_id(input$admin1_filter)),
+                      input$population15_filter)
   })
   
   output$ind_box_1 <- renderValueBox({
@@ -117,7 +127,7 @@ function(input, output, session) {
   
   #### MAP ----
   indicadores_prep_map_data <- reactive({
-    ind_prep_map_data(LANG_TLS,ZERO_POB_LIST,CUT_OFFS,country_shapes,scores_data,ind_rename(input$indicadores_select_indicador),get_a1_geo_id(input$admin1_filter),risk_rename(input$indicadores_select_risk))
+    ind_prep_map_data(LANG_TLS,ZERO_POB_LIST,CUT_OFFS,country_shapes,scores_data,ind_rename(input$indicadores_select_indicador),get_a1_geo_id(input$admin1_filter),risk_rename(input$indicadores_select_risk), input$population15_filter)
   })
   
   ind_map <- reactiveValues(dat = 0)
@@ -168,7 +178,7 @@ function(input, output, session) {
   
   ### TOTAL POINTS ----
   indicadores_prep_bar_data <- reactive({
-    ind_prep_bar_data(LANG_TLS,CUT_OFFS,scores_data,ind_rename(input$indicadores_select_indicador),get_a1_geo_id(input$admin1_filter),risk_rename(input$indicadores_select_risk))
+    ind_prep_bar_data(LANG_TLS,CUT_OFFS,scores_data,ind_rename(input$indicadores_select_indicador),get_a1_geo_id(input$admin1_filter),risk_rename(input$indicadores_select_risk), input$population15_filter)
   })
   
   
@@ -191,7 +201,7 @@ function(input, output, session) {
       input$general_title_plot_multibar_filter == lang_label("population_pfa_filter") ~ TRUE,
       input$general_title_plot_multibar_filter == lang_label("population_pfa_no_filter") ~ FALSE,
     )
-    ind_plot_multibar_data(LANG_TLS,CUT_OFFS,scores_data,get_a1_geo_id(input$admin1_filter),ind_rename(input$indicadores_select_indicador),risk_rename(input$indicadores_select_risk), pfa_filter)
+    ind_plot_multibar_data(LANG_TLS,CUT_OFFS,scores_data,get_a1_geo_id(input$admin1_filter),ind_rename(input$indicadores_select_indicador),risk_rename(input$indicadores_select_risk), pfa_filter, input$population15_filter)
   })
   
   ### INDICATORS CHEAT SHEET ----
