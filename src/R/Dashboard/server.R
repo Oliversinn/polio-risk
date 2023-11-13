@@ -522,4 +522,21 @@ function(input, output, session) {
     }
   )
   
+  ### SANITATION SERVICES ----
+  determinants_map_sanitation <- reactiveValues(dat = 0)
+  
+  output$determinants_map_sanitation <- renderLeaflet({
+    determinants_map_sanitation$dat <- determinants_plot_map_data(LANG_TLS,toupper(COUNTRY_NAME),YEAR_LIST,ZERO_POB_LIST,CUT_OFFS,country_shapes,determinants_scores,"sanitation_services_percent",input$admin1_filter,get_a1_geo_id(input$admin1_filter),admin1_geo_id_df)
+    determinants_map_sanitation$dat
+  })
+  
+  output$dl_determinants_map_sanitation <- downloadHandler(
+    filename = function() {
+      paste0(lang_label("map")," ",input$admin1_filter," ",toupper(COUNTRY_NAME)," ",lang_label("determinants_sanitation_services")," (", YEAR_5,").png")
+    },
+    content = function(file) {
+      mapshot(determinants_map_sanitation$dat, file = file)
+    }
+  )
+  
 }

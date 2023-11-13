@@ -9,6 +9,7 @@ determinants_title_map <- function(LANG_TLS,COUNTRY_NAME,YEAR_LIST,admin1,var) {
   var_text <- case_when(
     var == "determinants_score" ~ paste0(lang_label_tls(LANG_TLS,"determinants_title_map_total_pr")," ",admin1_transform(LANG_TLS,COUNTRY_NAME,admin1)," (",YEAR_LIST[5],")"),
     var == "drinking_water_percent" ~ paste0(lang_label_tls(LANG_TLS,"determinants_title_map_water")," ",admin1_transform(LANG_TLS,COUNTRY_NAME,admin1)," (",YEAR_LIST[5],")"),
+    var == "sanitation_services_percent" ~ paste0(lang_label_tls(LANG_TLS,"determinants_title_map_sanitation")," ",admin1_transform(LANG_TLS,COUNTRY_NAME,admin1)," (",YEAR_LIST[5],")"),
   )
   return(var_text)
 }
@@ -155,7 +156,8 @@ determinants_plot_map_data <- function(LANG_TLS,COUNTRY_NAME,YEAR_LIST,ZERO_POB_
                            map_data$ADMIN2,
                            map_data$ADMIN1,
                            lang_label_tls(LANG_TLS,"determinants_population_legend"),
-                           tolower(map_data$var_word)
+                           as.character(map_data$COB)
+                           
     ) %>% lapply(HTML)
     
     # MAPA
