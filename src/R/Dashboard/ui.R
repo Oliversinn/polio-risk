@@ -593,6 +593,23 @@ fluidPage(
                 title = textOutput("determinants_title_data_box"),
                 column(width = 12,shinycssloaders::withSpinner(dataTableOutput("determinants_table"),color = "#1c9ad6", type = "8", size = 0.5))
               )
+            ),
+            
+            #### SCORE CHEAT SHEET ----
+            fluidRow(
+              box(
+                width = 12,
+                olidHeader = TRUE,collapsible = TRUE,title = lang_label("general_title_limits_table"),
+                selectInput(
+                  "determinants_limits_table_filter", 
+                  label = "", 
+                  choices = c(
+                    lang_label("population_pfa_filter"),
+                    lang_label("population_pfa_no_filter")
+                  ),
+                ),
+                shinycssloaders::withSpinner(dataTableOutput("determinants_rangos_table"),color = "#1c9ad6", type = "8", size = 0.3)
+              )
             )
           )
           ### NEW TABITEM ----

@@ -565,4 +565,13 @@ function(input, output, session) {
     determinants_get_data_table(LANG_TLS,CUT_OFFS,determinants_scores,get_a1_geo_id(input$admin1_filter))
   })
   
+  ## CHEAT SHEET ----
+  output$determinants_rangos_table <- renderDataTable(server = FALSE,{
+    pfa_filter <- case_when(
+      input$determinants_limits_table_filter == lang_label("population_pfa_filter") ~ TRUE,
+      input$determinants_limits_table_filter == lang_label("population_pfa_no_filter") ~ FALSE,
+    )
+    ind_rangos_table(LANG_TLS,CUT_OFFS,"determinants_score", pfa_filter)
+  })
+  
 }

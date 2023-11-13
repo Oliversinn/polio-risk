@@ -61,7 +61,7 @@ get_risk_level <- function(LANG_TLS,CUT_OFFS,indicator,risk_points, pfa) {
   risk_levels <- c()
   
   for (i in 1:length(risk_points)) {
-    if (pfa[i]) {
+    if (!pfa[i]) {
       if (is.na(risk_points[i])) {r_level = lang_label_tls(LANG_TLS,"no_data")}
       else if (risk_points[i] >= 0 & risk_points[i] <= rp_LR) {r_level = lang_label_tls(LANG_TLS,"LR")}
       else if (risk_points[i] > rp_LR & risk_points[i] <= rp_MD) {r_level = lang_label_tls(LANG_TLS,"MR")}
@@ -78,14 +78,6 @@ get_risk_level <- function(LANG_TLS,CUT_OFFS,indicator,risk_points, pfa) {
     }
   }
   
-  # for (r_point in risk_points) {
-  #   if (is.na(r_point)) {r_level = lang_label_tls(LANG_TLS,"no_data")}
-  #   else if (r_point >= 0 & r_point <= rp_LR) {r_level = lang_label_tls(LANG_TLS,"LR")}
-  #   else if (r_point > rp_LR & r_point <= rp_MD) {r_level = lang_label_tls(LANG_TLS,"MR")}
-  #   else if (r_point > rp_MD & r_point <= rp_HR) {r_level = lang_label_tls(LANG_TLS,"HR")}
-  #   else if (r_point > rp_HR) {r_level = lang_label_tls(LANG_TLS,"VHR")}
-  #   risk_levels <- c(risk_levels,r_level)
-  # }
   return(risk_levels)
 }
 
