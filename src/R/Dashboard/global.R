@@ -27,7 +27,7 @@ library(tidyverse)
 library(scales)
 library(mapview)
 library(webshot)
-webshot::install_phantomjs()
+webshot::install_phantomjs(force = TRUE)
 
 options(shiny.fullstacktrace = TRUE)
 
@@ -203,3 +203,4 @@ title_pie_box <- function(indicator,admin1) {
 source("general.R")
 source("immunity.R")
 source("surveillance.R")
+source("determinants.R")

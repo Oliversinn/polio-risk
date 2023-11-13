@@ -291,11 +291,11 @@ function(input, output, session) {
   })
   
   output$inmunidad_plot_pie <- renderPlotly({
-    plot_pie_data(LANG_TLS,ZERO_POB_LIST,CUT_OFFS,"immunity_score",immunity_scores,get_a1_geo_id(input$inmunidad_select_admin1),return_table=F)
+    plot_pie_data(LANG_TLS,ZERO_POB_LIST,CUT_OFFS,"immunity_score",immunity_scores,get_a1_geo_id(input$inmunidad_select_admin1),return_table = F)
   })
   
   output$inmunidad_table_dist <- renderDataTable(server = FALSE,{
-    plot_pie_data(LANG_TLS,ZERO_POB_LIST,CUT_OFFS,"immunity_score",immunity_scores,get_a1_geo_id(input$inmunidad_select_admin1),return_table=T)
+    plot_pie_data(LANG_TLS,ZERO_POB_LIST,CUT_OFFS,"immunity_score",immunity_scores,get_a1_geo_id(input$inmunidad_select_admin1),return_table = T)
   })
   
   ## DATATABLE ----
@@ -457,11 +457,11 @@ function(input, output, session) {
   })
   
   output$calidad_plot_pie <- renderPlotly({
-    plot_pie_data(LANG_TLS,ZERO_POB_LIST,CUT_OFFS,"surveillance_score",surveillance_scores,get_a1_geo_id(input$surveillance_select_admin1),return_table=F)
+    plot_pie_data(LANG_TLS,ZERO_POB_LIST,CUT_OFFS,"surveillance_score",surveillance_scores,get_a1_geo_id(input$surveillance_select_admin1),return_table = F)
   })
   
   output$calidad_table_dist <- renderDataTable(server = FALSE,{
-    plot_pie_data(LANG_TLS,ZERO_POB_LIST,CUT_OFFS,"surveillance_score",surveillance_scores,get_a1_geo_id(input$surveillance_select_admin1),return_table=T)
+    plot_pie_data(LANG_TLS,ZERO_POB_LIST,CUT_OFFS,"surveillance_score",surveillance_scores,get_a1_geo_id(input$surveillance_select_admin1),return_table = T)
   })
   
   ## DATATABLE ----
@@ -480,6 +480,20 @@ function(input, output, session) {
       input$surveillance_limits_table_filter == lang_label("population_pfa_no_filter") ~ FALSE,
     )
     ind_rangos_table(LANG_TLS,CUT_OFFS,"surveillance_score", pfa_filter)
+  })
+  
+  # DETERMINANTS ----
+  ## MAP ----
+  output$determinants_map_box_title <- renderText({
+    title_map_box(lang_label("determinants_score"),input$admin1_filter)
+  })
+  
+  ### DETERMINANTS SCORE ----
+  determinants_map_total <- reactiveValues(dat = 0)
+  
+  output$determinants_map_total <- renderLeaflet({
+    determinants_map_total$dat <- determinants_plot_map_data(LANG_TLS,toupper(COUNTRY_NAME),YEAR_LIST,ZERO_POB_LIST,CUT_OFFS,country_shapes,determinants_scores,"determinants_score",input$admin1_filter,get_a1_geo_id(input$admin1_filter),admin1_geo_id_df)
+    determinants_map_total$dat
   })
   
 }

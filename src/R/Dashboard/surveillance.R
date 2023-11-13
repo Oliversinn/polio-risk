@@ -513,7 +513,7 @@ cal_get_data_table <- function(LANG_TLS,CUT_OFFS,data,admin1_id) {
   data <- data %>% 
     select(
       `ADMIN1 GEO_ID`, ADMIN1, ADMIN2, surveillance_score, risk_level, POB1, POB5,
-      POB15, population_and_pfa_bool, compliant_units_percent, compliant_units_score,
+      POB15, compliant_units_percent, compliant_units_score,
       pfa_rate, pfa_rate_score, pfa_notified_percent, pfa_notified_score,
       pfa_investigated_percent, pfa_investigated_score, suitable_samples_percent,
       suitable_samples_score, followups_percent, followups_score, active_search,
@@ -523,11 +523,6 @@ cal_get_data_table <- function(LANG_TLS,CUT_OFFS,data,admin1_id) {
       POB1 = cFormat(POB1,0),
       POB5 = cFormat(POB5,0),
       POB15 = cFormat(POB15,0),
-      population_and_pfa_bool = case_when(
-        population_and_pfa_bool ~ lang_label("yes"),
-        !population_and_pfa_bool ~ lang_label("no"),
-        is.na(population_and_pfa_bool) ~ lang_label("no_data")
-      ),
       compliant_units_percent = round(compliant_units_percent, 0),
       pfa_rate = round(pfa_rate, 2),
       pfa_notified_percent = round(pfa_notified_percent, 0),
@@ -549,7 +544,7 @@ cal_get_data_table <- function(LANG_TLS,CUT_OFFS,data,admin1_id) {
     colnames(data) <- c(
       lang_label_tls(LANG_TLS,"table_admin1_name"),lang_label_tls(LANG_TLS,"table_admin2_name"),
       lang_label_tls(LANG_TLS,"total_pr"),lang_label_tls(LANG_TLS,"risk_level"),
-      "POB1", "POB5", "POB15", lang_label_tls(LANG_TLS, "population_and_pfa"),
+      "POB1", "POB5", "POB15", 
       lang_label_tls(LANG_TLS,"surveillance_title_map_reporting_units"),lang_label_tls(LANG_TLS,"surveillance_reporting_units_score"),
       lang_label_tls(LANG_TLS,"surveillance_pfa_rate"),lang_label_tls(LANG_TLS,"surveillance_pfa_rate_score"),
       lang_label_tls(LANG_TLS,"surveillance_title_map_pfa_notification"),lang_label_tls(LANG_TLS,"surveillance_pfa_notification_score"),
@@ -563,7 +558,7 @@ cal_get_data_table <- function(LANG_TLS,CUT_OFFS,data,admin1_id) {
     colnames(data) <- c(
       lang_label_tls(LANG_TLS,"table_admin2_name"),
       lang_label_tls(LANG_TLS,"total_pr"),lang_label_tls(LANG_TLS,"risk_level"),
-      "POB1", "POB5", "POB15", lang_label_tls(LANG_TLS, "population_and_pfa"),
+      "POB1", "POB5", "POB15", 
       lang_label_tls(LANG_TLS,"surveillance_title_map_reporting_units"),lang_label_tls(LANG_TLS,"surveillance_reporting_units_score"),
       lang_label_tls(LANG_TLS,"surveillance_pfa_rate"),lang_label_tls(LANG_TLS,"surveillance_pfa_rate_score"),
       lang_label_tls(LANG_TLS,"surveillance_title_map_pfa_notification"),lang_label_tls(LANG_TLS,"surveillance_pfa_notification_score"),

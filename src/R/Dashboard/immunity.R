@@ -314,7 +314,7 @@ inmu_plot_map_data <- function(LANG_TLS,YEAR_CAMP_SR,COUNTRY_NAME,YEAR_LIST,ZERO
           direction = "auto")
       ) %>% 
       addLegend(layerId = "map_title","topright",color = "white", opacity = 0,labels=HTML(paste0("<strong>",inmu_title_map(LANG_TLS,YEAR_CAMP_SR,COUNTRY_NAME,YEAR_LIST,admin1,var_to_summarise),"</strong>"))) %>%
-      addLegend(title = lang_label_tls(LANG_TLS,"rap_pres_team"),colors = legend_colors,labels = legend_values, opacity = 0.5, position = 'topright')
+      addLegend(title = lang_label_tls(LANG_TLS,"immunity_effective_cob_legend"),colors = legend_colors,labels = legend_values, opacity = 0.5, position = 'topright')
   }
 
   return(map)

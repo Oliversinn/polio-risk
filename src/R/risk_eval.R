@@ -449,6 +449,7 @@ determinants_scores <-  determinants_data %>%
     vars(contains('percent')), ~ round(.,digits = 0)
   ) %>% 
   mutate(
+    population_and_pfa_bool = population_and_pfa(determinants_data),
     drinking_water_score = score_drinking_water(determinants_data),
     sanitation_services = score_sanitation_services(determinants_data)
   ) %>% 

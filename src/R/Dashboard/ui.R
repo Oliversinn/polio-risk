@@ -33,6 +33,36 @@ fluidPage(
       sidebarMenu(
         id = "sidebarid",
         
+        ## GENERAL FILTERS ----
+        ### ADMIN1 ----
+        selectInput(
+          "admin1_filter", 
+          label = paste0(lang_label("general_select_admin1"), ":"),
+          choices = admin1_list, 
+          selected = admin1_list[1]
+        ),
+        bsTooltip(
+          "admin1_filter", 
+          lang_label("tooltip_select_admin1"), 
+          placement = "right", trigger = "hover",options = NULL
+        ),
+        
+        ### POPULATION15 ----
+        selectInput("population15_filter",
+                    label = paste0(lang_label("population15_filter"), ":"),
+                    choices = c(
+                      lang_label("filter_all"),
+                      lang_label("less_than_100000"),
+                      lang_label("greater_than_100000")
+                    ),
+                    selected = lang_label("filter_all")
+        ), 
+        bsTooltip(
+          "population15_filter", 
+          lang_label("tooltip_population15_filter"), 
+          placement = "right", trigger = "hover",options = NULL
+        ),
+        
         ### GENERAL SCORES ----
         menuItem(
           text = lang_label("menuitem_general"),
@@ -90,14 +120,21 @@ fluidPage(
         menuItem(
           text = lang_label("menuitem_surveillance"),
           tabName = "SURVEILLANCE",
-          icon = icon("eye",class="fa-solid fa-eye")
+          icon = icon("eye",class = "fa-solid fa-eye")
         ),
         conditionalPanel(
           'input.sidebarid == "SURVEILLANCE"',
           ##### ADMIN1 SELECTOR ----
           selectInput("surveillance_select_admin1", label = paste0(lang_label("general_select_admin1"), ":"), choices = admin1_list, selected = admin1_list[1]),
           bsTooltip("surveillance_select_admin1", lang_label("tooltip_select_admin1"), placement = "right", trigger = "hover",options = NULL),
-        ) 
+        ),
+        
+        ### DETERMINANTS SCORES ----
+        menuItem(
+          text = lang_label("menuitem_determinants"),
+          tabName = "DETERMINANTS",
+          icon = icon("person-dots-from-line")
+        )
       )
     ),
     ## DASHBOARD BODY ----
@@ -257,14 +294,14 @@ fluidPage(
                     title = lang_label("total_pr"),
                     icon = icon("square-check"),
                     shinycssloaders::withSpinner(leafletOutput("inmunidad_map_total",height = 600),color = "#1c9ad6", type = "8", size = 0.5),
-                    br(),div(style="text-align: center;",downloadButton(outputId = "dl_inmunidad_map_total",lang_label("button_download_map"),icon=icon('camera')))
+                    br(),div(style = "text-align: center;",downloadButton(outputId = "dl_inmunidad_map_total",lang_label("button_download_map"),icon = icon('camera')))
                   ),
                   
                   ##### POLIO COB ----
                   tabPanel(
                     title = lang_label("immunity_polio_cob"),icon = icon("syringe"),
                     column(width = 12,
-                           selectInput("radio_inmunidad_cob_1", label ="", 
+                           selectInput("radio_inmunidad_cob_1", label = "", 
                                        choices = c(
                                          paste(lang_label("vac_coverage"),YEAR_1),
                                          paste(lang_label("vac_coverage"),YEAR_2),
@@ -272,24 +309,24 @@ fluidPage(
                                          paste(lang_label("vac_coverage"),YEAR_4),
                                          paste(lang_label("vac_coverage"),YEAR_5)
                                        ),
-                           ),style="z-index:2000;"),
+                           ),style = "z-index:2000;"),
                     shinycssloaders::withSpinner(leafletOutput("inmunidad_map_cob_1",height = 600),color = "#1c9ad6", type = "8", size = 0.5),
-                    br(),div(style="text-align: center;",downloadButton(outputId = "dl_inmunidad_map_cob_1",lang_label("button_download_map"),icon=icon('camera')))
+                    br(),div(style = "text-align: center;",downloadButton(outputId = "dl_inmunidad_map_cob_1",lang_label("button_download_map"),icon = icon('camera')))
                   ),
                   
                   ##### IPV2 COB ----
                   tabPanel(
                     title = lang_label("immunity_ipv2_cob"),icon = icon("syringe"),
                     shinycssloaders::withSpinner(leafletOutput("inmunidad_map_cob_2",height = 600),color = "#1c9ad6", type = "8", size = 0.5),
-                    br(),div(style="text-align: center;",downloadButton(outputId = "dl_inmunidad_map_cob_2",lang_label("button_download_map"),icon=icon('camera')))
+                    br(),div(style = "text-align: center;",downloadButton(outputId = "dl_inmunidad_map_cob_2",lang_label("button_download_map"),icon = icon('camera')))
                   ),
                   
                   ##### EFFECTIVE CAMPAIGN ----
                   tabPanel(
                     title = lang_label("immunity_effective_cob"),icon = icon("question-circle"),
-                    p(style="text-align: center;",lang_label("immunity_effective_cob_text")),
+                    p(style = "text-align: center;",lang_label("immunity_effective_cob_text")),
                     shinycssloaders::withSpinner(leafletOutput("inmunidad_map_effective",height = 600),color = "#1c9ad6", type = "8", size = 0.5),
-                    br(),div(style="text-align: center;",downloadButton(outputId = "dl_inmunidad_map_effective",lang_label("button_download_map"),icon=icon('camera')))
+                    br(),div(style = "text-align: center;",downloadButton(outputId = "dl_inmunidad_map_effective",lang_label("button_download_map"),icon = icon('camera')))
                   )
                 )
               ),
@@ -368,67 +405,67 @@ fluidPage(
                   tabPanel(
                     title = lang_label("total_pr"),icon = icon("square-check"),
                     shinycssloaders::withSpinner(leafletOutput("calidad_map_total",height = 600),color = "#1c9ad6", type = "8", size = 0.5),
-                    br(),div(style="text-align: center;",downloadButton(outputId = "dl_surveillance_map_total",lang_label("button_download_map"),icon=icon('camera')))
+                    br(),div(style = "text-align: center;",downloadButton(outputId = "dl_surveillance_map_total",lang_label("button_download_map"),icon = icon('camera')))
                   ),
                   
                   ##### REPORTING UNITS ----
                   tabPanel(
                     title = lang_label("surveillance_reporting_units"),icon = icon("house-medical"),
                     shinycssloaders::withSpinner(leafletOutput("calidad_map_2",height = 600),color = "#1c9ad6", type = "8", size = 0.5),
-                    br(),div(style="text-align: center;",downloadButton(outputId = "dl_calidad_map_2",lang_label("button_download_map"),icon=icon('camera')))
+                    br(),div(style = "text-align: center;",downloadButton(outputId = "dl_calidad_map_2",lang_label("button_download_map"),icon = icon('camera')))
                   ),
                   
                   ##### PFA RATE ----
                   tabPanel(
                     title = lang_label("surveillance_pfa_rate"),icon = icon("calculator"),
-                    p(style="text-align: center;",lang_label("surveillance_pfa_population_text")),
+                    p(style = "text-align: center;",lang_label("surveillance_pfa_population_text")),
                     shinycssloaders::withSpinner(leafletOutput("calidad_map_3",height = 600),color = "#1c9ad6", type = "8", size = 0.5),
-                    br(),div(style="text-align: center;",downloadButton(outputId = "dl_calidad_map_3",lang_label("button_download_map"),icon=icon('camera')))
+                    br(),div(style = "text-align: center;",downloadButton(outputId = "dl_calidad_map_3",lang_label("button_download_map"),icon = icon('camera')))
                   ),
                   
                   ##### PFA NOTIFICATION ----
                   tabPanel(
                     title = lang_label("surveillance_pfa_notification"),icon = icon("house-medical-circle-check", class = "fa-solid fa-house-medical-circle-check"),
-                    p(style="text-align: center;",lang_label("surveillance_pfa_population_text")),
+                    p(style = "text-align: center;",lang_label("surveillance_pfa_population_text")),
                     shinycssloaders::withSpinner(leafletOutput("calidad_map_4",height = 600),color = "#1c9ad6", type = "8", size = 0.5),
-                    br(),div(style="text-align: center;",downloadButton(outputId = "dl_calidad_map_4",lang_label("button_download_map"),icon=icon('camera')))
+                    br(),div(style = "text-align: center;",downloadButton(outputId = "dl_calidad_map_4",lang_label("button_download_map"),icon = icon('camera')))
                   ),
                   
                   ##### PFA INVESTIGTED ----
                   tabPanel(
                     title = lang_label("surveillance_pfa_investigated"),icon = icon("search-plus"),
-                    p(style="text-align: center;",lang_label("surveillance_pfa_population_text")),
+                    p(style = "text-align: center;",lang_label("surveillance_pfa_population_text")),
                     shinycssloaders::withSpinner(leafletOutput("calidad_map_5",height = 600),color = "#1c9ad6", type = "8", size = 0.5),
-                    br(),div(style="text-align: center;",downloadButton(outputId = "dl_calidad_map_5",lang_label("button_download_map"),icon=icon('camera')))
+                    br(),div(style = "text-align: center;",downloadButton(outputId = "dl_calidad_map_5",lang_label("button_download_map"),icon = icon('camera')))
                   ),
                   
                   ##### SUITABLE SAMPLES ----
                   tabPanel(
                     title = lang_label("surveillance_suitable_samples"),icon = icon("vials"),
-                    p(style="text-align: center;",lang_label("surveillance_pfa_population_text")),
+                    p(style = "text-align: center;",lang_label("surveillance_pfa_population_text")),
                     shinycssloaders::withSpinner(leafletOutput("calidad_map_6",height = 600),color = "#1c9ad6", type = "8", size = 0.5),
-                    br(),div(style="text-align: center;",downloadButton(outputId = "dl_calidad_map_6",lang_label("button_download_map"),icon=icon('camera')))
+                    br(),div(style = "text-align: center;",downloadButton(outputId = "dl_calidad_map_6",lang_label("button_download_map"),icon = icon('camera')))
                   ),
                   
                   ##### FOLLOWUPS ----
                   tabPanel(
                     title = lang_label("surveillance_followups"),icon = icon("notes-medical"),
-                    p(style="text-align: center;",lang_label("surveillance_pfa_population_text")),
+                    p(style = "text-align: center;",lang_label("surveillance_pfa_population_text")),
                     shinycssloaders::withSpinner(leafletOutput("calidad_map_7",height = 600),color = "#1c9ad6", type = "8", size = 0.5),
-                    br(),div(style="text-align: center;",downloadButton(outputId = "dl_calidad_map_7",lang_label("button_download_map"),icon=icon('camera')))
+                    br(),div(style = "text-align: center;",downloadButton(outputId = "dl_calidad_map_7",lang_label("button_download_map"),icon = icon('camera')))
                   ),
                   
                   ##### ACTIVE SEARCH ----
                   tabPanel(
                     title = lang_label("surveillance_active_search"),icon = icon("magnifying-glass-location"),
-                    p(style="text-align: center;",lang_label("surveillance_active_search_text")),
+                    p(style = "text-align: center;",lang_label("surveillance_active_search_text")),
                     shinycssloaders::withSpinner(leafletOutput("calidad_map_8",height = 600),color = "#1c9ad6", type = "8", size = 0.5),
-                    br(),div(style="text-align: center;",downloadButton(outputId = "dl_calidad_map_8",lang_label("button_download_map"),icon=icon('camera')))
+                    br(),div(style = "text-align: center;",downloadButton(outputId = "dl_calidad_map_8",lang_label("button_download_map"),icon = icon('camera')))
                   )
                 )
               ),
               
-              ### PIE CHART ----
+              #### PIE CHART ----
               box(
                 width = 5,
                 solidHeader = TRUE,
@@ -452,7 +489,7 @@ fluidPage(
               )
             ),
             
-            ### DATATABLE ----
+            #### DATATABLE ----
             fluidRow(
               box(
                 width = 12,
@@ -463,7 +500,7 @@ fluidPage(
               )
             ),
             
-            ### SCORE DATASHEET ----
+            #### SCORE DATASHEET ----
             fluidRow(
               box(
                 width = 12,
@@ -477,6 +514,34 @@ fluidPage(
                   ),
                 ),
                 shinycssloaders::withSpinner(dataTableOutput("surveillance_rangos_table"),color = "#1c9ad6", type = "8", size = 0.3)
+              )
+            )
+          ),
+          
+          ### TAB DETERMINANTS ----
+          tabItem(
+            tabName = "DETERMINANTS",
+            h2(lang_label("determinants_title")),
+            br(),
+            
+            fluidRow(
+              #### MAP ----
+              box(
+                width = 7,
+                solidHeader = TRUE,
+                collapsible = TRUE,
+                title = textOutput("determinants_map_box_title"),
+                tabBox(
+                  width = 12,
+                  height = NULL,
+                  ##### TOTAL PR ----
+                  tabPanel(
+                    title = lang_label("total_pr"),
+                    icon = icon("square-check"),
+                    shinycssloaders::withSpinner(leafletOutput("determinants_map_total",height = 600),color = "#1c9ad6", type = "8", size = 0.5),
+                    br(),div(style = "text-align: center;",downloadButton(outputId = "dl_determinants_map_total",lang_label("button_download_map"),icon = icon('camera')))
+                  )
+                )
               )
             )
           )
