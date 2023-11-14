@@ -251,7 +251,7 @@ determinants_plot_map_data <- function(LANG_TLS,COUNTRY_NAME,YEAR_LIST,ZERO_POB_
 
 
 
-determinants_get_data_table <- function(LANG_TLS,CUT_OFFS,data,admin1_id) {
+determinants_get_data_table <- function(LANG_TLS,CUT_OFFS,data,admin1_id, pop_filter = lang_label("filter_all")) {
 
   data$risk_level <- get_risk_level(LANG_TLS,CUT_OFFS,"determinants_score",data$determinants_score, data$population_and_pfa_bool)
   
@@ -285,6 +285,14 @@ determinants_get_data_table <- function(LANG_TLS,CUT_OFFS,data,admin1_id) {
     paste(lang_label_tls(LANG_TLS,"determinants_water_column"),"(%)"),
     paste(lang_label_tls(LANG_TLS,"determinants_sanitation_column"),"(%)")
     )
+  
+  if (pop_filter != lang_label("filter_all")) {
+    if (pop_filter == lang_label("less_than_100000")) {
+      data <- data %>% filter(POB15 < 100000)
+    } else if (pop_filter == lang_label("greater_than_100000")) {
+      data <- data %>% filter(POB15 >= 100000)
+    }
+  }
   
   datos_table <- data %>%
     datatable(

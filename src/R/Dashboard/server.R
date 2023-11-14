@@ -576,7 +576,7 @@ function(input, output, session) {
   })
   
   output$determinants_table <- renderDataTable(server = FALSE,{
-    determinants_get_data_table(LANG_TLS,CUT_OFFS,determinants_scores,get_a1_geo_id(input$admin1_filter))
+    determinants_get_data_table(LANG_TLS,CUT_OFFS,determinants_scores,get_a1_geo_id(input$admin1_filter), input$population15_filter)
   })
   
   ## CHEAT SHEET ----
