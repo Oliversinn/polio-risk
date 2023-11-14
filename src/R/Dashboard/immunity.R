@@ -417,14 +417,14 @@ inmu_plot_map_data <- function(LANG_TLS,YEAR_CAMP_SR,COUNTRY_NAME,YEAR_LIST,ZERO
   
 }
 
-inmu_get_data_table <- function(LANG_TLS,YEAR_LIST,CUT_OFFS,data,admin1_id) {
+inmu_get_data_table <- function(LANG_TLS,YEAR_LIST,CUT_OFFS,data,admin1_id, pop_filter) {
   YEAR_1=YEAR_LIST[1];YEAR_2=YEAR_LIST[2];YEAR_3=YEAR_LIST[3];YEAR_4=YEAR_LIST[4];YEAR_5=YEAR_LIST[5];
   
   data$risk_level <- get_risk_level(LANG_TLS,CUT_OFFS,"immunity_score",data$immunity_score, data$population_and_pfa_bool)
   
   data <- data %>% 
     select(`ADMIN1 GEO_ID`,
-           ADMIN1,ADMIN2,immunity_score,risk_level,
+           ADMIN1,ADMIN2,immunity_score,risk_level, POB1, POB5, POB15,
            year1,year2,year3,year4,year5,years_score,
            ipv2,ipv_score,
            effective_campaign,effective_campaign_score,immunity_score) %>%
@@ -438,7 +438,11 @@ inmu_get_data_table <- function(LANG_TLS,YEAR_LIST,CUT_OFFS,data,admin1_id) {
   
   if (admin1_id == 0) {
     data <- data %>% select(-`ADMIN1 GEO_ID`)
-    colnames(data) <- c(lang_label_tls(LANG_TLS,"table_admin1_name"),lang_label_tls(LANG_TLS,"table_admin2_name"),lang_label_tls(LANG_TLS,"total_pr"),lang_label_tls(LANG_TLS,"risk_level"),
+    colnames(data) <- c(lang_label_tls(LANG_TLS,"table_admin1_name"),
+                        lang_label_tls(LANG_TLS,"table_admin2_name"),
+                        lang_label_tls(LANG_TLS,"total_pr"),
+                        lang_label_tls(LANG_TLS,"risk_level"),
+                        "POB1", "POB5", "POB15",
                         paste(lang_label_tls(LANG_TLS,"immunity_polio_cob"),YEAR_1,"(%)"),
                         paste(lang_label_tls(LANG_TLS,"immunity_polio_cob"),YEAR_2,"(%)"),
                         paste(lang_label_tls(LANG_TLS,"immunity_polio_cob"),YEAR_3,"(%)"),
@@ -451,7 +455,10 @@ inmu_get_data_table <- function(LANG_TLS,YEAR_LIST,CUT_OFFS,data,admin1_id) {
                         lang_label_tls(LANG_TLS,"immunity_effective_score"))
   } else {
     data <- data %>% filter(`ADMIN1 GEO_ID` == admin1_id) %>% select(-ADMIN1,-`ADMIN1 GEO_ID`)
-    colnames(data) <- c(lang_label_tls(LANG_TLS,"table_admin2_name"),lang_label_tls(LANG_TLS,"total_pr"),lang_label_tls(LANG_TLS,"risk_level"),
+    colnames(data) <- c(lang_label_tls(LANG_TLS,"table_admin2_name"),
+                        lang_label_tls(LANG_TLS,"total_pr"),
+                        lang_label_tls(LANG_TLS,"risk_level"),
+                        "POB1", "POB5", "POB15",
                         paste(lang_label_tls(LANG_TLS,"immunity_polio_cob"),YEAR_1,"(%)"),
                         paste(lang_label_tls(LANG_TLS,"immunity_polio_cob"),YEAR_2,"(%)"),
                         paste(lang_label_tls(LANG_TLS,"immunity_polio_cob"),YEAR_3,"(%)"),
@@ -473,6 +480,14 @@ inmu_get_data_table <- function(LANG_TLS,YEAR_LIST,CUT_OFFS,data,admin1_id) {
     lang_label_tls(LANG_TLS, "immunity_ipv2_cob"),
     lang_label_tls(LANG_TLS,"immunity_effective_cob")
   )
+  
+  if (pop_filter != lang_label("filter_all")) {
+    if (pop_filter == lang_label("less_than_100000")) {
+      data <- data %>% filter(POB15 < 100000)
+    } else if (pop_filter == lang_label("greater_than_100000")) {
+      data <- data %>% filter(POB15 >= 100000)
+    }
+  }
   
   datos_table <- data %>%
     datatable(
