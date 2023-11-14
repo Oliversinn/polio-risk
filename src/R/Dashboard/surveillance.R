@@ -554,7 +554,7 @@ cal_plot_map_data <- function(LANG_TLS,COUNTRY_NAME,YEAR_LIST,ZERO_POB_LIST,CUT_
   
 }
 
-cal_get_data_table <- function(LANG_TLS,CUT_OFFS,data,admin1_id) {
+cal_get_data_table <- function(LANG_TLS,CUT_OFFS,data,admin1_id,pop_filter) {
   
   data$risk_level <- get_risk_level(LANG_TLS,CUT_OFFS,"surveillance_score",data$surveillance_score, data$population_and_pfa_bool)
   data <- data %>% 
@@ -567,9 +567,6 @@ cal_get_data_table <- function(LANG_TLS,CUT_OFFS,data,admin1_id) {
       active_search_score
       ) %>% 
     mutate(
-      POB1 = cFormat(POB1,0),
-      POB5 = cFormat(POB5,0),
-      POB15 = cFormat(POB15,0),
       compliant_units_percent = round(compliant_units_percent, 0),
       pfa_rate = round(pfa_rate, 2),
       pfa_notified_percent = round(pfa_notified_percent, 0),
@@ -615,6 +612,21 @@ cal_get_data_table <- function(LANG_TLS,CUT_OFFS,data,admin1_id) {
       lang_label_tls(LANG_TLS,"surveillance_title_map_active_search"),lang_label_tls(LANG_TLS,"surveillance_active_search_score")
     )
   }
+  
+  if (pop_filter != lang_label("filter_all")) {
+    if (pop_filter == lang_label("less_than_100000")) {
+      data <- data %>% filter(POB15 < 100000)
+    } else if (pop_filter == lang_label("greater_than_100000")) {
+      data <- data %>% filter(POB15 >= 100000)
+    }
+  }
+  
+  data <- data %>% 
+    mutate(
+      POB1 = cFormat(POB1,0),
+      POB5 = cFormat(POB5,0),
+      POB15 = cFormat(POB15,0)
+    )
   
   datos_table <- data %>%
     datatable(

@@ -484,7 +484,7 @@ function(input, output, session) {
   })
   
   output$calidad_table <- renderDataTable(server = FALSE,{
-    cal_get_data_table(LANG_TLS,CUT_OFFS,surveillance_scores,get_a1_geo_id(input$admin1_filter))
+    cal_get_data_table(LANG_TLS,CUT_OFFS,surveillance_scores,get_a1_geo_id(input$admin1_filter), input$population15_filter)
   })
   
   ## CHEAT SHEET ----
