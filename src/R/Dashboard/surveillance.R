@@ -564,23 +564,65 @@ cal_get_data_table <- function(LANG_TLS,CUT_OFFS,data,admin1_id,pop_filter) {
       pfa_rate, pfa_rate_score, pfa_notified_percent, pfa_notified_score,
       pfa_investigated_percent, pfa_investigated_score, suitable_samples_percent,
       suitable_samples_score, followups_percent, followups_score, active_search,
-      active_search_score
+      active_search_score, population_and_pfa_bool
       ) %>% 
     mutate(
       compliant_units_percent = round(compliant_units_percent, 0),
-      pfa_rate = round(pfa_rate, 2),
-      pfa_notified_percent = round(pfa_notified_percent, 0),
-      pfa_investigated_percent = round(pfa_investigated_percent, 0),
-      suitable_samples_percent = round(suitable_samples_percent, 0),
-      followups_percent = round(followups_percent, 0),
+      pfa_rate = case_when(
+        population_and_pfa_bool ~ cFormat(pfa_rate, 2),
+        !population_and_pfa_bool ~ lang_label("na")
+      ),
+      pfa_rate_score = case_when(
+        population_and_pfa_bool ~ cFormat(pfa_rate_score, 0),
+        !population_and_pfa_bool ~ lang_label("na")
+      ),
+      pfa_notified_percent = case_when(
+        population_and_pfa_bool ~ cFormat(pfa_notified_percent, 0),
+        !population_and_pfa_bool ~ lang_label("na")
+      ),
+      pfa_notified_score = case_when(
+        population_and_pfa_bool ~ cFormat(pfa_notified_score, 0),
+        !population_and_pfa_bool ~ lang_label("na")
+      ),
+      pfa_investigated_percent = case_when(
+        population_and_pfa_bool ~ cFormat(pfa_investigated_percent, 0),
+        !population_and_pfa_bool ~ lang_label("na")
+      ),
+      pfa_investigated_score = case_when(
+        population_and_pfa_bool ~ cFormat(pfa_investigated_score, 0),
+        !population_and_pfa_bool ~ lang_label("na")
+      ),
+      suitable_samples_percent = case_when(
+        population_and_pfa_bool ~ cFormat(suitable_samples_percent, 0),
+        !population_and_pfa_bool ~ lang_label("na")
+      ),
+      suitable_samples_score = case_when(
+        population_and_pfa_bool ~ cFormat(suitable_samples_score, 0),
+        !population_and_pfa_bool ~ lang_label("na")
+      ),
+      followups_percent = case_when(
+        population_and_pfa_bool ~ cFormat(followups_percent, 0),
+        !population_and_pfa_bool ~ lang_label("na")
+      ),
+      followups_score = case_when(
+        population_and_pfa_bool ~ cFormat(followups_score, 0),
+        !population_and_pfa_bool ~ lang_label("na")
+      ),
       active_search = case_when(
-        active_search == lang_label("yes") ~ lang_label("yes"),
-        active_search == lang_label("yes_upper") ~ lang_label("yes"),
-        active_search == lang_label("no") ~ lang_label("no"),
-        active_search == lang_label("no_upper") ~ lang_label("no"),
-        # population_and_pfa_bool == lang_label("yes") ~ lang_label("na"),
-        # is.na(active_search) ~ lang_label("no_data")
-      )
+        !population_and_pfa_bool ~ case_when(
+          active_search == lang_label("yes") ~ lang_label("yes"),
+          active_search == lang_label("yes_upper") ~ lang_label("yes"),
+          active_search == lang_label("no") ~ lang_label("no"),
+          active_search == lang_label("no_upper") ~ lang_label("no"),
+          # population_and_pfa_bool == lang_label("yes") ~ lang_label("na"),
+          # is.na(active_search) ~ lang_label("no_data")
+        ),
+        population_and_pfa_bool ~ lang_label("na")
+      ),
+      active_search_score = case_when(
+        !population_and_pfa_bool ~ cFormat(active_search_score, 0),
+        population_and_pfa_bool ~ lang_label("na")
+      ),
     )
   
   if (admin1_id == 0) {
@@ -595,7 +637,8 @@ cal_get_data_table <- function(LANG_TLS,CUT_OFFS,data,admin1_id,pop_filter) {
       lang_label_tls(LANG_TLS,"surveillance_title_map_pfa_investigated"),lang_label_tls(LANG_TLS,"surveillance_pfa_investigated_score"),
       lang_label_tls(LANG_TLS,"surveillance_title_map_suitable_samples"),lang_label_tls(LANG_TLS,"surveillance_suitable_samples_score"),
       lang_label_tls(LANG_TLS,"surveillance_title_map_followups"),lang_label_tls(LANG_TLS,"surveillance_followups_score"),
-      lang_label_tls(LANG_TLS,"surveillance_title_map_active_search"),lang_label_tls(LANG_TLS,"surveillance_active_search_score")
+      lang_label_tls(LANG_TLS,"surveillance_title_map_active_search"),lang_label_tls(LANG_TLS,"surveillance_active_search_score"),
+      "population_and_pfa_bool"
     )
   } else {
     data <- data %>% filter(`ADMIN1 GEO_ID` == admin1_id) %>% select(-ADMIN1,-`ADMIN1 GEO_ID`)
@@ -609,7 +652,8 @@ cal_get_data_table <- function(LANG_TLS,CUT_OFFS,data,admin1_id,pop_filter) {
       lang_label_tls(LANG_TLS,"surveillance_title_map_pfa_investigated"),lang_label_tls(LANG_TLS,"surveillance_pfa_investigated_score"),
       lang_label_tls(LANG_TLS,"surveillance_title_map_suitable_samples"),lang_label_tls(LANG_TLS,"surveillance_suitable_samples_score"),
       lang_label_tls(LANG_TLS,"surveillance_title_map_followups"),lang_label_tls(LANG_TLS,"surveillance_followups_score"),
-      lang_label_tls(LANG_TLS,"surveillance_title_map_active_search"),lang_label_tls(LANG_TLS,"surveillance_active_search_score")
+      lang_label_tls(LANG_TLS,"surveillance_title_map_active_search"),lang_label_tls(LANG_TLS,"surveillance_active_search_score"),
+      "population_and_pfa_bool"
     )
   }
   
@@ -622,6 +666,7 @@ cal_get_data_table <- function(LANG_TLS,CUT_OFFS,data,admin1_id,pop_filter) {
   }
   
   data <- data %>% 
+    select(-population_and_pfa_bool) %>% 
     mutate(
       POB1 = cFormat(POB1,0),
       POB5 = cFormat(POB5,0),
