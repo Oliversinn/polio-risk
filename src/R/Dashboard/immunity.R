@@ -488,6 +488,13 @@ inmu_get_data_table <- function(LANG_TLS,YEAR_LIST,CUT_OFFS,data,admin1_id, pop_
       data <- data %>% filter(POB15 >= 100000)
     }
   }
+
+  data <- data %>%
+    mutate(
+      POB1 = cFormat(POB1,0),
+      POB5 = cFormat(POB5,0),
+      POB15 = cFormat(POB15,0)
+    )
   
   datos_table <- data %>%
     datatable(
