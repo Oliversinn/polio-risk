@@ -252,7 +252,7 @@ function(input, output, session) {
       input$radio_inmunidad_cob_1 == paste(lang_label("vac_coverage"),YEAR_5) ~ "year5",
       input$radio_inmunidad_cob_1 == lang_label("risk_points") ~ "SRP1_PR"
     )
-    inmu_map_cob_1$dat <- inmu_plot_map_data(LANG_TLS,YEAR_CAMP_SR,toupper(COUNTRY_NAME),YEAR_LIST,ZERO_POB_LIST,CUT_OFFS,country_shapes,immunity_scores,var_srp1,input$admin1_filter,get_a1_geo_id(input$admin1_filter),admin1_geo_id_df)
+    inmu_map_cob_1$dat <- inmu_plot_map_data(LANG_TLS,YEAR_CAMP_SR,toupper(COUNTRY_NAME),YEAR_LIST,ZERO_POB_LIST,CUT_OFFS,country_shapes,immunity_scores,var_srp1,input$admin1_filter,get_a1_geo_id(input$admin1_filter),admin1_geo_id_df, input$population15_filter)
     inmu_map_cob_1$dat
   })
   
@@ -269,7 +269,7 @@ function(input, output, session) {
   inmu_map_cob_2 <- reactiveValues(dat = 0)
   
   output$inmunidad_map_cob_2 <- renderLeaflet({
-    inmu_map_cob_2$dat <- inmu_plot_map_data(LANG_TLS,YEAR_CAMP_SR,toupper(COUNTRY_NAME),YEAR_LIST,ZERO_POB_LIST,CUT_OFFS,country_shapes,immunity_scores,"ipv2",input$admin1_filter,get_a1_geo_id(input$admin1_filter),admin1_geo_id_df)
+    inmu_map_cob_2$dat <- inmu_plot_map_data(LANG_TLS,YEAR_CAMP_SR,toupper(COUNTRY_NAME),YEAR_LIST,ZERO_POB_LIST,CUT_OFFS,country_shapes,immunity_scores,"ipv2",input$admin1_filter,get_a1_geo_id(input$admin1_filter),admin1_geo_id_df, input$population15_filter)
     inmu_map_cob_2$dat
   })
   
@@ -286,7 +286,7 @@ function(input, output, session) {
   inmu_map_effective <- reactiveValues(dat = 0)
   
   output$inmunidad_map_effective <- renderLeaflet({
-    inmu_map_effective$dat <- inmu_plot_map_data(LANG_TLS,YEAR_CAMP_SR,toupper(COUNTRY_NAME),YEAR_LIST,ZERO_POB_LIST,CUT_OFFS,country_shapes,immunity_scores,"effective_campaign",input$admin1_filter,get_a1_geo_id(input$admin1_filter),admin1_geo_id_df)
+    inmu_map_effective$dat <- inmu_plot_map_data(LANG_TLS,YEAR_CAMP_SR,toupper(COUNTRY_NAME),YEAR_LIST,ZERO_POB_LIST,CUT_OFFS,country_shapes,immunity_scores,"effective_campaign",input$admin1_filter,get_a1_geo_id(input$admin1_filter),admin1_geo_id_df, input$population15_filter)
     inmu_map_effective$dat
   })
   

@@ -44,10 +44,31 @@ inmu_plot_map_data <- function(LANG_TLS,YEAR_CAMP_SR,COUNTRY_NAME,YEAR_LIST,ZERO
 
   if (var_to_summarise %in% c("immunity_score")) {
     map_data <- map_data %>% rename("PR" = var_to_summarise)
+    
     map_data$risk_level <- get_risk_level(LANG_TLS,CUT_OFFS,indicator,map_data$PR,map_data$population_and_pfa_bool)
     
     if (var_to_summarise == "immunity_score") {
       map_data$risk_level[map_data$GEO_ID %in% ZERO_POB_LIST] <- "NO_HAB"
+    }
+    
+    if (pop_filter != lang_label("filter_all")) {
+      if (pop_filter == lang_label("less_than_100000")) {
+        map_data <- map_data %>% 
+          mutate(
+            risk_level = case_when(
+              POB15 >= 100000 ~ lang_label("na"),
+              T ~ risk_level
+            )
+          )
+      } else if (pop_filter == lang_label("greater_than_100000")) {
+        map_data <- map_data %>%
+          mutate(
+            risk_level = case_when(
+              POB15 < 100000 ~ lang_label("na"),
+              T ~ risk_level
+            )
+          )
+      }
     }
     
     
@@ -66,7 +87,8 @@ inmu_plot_map_data <- function(LANG_TLS,YEAR_CAMP_SR,COUNTRY_NAME,YEAR_LIST,ZERO
           risk_level == lang_label_tls(LANG_TLS,"MR") ~ 2,
           risk_level == lang_label_tls(LANG_TLS,"HR") ~ 3,
           risk_level == lang_label_tls(LANG_TLS,"VHR") ~ 4,
-          risk_level == "NO_HAB" ~ 5
+          risk_level == "NO_HAB" ~ 5,
+          risk_level == lang_label("na") ~ 6
         ),
         risk_level_word = case_when(
           is.na(risk_level) ~ lang_label_tls(LANG_TLS,"no_data"),
@@ -76,8 +98,8 @@ inmu_plot_map_data <- function(LANG_TLS,YEAR_CAMP_SR,COUNTRY_NAME,YEAR_LIST,ZERO
       )
       
       pal_gradient <- colorNumeric(
-        c("#666666","#92d050","#fec000","#e8132b","#920000","#9bc2e6"),
-        domain = c(0,5)
+        c("#666666","#92d050","#fec000","#e8132b","#920000","#9bc2e6", "#111111"),
+        domain = c(0,6)
       )
       
       legend_colors = c("#920000","#e8132b","#fec000","#92d050")
@@ -94,6 +116,11 @@ inmu_plot_map_data <- function(LANG_TLS,YEAR_CAMP_SR,COUNTRY_NAME,YEAR_LIST,ZERO
       if (length(ZERO_POB_LIST) > 0) {
         legend_colors = c(legend_colors,"#9bc2e6")
         legend_values = c(legend_values,lang_label_tls(LANG_TLS,"no_hab"))
+      }
+      
+      if (6 %in% map_data$risk_level_num) {
+        legend_colors = c(legend_colors,"#111111")
+        legend_values = c(legend_values,lang_label_tls(LANG_TLS,"na"))
       }
       
       shape_label <- sprintf("<strong>%s</strong>, %s<br/>%s: %s<br/>%s: %s",
@@ -177,9 +204,9 @@ inmu_plot_map_data <- function(LANG_TLS,YEAR_CAMP_SR,COUNTRY_NAME,YEAR_LIST,ZERO
     map_data$COB <- round(map_data$COB,1)
     
     if (admin1_id == 0) {
-      map_data <- map_data %>% select(GEO_ID,ADMIN1,ADMIN2,COB,geometry)
+      map_data <- map_data %>% select(GEO_ID,ADMIN1,ADMIN2,COB,geometry, POB15)
     } else {
-      map_data <- map_data %>% filter(`ADMIN1 GEO_ID` == admin1_id) %>% select(GEO_ID,ADMIN1,ADMIN2,COB,geometry)
+      map_data <- map_data %>% filter(`ADMIN1 GEO_ID` == admin1_id) %>% select(GEO_ID,ADMIN1,ADMIN2,COB,geometry, POB15)
     }
 
     map_data <- map_data %>% mutate(
@@ -194,9 +221,29 @@ inmu_plot_map_data <- function(LANG_TLS,YEAR_CAMP_SR,COUNTRY_NAME,YEAR_LIST,ZERO
       )
     )
     
+    if (pop_filter != lang_label("filter_all")) {
+      if (pop_filter == lang_label("less_than_100000")) {
+        map_data <- map_data %>% 
+          mutate(
+            cob_level_num = case_when(
+              POB15 >= 100000 ~ 7,
+              T ~ cob_level_num
+            )
+          )
+      } else if (pop_filter == lang_label("greater_than_100000")) {
+        map_data <- map_data %>%
+          mutate(
+            cob_level_num = case_when(
+              POB15 < 100000 ~ 7,
+              T ~ cob_level_num
+            )
+          )
+      }
+    }
+    
     pal_gradient <- colorNumeric(
-      c("#666666","#92d050","#fec000","#e8132b","#920000","#9bc2e6", "#0097e6"),
-      domain = c(0,6)
+      c("#666666","#92d050","#fec000","#e8132b","#920000","#9bc2e6", "#0097e6", "#111111"),
+      domain = c(0,7)
     )
     legend_colors = c("#920000","#e8132b","#fec000","#92d050")
     legend_values = c("< 80%","80-90%","90-95%","95-100%")
@@ -215,6 +262,11 @@ inmu_plot_map_data <- function(LANG_TLS,YEAR_CAMP_SR,COUNTRY_NAME,YEAR_LIST,ZERO
       legend_colors = c(legend_colors, "#0097e6")
       legend_values = c(legend_values,lang_label_tls(LANG_TLS,"over_100"))
 
+    }
+    
+    if (7 %in% map_data$cob_level_num) {
+      legend_colors = c(legend_colors, "#111111")
+      legend_values = c(legend_values,lang_label_tls(LANG_TLS,"na"))
     }
     
     shape_label <- sprintf("<strong>%s</strong>, %s<br/>%s: %s%s",
@@ -257,9 +309,9 @@ inmu_plot_map_data <- function(LANG_TLS,YEAR_CAMP_SR,COUNTRY_NAME,YEAR_LIST,ZERO
     
 
     if (admin1_id == 0) {
-      map_data <- map_data %>% select(GEO_ID,ADMIN1,ADMIN2,COB,geometry)
+      map_data <- map_data %>% select(GEO_ID,ADMIN1,ADMIN2,COB,geometry, POB15)
     } else {
-      map_data <- map_data %>% filter(`ADMIN1 GEO_ID` == admin1_id) %>% select(GEO_ID,ADMIN1,ADMIN2,COB,geometry)
+      map_data <- map_data %>% filter(`ADMIN1 GEO_ID` == admin1_id) %>% select(GEO_ID,ADMIN1,ADMIN2,COB,geometry, POB15)
     }
     
     map_data <- map_data %>% mutate(
@@ -276,11 +328,39 @@ inmu_plot_map_data <- function(LANG_TLS,YEAR_CAMP_SR,COUNTRY_NAME,YEAR_LIST,ZERO
         COB == "No" ~ lang_label_tls(LANG_TLS,"no")
       )
     )
+    
+    if (pop_filter != lang_label("filter_all")) {
+      if (pop_filter == lang_label("less_than_100000")) {
+        map_data <- map_data %>% 
+          mutate(
+            var_num = case_when(
+              POB15 >= 100000 ~ 4,
+              T ~ var_num
+            ),
+            var_word = case_when(
+              POB15 >= 100000 ~ lang_label("na"),
+              T ~ var_word
+            )
+          )
+      } else if (pop_filter == lang_label("greater_than_100000")) {
+        map_data <- map_data %>%
+          mutate(
+            var_num = case_when(
+              POB15 < 100000 ~ 4,
+              T ~ var_num
+            ),
+            var_word = case_when(
+              POB15 < 100000 ~ lang_label("na"),
+              T ~ var_word
+            )
+          )
+      }
+    }
 
 
     pal_gradient <- colorNumeric(
-      c("#666666","#92d050","#e8132b","#9bc2e6"),
-      domain = c(0,3)
+      c("#666666","#92d050","#e8132b","#9bc2e6", "#111111"),
+      domain = c(0,4)
     )
     legend_colors = c("#e8132b","#92d050")
     legend_values = c(lang_label_tls(LANG_TLS,"no"),lang_label_tls(LANG_TLS,"yes"))
@@ -293,6 +373,11 @@ inmu_plot_map_data <- function(LANG_TLS,YEAR_CAMP_SR,COUNTRY_NAME,YEAR_LIST,ZERO
     if (length(ZERO_POB_LIST) > 0) {
       legend_colors = c(legend_colors,"#9bc2e6")
       legend_values = c(legend_values,lang_label_tls(LANG_TLS,"no_hab"))
+    }
+    
+    if (4 %in% map_data$var_num) {
+      legend_colors = c("#111111",legend_colors)
+      legend_values = c(lang_label_tls(LANG_TLS,"na"),legend_values)
     }
     
     shape_label <- sprintf("<strong>%s</strong>, %s<br/>%s: %s",
