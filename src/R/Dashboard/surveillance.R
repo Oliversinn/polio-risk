@@ -22,7 +22,7 @@ cal_title_map <- function(LANG_TLS,COUNTRY_NAME,YEAR_LIST,admin1,var) {
 }
 
 
-cal_plot_map_data <- function(LANG_TLS,COUNTRY_NAME,YEAR_LIST,ZERO_POB_LIST,CUT_OFFS,map_data,data,var_to_summarise,admin1,admin1_id,admin1_geo_id_df) {
+cal_plot_map_data <- function(LANG_TLS,COUNTRY_NAME,YEAR_LIST,ZERO_POB_LIST,CUT_OFFS,map_data,data,var_to_summarise,admin1,admin1_id,admin1_geo_id_df, pop_filter = lang_label("filter_all")) {
 
   indicator <- "surveillance_score"
   data <- data %>% select(-ADMIN1,-ADMIN2)
@@ -33,107 +33,329 @@ cal_plot_map_data <- function(LANG_TLS,COUNTRY_NAME,YEAR_LIST,ZERO_POB_LIST,CUT_
 
   map_data$`ADMIN1 GEO_ID`[is.na(map_data$`ADMIN1 GEO_ID`) & map_data$ADMIN1 == admin1] <- admin1_geo_id_df$`ADMIN1 GEO_ID`[admin1_geo_id_df$ADMIN1 == admin1]
   
-  if (var_to_summarise != "tasa_casos") {
+ 
     
-    if (var_to_summarise == "surveillance_score") {
-      map_data$risk_level <- get_risk_level(LANG_TLS,CUT_OFFS,indicator,map_data$surveillance_score, map_data$population_and_pfa_bool)
-      map_data$risk_level[map_data$GEO_ID %in% ZERO_POB_LIST] <- "NO_HAB"
-      
-      if (admin1_id == 0) {
-        map_data <- map_data %>% select(GEO_ID,ADMIN1,ADMIN2,surveillance_score,risk_level,geometry)
-      } else {
-        map_data <- map_data %>% filter(`ADMIN1 GEO_ID` == admin1_id) %>% select(GEO_ID,ADMIN1,ADMIN2,surveillance_score,risk_level,geometry)
+  if (var_to_summarise == "surveillance_score") {
+    map_data$risk_level <- get_risk_level(LANG_TLS,CUT_OFFS,indicator,map_data$surveillance_score, map_data$population_and_pfa_bool)
+    map_data$risk_level[map_data$GEO_ID %in% ZERO_POB_LIST] <- "NO_HAB"
+    
+    if (pop_filter != lang_label("filter_all")) {
+      if (pop_filter == lang_label("less_than_100000")) {
+        map_data <- map_data %>% 
+          mutate(
+            risk_level = case_when(
+              POB15 >= 100000 ~ lang_label("na"),
+              T ~ risk_level
+            )
+          )
+      } else if (pop_filter == lang_label("greater_than_100000")) {
+        map_data <- map_data %>%
+          mutate(
+            risk_level = case_when(
+              POB15 < 100000 ~ lang_label("na"),
+              T ~ risk_level
+            )
+          )
       }
-      
-      map_data <- map_data %>% mutate(
-        risk_level_num = case_when(
-          is.na(risk_level) ~ 0,
-          risk_level == lang_label_tls(LANG_TLS,"LR") ~ 1,
-          risk_level == lang_label_tls(LANG_TLS,"MR") ~ 2,
-          risk_level == lang_label_tls(LANG_TLS,"HR") ~ 3,
-          risk_level == lang_label_tls(LANG_TLS,"VHR") ~ 4,
-          risk_level == "NO_HAB" ~ 5
-        ),
-        risk_level_word = case_when(
-          is.na(risk_level) ~ lang_label_tls(LANG_TLS,"no_data"),
-          risk_level == "NO_HAB" ~ lang_label_tls(LANG_TLS,"no_hab"),
-          T ~ risk_level
-        )
+    }
+    
+    if (admin1_id == 0) {
+      map_data <- map_data %>% select(GEO_ID,ADMIN1,ADMIN2,surveillance_score,risk_level,geometry)
+    } else {
+      map_data <- map_data %>% filter(`ADMIN1 GEO_ID` == admin1_id) %>% select(GEO_ID,ADMIN1,ADMIN2,surveillance_score,risk_level,geometry)
+    }
+    
+    map_data <- map_data %>% mutate(
+      risk_level_num = case_when(
+        is.na(risk_level) ~ 0,
+        risk_level == lang_label_tls(LANG_TLS,"LR") ~ 1,
+        risk_level == lang_label_tls(LANG_TLS,"MR") ~ 2,
+        risk_level == lang_label_tls(LANG_TLS,"HR") ~ 3,
+        risk_level == lang_label_tls(LANG_TLS,"VHR") ~ 4,
+        risk_level == "NO_HAB" ~ 5,
+        risk_level == lang_label("na") ~ 6
+      ),
+      risk_level_word = case_when(
+        is.na(risk_level) ~ lang_label_tls(LANG_TLS,"no_data"),
+        risk_level == "NO_HAB" ~ lang_label_tls(LANG_TLS,"no_hab"),
+        T ~ risk_level
       )
-      
-      pal_gradient <- colorNumeric(
-        c("#666666","#92d050","#fec000","#e8132b","#920000","#9bc2e6"),
-        domain = c(0,5)
+    )
+    
+    pal_gradient <- colorNumeric(
+      c("#666666","#92d050","#fec000","#e8132b","#920000","#9bc2e6","#111111"),
+      domain = c(0,6)
+    )
+    
+    legend_colors = c("#920000","#e8132b","#fec000","#92d050")
+    legend_values = c(lang_label_tls(LANG_TLS,"cut_offs_VHR"),
+                      lang_label_tls(LANG_TLS,"cut_offs_HR"),
+                      lang_label_tls(LANG_TLS,"cut_offs_MR"),
+                      lang_label_tls(LANG_TLS,"cut_offs_LR"))
+    
+    if (0 %in% map_data$risk_level_num) {
+      legend_colors = c("#666666",legend_colors)
+      legend_values = c(lang_label_tls(LANG_TLS,"no_data"),legend_values)
+    }
+    
+    if (length(ZERO_POB_LIST) > 0) {
+      legend_colors = c(legend_colors,"#9bc2e6")
+      legend_values = c(legend_values,lang_label_tls(LANG_TLS,"no_hab"))
+    }
+    
+    if (6 %in% map_data$risk_level_num) {
+      legend_colors = c(legend_colors,"#111111")
+      legend_values = c(legend_values,lang_label_tls(LANG_TLS,"na"))
+    }
+    
+    shape_label <- sprintf("<strong>%s</strong>, %s<br/>%s: %s<br/>%s: %s",
+                           map_data$ADMIN2,
+                           map_data$ADMIN1,
+                           lang_label_tls(LANG_TLS,"risk_points"),
+                           map_data$surveillance_score,
+                           lang_label_tls(LANG_TLS,"risk_level"),
+                           map_data$risk_level_word
+    ) %>% lapply(HTML)
+    
+    
+    # MAPA
+    map <- leaflet(map_data,options = leafletOptions(doubleClickZoom = T, attributionControl = F, zoomSnap=0.1, zoomDelta=0.1)) %>%
+      addProviderTiles(providers$Esri.WorldGrayCanvas) %>%
+      addPolygons(
+        fillColor   = ~pal_gradient(risk_level_num),
+        fillOpacity = 0.7,
+        dashArray   = "",
+        weight      = 1,
+        color       = "#333333",
+        opacity     = 1,
+        highlight = highlightOptions(
+          weight = 2,
+          color = "#333333",
+          dashArray = "",
+          fillOpacity = 1,
+          bringToFront = TRUE),
+        label = shape_label,
+        labelOptions = labelOptions(
+          style = list("font-weight" = "normal", padding = "3px 8px"),
+          textsize = "15px",
+          direction = "auto")
+      ) %>%
+      addLegend(layerId = "map_title","topright",color = "white", opacity = 0,labels=HTML(paste0("<strong>",cal_title_map(LANG_TLS,COUNTRY_NAME,YEAR_LIST,admin1,var_to_summarise),"</strong>"))) %>%
+      addLegend(title = lang_label_tls(LANG_TLS,"legend_risk_class"),colors = legend_colors,labels = legend_values, opacity = 0.5, position = 'topright')
+    
+  } else if (var_to_summarise == "compliant_units_percent") {
+    # % de casos o muestras
+    map_data <- map_data %>% rename("var"=var_to_summarise)
+    map_data$var <- round(map_data$var,1)
+    
+    if (var_to_summarise == "compliant_units_percent") {
+      legend_title = lang_label_tls(LANG_TLS,"surveillance_prop_reporting_units")
+    } 
+    
+    if (admin1_id == 0) {
+      map_data <- map_data %>% select(GEO_ID,ADMIN1,ADMIN2,var,geometry, POB15)
+    } else {
+      map_data <- map_data %>% filter(`ADMIN1 GEO_ID` == admin1_id) %>% select(GEO_ID,ADMIN1,ADMIN2,var,geometry, POB15)
+    }
+    
+    map_data <- map_data %>% mutate(
+      var_level_num = case_when(
+        GEO_ID %in% ZERO_POB_LIST ~ 3,
+        is.na(var) ~ 0,
+        var < 80 ~ 1,
+        var >= 80 ~ 2
       )
-      
-      legend_colors = c("#920000","#e8132b","#fec000","#92d050")
-      legend_values = c(lang_label_tls(LANG_TLS,"cut_offs_VHR"),
-                        lang_label_tls(LANG_TLS,"cut_offs_HR"),
-                        lang_label_tls(LANG_TLS,"cut_offs_MR"),
-                        lang_label_tls(LANG_TLS,"cut_offs_LR"))
-      
-      if (0 %in% map_data$risk_level_num) {
-        legend_colors = c("#666666",legend_colors)
-        legend_values = c(lang_label_tls(LANG_TLS,"no_data"),legend_values)
+    )
+    
+    if (pop_filter != lang_label("filter_all")) {
+      if (pop_filter == lang_label("less_than_100000")) {
+        map_data <- map_data %>% 
+          mutate(
+            var_level_num = case_when(
+              POB15 >= 100000 ~ 4,
+              T ~ var_level_num
+            )
+          )
+      } else if (pop_filter == lang_label("greater_than_100000")) {
+        map_data <- map_data %>%
+          mutate(
+            var_level_num = case_when(
+              POB15 < 100000 ~ 4,
+              T ~ var_level_num
+            )
+          )
       }
+    }
+    
+    pal_gradient <- colorNumeric(
+      c("#666666","#e8132b","#92d050","#9bc2e6", "#111111"),
+      domain = c(0,4)
+    )
+    legend_colors = c("#e8132b","#92d050")
+    legend_values = c("< 80%","≥ 80%")
+    
+    if (0 %in% map_data$var_level_num) {
+      legend_colors = c("#666666",legend_colors)
+      legend_values = c(lang_label_tls(LANG_TLS,"no_data"),legend_values)
+    }
+    
+    if (length(ZERO_POB_LIST) > 0) {
+      legend_colors = c(legend_colors,"#9bc2e6")
+      legend_values = c(legend_values,lang_label_tls(LANG_TLS,"no_hab"))
+    }
+    
+    if (4 %in% map_data$cob_level_num) {
+      legend_colors = c(legend_colors, "#0097e6")
+      legend_values = c(legend_values,lang_label_tls(LANG_TLS,"over_100"))
       
-      if (length(ZERO_POB_LIST) > 0) {
-        legend_colors = c(legend_colors,"#9bc2e6")
-        legend_values = c(legend_values,lang_label_tls(LANG_TLS,"no_hab"))
+    }
+    
+    shape_label <- sprintf("<strong>%s</strong>, %s<br/>%s: %s%s",
+                           map_data$ADMIN2,
+                           map_data$ADMIN1,
+                           lang_label_tls(LANG_TLS,"proportion"),
+                           map_data$var,
+                           "%"
+    ) %>% lapply(HTML)
+    
+    # MAPA
+    map <- leaflet(map_data,options = leafletOptions(doubleClickZoom = T, attributionControl = F, zoomSnap=0.1, zoomDelta=0.1)) %>%
+      addProviderTiles(providers$Esri.WorldGrayCanvas) %>%
+      addPolygons(
+        fillColor   = ~pal_gradient(var_level_num),
+        fillOpacity = 0.7,
+        dashArray   = "",
+        weight      = 1,
+        color       = "#333333",
+        opacity     = 1,
+        highlight = highlightOptions(
+          weight = 2,
+          color = "#333333",
+          dashArray = "",
+          fillOpacity = 1,
+          bringToFront = TRUE),
+        label = shape_label,
+        labelOptions = labelOptions(
+          style = list("font-weight" = "normal", padding = "3px 8px"),
+          textsize = "15px",
+          direction = "auto")
+      ) %>% 
+      addLegend(layerId = "map_title","topright",color = "white", opacity = 0,labels=HTML(paste0("<strong>",cal_title_map(LANG_TLS,COUNTRY_NAME,YEAR_LIST,admin1,var_to_summarise),"</strong>"))) %>%
+      addLegend(title = legend_title,colors = legend_colors,labels = legend_values, opacity = 0.5, position = 'topright')
+  
+    } else if (var_to_summarise == "pfa_rate") {
+    
+    map_data <- map_data %>% rename("var"=var_to_summarise)
+    legend_title = lang_label_tls(LANG_TLS,"surveillance_pfa_rate")
+    
+    if (admin1_id == 0) {
+      map_data <- map_data %>% select(GEO_ID,ADMIN1,ADMIN2,population_and_pfa_bool, var,geometry, POB15)
+    } else {
+      map_data <- map_data %>% filter(`ADMIN1 GEO_ID` == admin1_id) %>% select(GEO_ID,ADMIN1,ADMIN2,var,geometry, population_and_pfa_bool, POB15)
+    }
+    
+    map_data <- map_data %>% mutate(
+      var_level_num = case_when(
+        !population_and_pfa_bool ~ 4,
+        GEO_ID %in% ZERO_POB_LIST ~ 3,
+        is.na(var) ~ 0,
+        var < 1 ~ 1,
+        var >= 1 ~ 2
+      )
+    )
+    
+    if (pop_filter != lang_label("filter_all")) {
+      if (pop_filter == lang_label("less_than_100000")) {
+        map_data <- map_data %>% 
+          mutate(
+            var_level_num = case_when(
+              POB15 >= 100000 ~ 4,
+              T ~ var_level_num
+            )
+          )
+      } else if (pop_filter == lang_label("greater_than_100000")) {
+        map_data <- map_data %>%
+          mutate(
+            var_level_num = case_when(
+              POB15 < 100000 ~ 4,
+              T ~ var_level_num
+            )
+          )
       }
-      
-      shape_label <- sprintf("<strong>%s</strong>, %s<br/>%s: %s<br/>%s: %s",
-                             map_data$ADMIN2,
-                             map_data$ADMIN1,
-                             lang_label_tls(LANG_TLS,"risk_points"),
-                             map_data$surveillance_score,
-                             lang_label_tls(LANG_TLS,"risk_level"),
-                             map_data$risk_level_word
-      ) %>% lapply(HTML)
-      
-      
-      # MAPA
-      map <- leaflet(map_data,options = leafletOptions(doubleClickZoom = T, attributionControl = F, zoomSnap=0.1, zoomDelta=0.1)) %>%
-        addProviderTiles(providers$Esri.WorldGrayCanvas) %>%
-        addPolygons(
-          fillColor   = ~pal_gradient(risk_level_num),
-          fillOpacity = 0.7,
-          dashArray   = "",
-          weight      = 1,
-          color       = "#333333",
-          opacity     = 1,
-          highlight = highlightOptions(
-            weight = 2,
-            color = "#333333",
-            dashArray = "",
-            fillOpacity = 1,
-            bringToFront = TRUE),
-          label = shape_label,
-          labelOptions = labelOptions(
-            style = list("font-weight" = "normal", padding = "3px 8px"),
-            textsize = "15px",
-            direction = "auto")
-        ) %>%
-        addLegend(layerId = "map_title","topright",color = "white", opacity = 0,labels=HTML(paste0("<strong>",cal_title_map(LANG_TLS,COUNTRY_NAME,YEAR_LIST,admin1,var_to_summarise),"</strong>"))) %>%
-        addLegend(title = lang_label_tls(LANG_TLS,"legend_risk_class"),colors = legend_colors,labels = legend_values, opacity = 0.5, position = 'topright')
-      
-    } else if (var_to_summarise == "compliant_units_percent") {
+    }
+    
+    pal_gradient <- colorNumeric(
+      c("#666666","#e8132b","#92d050","#9bc2e6", "#111111"),
+      domain = c(0,4)
+    )
+    legend_colors = c("#e8132b","#92d050")
+    legend_values = c("< 1","≥ 1")
+    
+    if (0 %in% map_data$var_level_num) {
+      legend_colors = c("#666666",legend_colors)
+      legend_values = c(lang_label_tls(LANG_TLS,"no_data"),legend_values)
+    }
+    
+    if (length(ZERO_POB_LIST) > 0) {
+      legend_colors = c(legend_colors,"#9bc2e6")
+      legend_values = c(legend_values,lang_label_tls(LANG_TLS,"no_hab"))
+    }
+    
+    if (FALSE %in% map_data$population_and_pfa_bool) {
+      legend_colors = c(legend_colors,"#111111")
+      legend_values = c(legend_values,lang_label_tls(LANG_TLS,"na"))
+    }
+    
+    shape_label <- sprintf("<strong>%s</strong>, %s<br/>%s: %s",
+                           map_data$ADMIN2,
+                           map_data$ADMIN1,
+                           lang_label_tls(LANG_TLS,"rate"),
+                           map_data$var
+    ) %>% lapply(HTML)
+    
+    # MAPA
+    map <- leaflet(map_data,options = leafletOptions(doubleClickZoom = T, attributionControl = F, zoomSnap=0.1, zoomDelta=0.1)) %>%
+      addProviderTiles(providers$Esri.WorldGrayCanvas) %>%
+      addPolygons(
+        fillColor   = ~pal_gradient(var_level_num),
+        fillOpacity = 0.7,
+        dashArray   = "",
+        weight      = 1,
+        color       = "#333333",
+        opacity     = 1,
+        highlight = highlightOptions(
+          weight = 2,
+          color = "#333333",
+          dashArray = "",
+          fillOpacity = 1,
+          bringToFront = TRUE),
+        label = shape_label,
+        labelOptions = labelOptions(
+          style = list("font-weight" = "normal", padding = "3px 8px"),
+          textsize = "15px",
+          direction = "auto")
+      ) %>% 
+      addLegend(layerId = "map_title","topright",color = "white", opacity = 0,labels=HTML(paste0("<strong>",cal_title_map(LANG_TLS,COUNTRY_NAME,YEAR_LIST,admin1,var_to_summarise),"</strong>"))) %>%
+      addLegend(title = legend_title,colors = legend_colors,labels = legend_values, opacity = 0.5, position = 'topright')
+    
+    
+    } else if (var_to_summarise %in% c("pfa_notified_percent", "pfa_investigated_percent", 
+                                       "suitable_samples_percent", "followups_percent")) {
       # % de casos o muestras
       map_data <- map_data %>% rename("var"=var_to_summarise)
       map_data$var <- round(map_data$var,1)
       
-      if (var_to_summarise == "compliant_units_percent") {
-        legend_title = lang_label_tls(LANG_TLS,"surveillance_prop_reporting_units")
-      } 
+      legend_title = lang_label_tls(LANG_TLS,"surveillance_prop_pfa_cases")
       
       if (admin1_id == 0) {
-        map_data <- map_data %>% select(GEO_ID,ADMIN1,ADMIN2,var,geometry)
+        map_data <- map_data %>% select(GEO_ID,ADMIN1,ADMIN2,var,geometry, population_and_pfa_bool, POB15)
       } else {
-        map_data <- map_data %>% filter(`ADMIN1 GEO_ID` == admin1_id) %>% select(GEO_ID,ADMIN1,ADMIN2,var,geometry)
+        map_data <- map_data %>% filter(`ADMIN1 GEO_ID` == admin1_id) %>% select(GEO_ID,ADMIN1,ADMIN2,var,geometry, population_and_pfa_bool, POB15)
       }
       
       map_data <- map_data %>% mutate(
         var_level_num = case_when(
+          !population_and_pfa_bool ~ 4,
           GEO_ID %in% ZERO_POB_LIST ~ 3,
           is.na(var) ~ 0,
           var < 80 ~ 1,
@@ -141,9 +363,29 @@ cal_plot_map_data <- function(LANG_TLS,COUNTRY_NAME,YEAR_LIST,ZERO_POB_LIST,CUT_
         )
       )
       
+      if (pop_filter != lang_label("filter_all")) {
+        if (pop_filter == lang_label("less_than_100000")) {
+          map_data <- map_data %>% 
+            mutate(
+              var_level_num = case_when(
+                POB15 >= 100000 ~ 4,
+                T ~ var_level_num
+              )
+            )
+        } else if (pop_filter == lang_label("greater_than_100000")) {
+          map_data <- map_data %>%
+            mutate(
+              var_level_num = case_when(
+                POB15 < 100000 ~ 4,
+                T ~ var_level_num
+              )
+            )
+        }
+      }
+      
       pal_gradient <- colorNumeric(
-        c("#666666","#e8132b","#92d050","#9bc2e6"),
-        domain = c(0,3)
+        c("#666666","#e8132b","#92d050","#9bc2e6", "#111111"),
+        domain = c(0,4)
       )
       legend_colors = c("#e8132b","#92d050")
       legend_values = c("< 80%","≥ 80%")
@@ -156,6 +398,11 @@ cal_plot_map_data <- function(LANG_TLS,COUNTRY_NAME,YEAR_LIST,ZERO_POB_LIST,CUT_
       if (length(ZERO_POB_LIST) > 0) {
         legend_colors = c(legend_colors,"#9bc2e6")
         legend_values = c(legend_values,lang_label_tls(LANG_TLS,"no_hab"))
+      }
+      
+      if (FALSE %in% map_data$population_and_pfa_bool) {
+        legend_colors = c(legend_colors,"#111111")
+        legend_values = c(legend_values,lang_label_tls(LANG_TLS,"na"))
       }
       
       shape_label <- sprintf("<strong>%s</strong>, %s<br/>%s: %s%s",
@@ -190,36 +437,72 @@ cal_plot_map_data <- function(LANG_TLS,COUNTRY_NAME,YEAR_LIST,ZERO_POB_LIST,CUT_
         ) %>% 
         addLegend(layerId = "map_title","topright",color = "white", opacity = 0,labels=HTML(paste0("<strong>",cal_title_map(LANG_TLS,COUNTRY_NAME,YEAR_LIST,admin1,var_to_summarise),"</strong>"))) %>%
         addLegend(title = legend_title,colors = legend_colors,labels = legend_values, opacity = 0.5, position = 'topright')
-    
-      } else if (var_to_summarise == "pfa_rate") {
+      
+    } else if (var_to_summarise == "active_search") {
       
       map_data <- map_data %>% rename("var"=var_to_summarise)
-      legend_title = lang_label_tls(LANG_TLS,"surveillance_pfa_rate")
+
+      legend_title = lang_label_tls(LANG_TLS,"surveillance_active_search")
       
       if (admin1_id == 0) {
-        map_data <- map_data %>% select(GEO_ID,ADMIN1,ADMIN2,population_and_pfa_bool, var,geometry)
+        map_data <- map_data %>% select(GEO_ID,ADMIN1,ADMIN2,var,geometry, population_and_pfa_bool, POB15)
       } else {
-        map_data <- map_data %>% filter(`ADMIN1 GEO_ID` == admin1_id) %>% select(GEO_ID,ADMIN1,ADMIN2,var,geometry, population_and_pfa_bool)
+        map_data <- map_data %>% filter(`ADMIN1 GEO_ID` == admin1_id) %>% select(GEO_ID,ADMIN1,ADMIN2,var,geometry, population_and_pfa_bool, POB15)
       }
       
       map_data <- map_data %>% mutate(
-        var_level_num = case_when(
-          !population_and_pfa_bool ~ 4,
+        var_num = case_when(
+          population_and_pfa_bool ~ 4,
           GEO_ID %in% ZERO_POB_LIST ~ 3,
           is.na(var) ~ 0,
-          var < 1 ~ 1,
-          var >= 1 ~ 2
+          var == lang_label_tls(LANG_TLS,"yes") | var == lang_label_tls(LANG_TLS,"yes_upper") ~ 1,
+          var == lang_label_tls(LANG_TLS,"no") | var == lang_label_tls(LANG_TLS,"no_upper") ~ 2
+        ),
+        var_word = case_when(
+          population_and_pfa_bool ~ lang_label_tls(LANG_TLS,"na"),
+          GEO_ID %in% ZERO_POB_LIST ~ lang_label_tls(LANG_TLS,"no_hab"),
+          is.na(var) ~ lang_label_tls(LANG_TLS,"no_data"),
+          var == lang_label_tls(LANG_TLS,"yes") | var == lang_label_tls(LANG_TLS,"yes_upper") ~ lang_label_tls(LANG_TLS,"yes"),
+          var == lang_label_tls(LANG_TLS,"no") | var == lang_label_tls(LANG_TLS,"no_upper") ~ lang_label_tls(LANG_TLS,"no")
         )
       )
       
+      if (pop_filter != lang_label("filter_all")) {
+        if (pop_filter == lang_label("less_than_100000")) {
+          map_data <- map_data %>% 
+            mutate(
+              var_num = case_when(
+                POB15 >= 100000 ~ 4,
+                T ~ var_num
+              ),
+              var_word = case_when(
+                POB15 >= 100000 ~ lang_label("na"),
+                T ~ var_word
+              )
+            )
+        } else if (pop_filter == lang_label("greater_than_100000")) {
+          map_data <- map_data %>%
+            mutate(
+              var_num = case_when(
+                POB15 < 100000 ~ 4,
+                T ~ var_num
+              ),
+              var_word = case_when(
+                POB15 < 100000 ~ lang_label("na"),
+                T ~ var_word
+              )
+            )
+        }
+      }
+      
       pal_gradient <- colorNumeric(
-        c("#666666","#e8132b","#92d050","#9bc2e6", "#111111"),
+        c("#666666","#92d050","#e8132b","#9bc2e6", "#111111"),
         domain = c(0,4)
       )
       legend_colors = c("#e8132b","#92d050")
-      legend_values = c("< 1","≥ 1")
+      legend_values = c(lang_label_tls(LANG_TLS,"no"),lang_label_tls(LANG_TLS,"yes"))
       
-      if (0 %in% map_data$var_level_num) {
+      if (0 %in% map_data$var_num) {
         legend_colors = c("#666666",legend_colors)
         legend_values = c(lang_label_tls(LANG_TLS,"no_data"),legend_values)
       }
@@ -229,7 +512,7 @@ cal_plot_map_data <- function(LANG_TLS,COUNTRY_NAME,YEAR_LIST,ZERO_POB_LIST,CUT_
         legend_values = c(legend_values,lang_label_tls(LANG_TLS,"no_hab"))
       }
       
-      if (FALSE %in% map_data$population_and_pfa_bool) {
+      if (TRUE %in% map_data$population_and_pfa_bool) {
         legend_colors = c(legend_colors,"#111111")
         legend_values = c(legend_values,lang_label_tls(LANG_TLS,"na"))
       }
@@ -237,15 +520,14 @@ cal_plot_map_data <- function(LANG_TLS,COUNTRY_NAME,YEAR_LIST,ZERO_POB_LIST,CUT_
       shape_label <- sprintf("<strong>%s</strong>, %s<br/>%s: %s",
                              map_data$ADMIN2,
                              map_data$ADMIN1,
-                             lang_label_tls(LANG_TLS,"rate"),
-                             map_data$var
+                             lang_label_tls(LANG_TLS,"surveillance_active_search"),
+                             tolower(map_data$var_word)
       ) %>% lapply(HTML)
       
-      # MAPA
       map <- leaflet(map_data,options = leafletOptions(doubleClickZoom = T, attributionControl = F, zoomSnap=0.1, zoomDelta=0.1)) %>%
         addProviderTiles(providers$Esri.WorldGrayCanvas) %>%
         addPolygons(
-          fillColor   = ~pal_gradient(var_level_num),
+          fillColor   = ~pal_gradient(var_num),
           fillOpacity = 0.7,
           dashArray   = "",
           weight      = 1,
@@ -264,244 +546,9 @@ cal_plot_map_data <- function(LANG_TLS,COUNTRY_NAME,YEAR_LIST,ZERO_POB_LIST,CUT_
             direction = "auto")
         ) %>% 
         addLegend(layerId = "map_title","topright",color = "white", opacity = 0,labels=HTML(paste0("<strong>",cal_title_map(LANG_TLS,COUNTRY_NAME,YEAR_LIST,admin1,var_to_summarise),"</strong>"))) %>%
-        addLegend(title = legend_title,colors = legend_colors,labels = legend_values, opacity = 0.5, position = 'topright')
+        addLegend(title = lang_label_tls(LANG_TLS,"rap_pres_team"),colors = legend_colors,labels = legend_values, opacity = 0.5, position = 'topright')
       
-      
-      } else if (var_to_summarise %in% c("pfa_notified_percent", "pfa_investigated_percent", 
-                                         "suitable_samples_percent", "followups_percent")) {
-        # % de casos o muestras
-        map_data <- map_data %>% rename("var"=var_to_summarise)
-        map_data$var <- round(map_data$var,1)
-        
-        legend_title = lang_label_tls(LANG_TLS,"surveillance_prop_pfa_cases")
-        
-        if (admin1_id == 0) {
-          map_data <- map_data %>% select(GEO_ID,ADMIN1,ADMIN2,var,geometry, population_and_pfa_bool)
-        } else {
-          map_data <- map_data %>% filter(`ADMIN1 GEO_ID` == admin1_id) %>% select(GEO_ID,ADMIN1,ADMIN2,var,geometry, population_and_pfa_bool)
-        }
-        
-        map_data <- map_data %>% mutate(
-          var_level_num = case_when(
-            !population_and_pfa_bool ~ 4,
-            GEO_ID %in% ZERO_POB_LIST ~ 3,
-            is.na(var) ~ 0,
-            var < 80 ~ 1,
-            var >= 80 ~ 2
-          )
-        )
-        
-        pal_gradient <- colorNumeric(
-          c("#666666","#e8132b","#92d050","#9bc2e6", "#111111"),
-          domain = c(0,4)
-        )
-        legend_colors = c("#e8132b","#92d050")
-        legend_values = c("< 80%","≥ 80%")
-        
-        if (0 %in% map_data$var_level_num) {
-          legend_colors = c("#666666",legend_colors)
-          legend_values = c(lang_label_tls(LANG_TLS,"no_data"),legend_values)
-        }
-        
-        if (length(ZERO_POB_LIST) > 0) {
-          legend_colors = c(legend_colors,"#9bc2e6")
-          legend_values = c(legend_values,lang_label_tls(LANG_TLS,"no_hab"))
-        }
-        
-        if (FALSE %in% map_data$population_and_pfa_bool) {
-          legend_colors = c(legend_colors,"#111111")
-          legend_values = c(legend_values,lang_label_tls(LANG_TLS,"na"))
-        }
-        
-        shape_label <- sprintf("<strong>%s</strong>, %s<br/>%s: %s%s",
-                               map_data$ADMIN2,
-                               map_data$ADMIN1,
-                               lang_label_tls(LANG_TLS,"proportion"),
-                               map_data$var,
-                               "%"
-        ) %>% lapply(HTML)
-        
-        # MAPA
-        map <- leaflet(map_data,options = leafletOptions(doubleClickZoom = T, attributionControl = F, zoomSnap=0.1, zoomDelta=0.1)) %>%
-          addProviderTiles(providers$Esri.WorldGrayCanvas) %>%
-          addPolygons(
-            fillColor   = ~pal_gradient(var_level_num),
-            fillOpacity = 0.7,
-            dashArray   = "",
-            weight      = 1,
-            color       = "#333333",
-            opacity     = 1,
-            highlight = highlightOptions(
-              weight = 2,
-              color = "#333333",
-              dashArray = "",
-              fillOpacity = 1,
-              bringToFront = TRUE),
-            label = shape_label,
-            labelOptions = labelOptions(
-              style = list("font-weight" = "normal", padding = "3px 8px"),
-              textsize = "15px",
-              direction = "auto")
-          ) %>% 
-          addLegend(layerId = "map_title","topright",color = "white", opacity = 0,labels=HTML(paste0("<strong>",cal_title_map(LANG_TLS,COUNTRY_NAME,YEAR_LIST,admin1,var_to_summarise),"</strong>"))) %>%
-          addLegend(title = legend_title,colors = legend_colors,labels = legend_values, opacity = 0.5, position = 'topright')
-        
-      } else if (var_to_summarise == "active_search") {
-        
-        map_data <- map_data %>% rename("var"=var_to_summarise)
-
-        legend_title = lang_label_tls(LANG_TLS,"surveillance_active_search")
-        
-        if (admin1_id == 0) {
-          map_data <- map_data %>% select(GEO_ID,ADMIN1,ADMIN2,var,geometry, population_and_pfa_bool)
-        } else {
-          map_data <- map_data %>% filter(`ADMIN1 GEO_ID` == admin1_id) %>% select(GEO_ID,ADMIN1,ADMIN2,var,geometry, population_and_pfa_bool)
-        }
-        
-        map_data <- map_data %>% mutate(
-          var_num = case_when(
-            population_and_pfa_bool ~ 4,
-            GEO_ID %in% ZERO_POB_LIST ~ 3,
-            is.na(var) ~ 0,
-            var == lang_label_tls(LANG_TLS,"yes") | var == lang_label_tls(LANG_TLS,"yes_upper") ~ 1,
-            var == lang_label_tls(LANG_TLS,"no") | var == lang_label_tls(LANG_TLS,"no_upper") ~ 2
-          ),
-          var_word = case_when(
-            population_and_pfa_bool ~ lang_label_tls(LANG_TLS,"na"),
-            GEO_ID %in% ZERO_POB_LIST ~ lang_label_tls(LANG_TLS,"no_hab"),
-            is.na(var) ~ lang_label_tls(LANG_TLS,"no_data"),
-            var == lang_label_tls(LANG_TLS,"yes") | var == lang_label_tls(LANG_TLS,"yes_upper") ~ lang_label_tls(LANG_TLS,"yes"),
-            var == lang_label_tls(LANG_TLS,"no") | var == lang_label_tls(LANG_TLS,"no_upper") ~ lang_label_tls(LANG_TLS,"no")
-          )
-        )
-        
-        pal_gradient <- colorNumeric(
-          c("#666666","#92d050","#e8132b","#9bc2e6", "#111111"),
-          domain = c(0,4)
-        )
-        legend_colors = c("#e8132b","#92d050")
-        legend_values = c(lang_label_tls(LANG_TLS,"no"),lang_label_tls(LANG_TLS,"yes"))
-        
-        if (0 %in% map_data$var_num) {
-          legend_colors = c("#666666",legend_colors)
-          legend_values = c(lang_label_tls(LANG_TLS,"no_data"),legend_values)
-        }
-        
-        if (length(ZERO_POB_LIST) > 0) {
-          legend_colors = c(legend_colors,"#9bc2e6")
-          legend_values = c(legend_values,lang_label_tls(LANG_TLS,"no_hab"))
-        }
-        
-        if (TRUE %in% map_data$population_and_pfa_bool) {
-          legend_colors = c(legend_colors,"#111111")
-          legend_values = c(legend_values,lang_label_tls(LANG_TLS,"na"))
-        }
-        
-        shape_label <- sprintf("<strong>%s</strong>, %s<br/>%s: %s",
-                               map_data$ADMIN2,
-                               map_data$ADMIN1,
-                               lang_label_tls(LANG_TLS,"surveillance_active_search"),
-                               tolower(map_data$var_word)
-        ) %>% lapply(HTML)
-        
-        map <- leaflet(map_data,options = leafletOptions(doubleClickZoom = T, attributionControl = F, zoomSnap=0.1, zoomDelta=0.1)) %>%
-          addProviderTiles(providers$Esri.WorldGrayCanvas) %>%
-          addPolygons(
-            fillColor   = ~pal_gradient(var_num),
-            fillOpacity = 0.7,
-            dashArray   = "",
-            weight      = 1,
-            color       = "#333333",
-            opacity     = 1,
-            highlight = highlightOptions(
-              weight = 2,
-              color = "#333333",
-              dashArray = "",
-              fillOpacity = 1,
-              bringToFront = TRUE),
-            label = shape_label,
-            labelOptions = labelOptions(
-              style = list("font-weight" = "normal", padding = "3px 8px"),
-              textsize = "15px",
-              direction = "auto")
-          ) %>% 
-          addLegend(layerId = "map_title","topright",color = "white", opacity = 0,labels=HTML(paste0("<strong>",cal_title_map(LANG_TLS,COUNTRY_NAME,YEAR_LIST,admin1,var_to_summarise),"</strong>"))) %>%
-          addLegend(title = lang_label_tls(LANG_TLS,"rap_pres_team"),colors = legend_colors,labels = legend_values, opacity = 0.5, position = 'topright')
-        
-      }
-    
-  } else {
-    map_data <- map_data %>% rename("var"=var_to_summarise)
-    map_data$var <- round(map_data$var,0)
-    
-    if (admin1_id == 0) {
-      map_data <- map_data %>% select(GEO_ID,ADMIN1,ADMIN2,var,pob=POB,geometry)
-    } else {
-      map_data <- map_data %>% filter(`ADMIN1 GEO_ID` == admin1_id) %>% select(GEO_ID,ADMIN1,ADMIN2,var,pob=POB,geometry)
     }
-    
-    
-    map_data <- map_data %>% mutate(
-      tasa_level_num = case_when(
-        GEO_ID %in% ZERO_POB_LIST ~ 4,
-        is.na(var) ~ 0,
-        var < 1 ~ 1,
-        var >= 1 & var < 2 & pob > 100000 ~ 2,
-        (var >= 2 & pob > 100000) | (var >= 1 & pob <= 100000) ~ 3
-      )
-    )
-    
-    pal_gradient <- colorNumeric(
-      c("#666666","#e8132b","#fec000","#92d050","#9bc2e6"),
-      domain = c(0,4)
-    )
-    legend_colors = c("#e8132b","#fec000","#92d050")
-    legend_values = c(lang_label_tls(LANG_TLS,"surv_legend_cases_1"),
-                      lang_label_tls(LANG_TLS,"surv_legend_cases_2"),
-                      lang_label_tls(LANG_TLS,"surv_legend_cases_3"))
-    
-    if (0 %in% map_data$tasa_level_num) {
-      legend_colors = c("#666666",legend_colors)
-      legend_values = c(lang_label_tls(LANG_TLS,"no_data"),legend_values)
-    }
-    
-    if (length(ZERO_POB_LIST) > 0) {
-      legend_colors = c(legend_colors,"#9bc2e6")
-      legend_values = c(legend_values,lang_label_tls(LANG_TLS,"no_hab"))
-    }
-    
-    shape_label <- sprintf("<strong>%s</strong>, %s<br/>%s: %s",
-                           map_data$ADMIN2,
-                           map_data$ADMIN1,
-                           lang_label_tls(LANG_TLS,"rate"),
-                           map_data$var
-    ) %>% lapply(HTML)
-    
-    # MAPA
-    map <- leaflet(map_data,options = leafletOptions(doubleClickZoom = T, attributionControl = F, zoomSnap=0.1, zoomDelta=0.1)) %>%
-      addProviderTiles(providers$Esri.WorldGrayCanvas) %>%
-      addPolygons(
-        fillColor   = ~pal_gradient(tasa_level_num),
-        fillOpacity = 0.7,
-        dashArray   = "",
-        weight      = 1,
-        color       = "#333333",
-        opacity     = 1,
-        highlight = highlightOptions(
-          weight = 2,
-          color = "#333333",
-          dashArray = "",
-          fillOpacity = 1,
-          bringToFront = TRUE),
-        label = shape_label,
-        labelOptions = labelOptions(
-          style = list("font-weight" = "normal", padding = "3px 8px"),
-          textsize = "15px",
-          direction = "auto")
-      ) %>% 
-      addLegend(layerId = "map_title","topright",color = "white", opacity = 0,labels=HTML(paste0("<strong>",cal_title_map(LANG_TLS,COUNTRY_NAME,YEAR_LIST,admin1,var_to_summarise),"</strong>"))) %>%
-      addLegend(title = lang_label_tls(LANG_TLS,"surveillance_active_search"),colors = legend_colors,labels = legend_values, opacity = 0.5, position = 'topright')
-  }
   
   return(map)
   
