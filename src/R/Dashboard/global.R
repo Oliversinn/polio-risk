@@ -27,8 +27,10 @@ library(tidyverse)
 library(scales)
 library(mapview)
 library(webshot)
-webshot::install_phantomjs()
 
+
+webshot::install_phantomjs()
+Sys.setenv(OPENSSL_CONF = "/dev/null")
 options(shiny.fullstacktrace = TRUE)
 
 
