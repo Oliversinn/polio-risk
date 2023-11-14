@@ -73,7 +73,7 @@ fluidPage(
                     )
         ),
         bsTooltip("indicadores_select_risk", lang_label("tooltip_select_risk"), placement = "right", trigger = "hover",options = NULL),
-        
+
         
         ### GENERAL SCORES ----
         menuItem(

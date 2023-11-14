@@ -24,13 +24,24 @@ inmu_title_map <- function(LANG_TLS,YEAR_CAMP_SR,COUNTRY_NAME,YEAR_LIST,admin1,v
 
 
 
-inmu_plot_map_data <- function(LANG_TLS,YEAR_CAMP_SR,COUNTRY_NAME,YEAR_LIST,ZERO_POB_LIST,CUT_OFFS,map_data,data,var_to_summarise,admin1,admin1_id,admin1_geo_id_df) {
+inmu_plot_map_data <- function(LANG_TLS,YEAR_CAMP_SR,COUNTRY_NAME,YEAR_LIST,ZERO_POB_LIST,CUT_OFFS,map_data,data,var_to_summarise,admin1,admin1_id,admin1_geo_id_df, pop_filter) {
   pfa <- population_and_pfa(data)
   indicator <- "immunity_score"
   data <- data %>% select(-ADMIN1,-ADMIN2)
-  map_data <- full_join(map_data,data,by = c("GEO_ID" = "GEO_ID", "ADMIN1 GEO_ID" = "ADMIN1 GEO_ID"))
-  map_data$`ADMIN1 GEO_ID`[is.na(map_data$`ADMIN1 GEO_ID`) & map_data$ADMIN1 == admin1] <- admin1_geo_id_df$`ADMIN1 GEO_ID`[admin1_geo_id_df$ADMIN1 == admin1]
   
+  # if (pop_filter != lang_label("filter_all")) {
+  #   if (pop_filter == lang_label("less_than_100000")) {
+  #     data <- data %>% filter(POB15 < 100000)
+  #   } else if (pop_filter == lang_label("greater_than_100000")) {
+  #     data <- data %>% filter(POB15 >= 100000)
+  #   }
+  # }
+
+  
+  map_data <- full_join(map_data,data,by = c("GEO_ID" = "GEO_ID", "ADMIN1 GEO_ID" = "ADMIN1 GEO_ID"))
+  
+  map_data$`ADMIN1 GEO_ID`[is.na(map_data$`ADMIN1 GEO_ID`) & map_data$ADMIN1 == admin1] <- admin1_geo_id_df$`ADMIN1 GEO_ID`[admin1_geo_id_df$ADMIN1 == admin1]
+
   if (var_to_summarise %in% c("immunity_score")) {
     map_data <- map_data %>% rename("PR" = var_to_summarise)
     map_data$risk_level <- get_risk_level(LANG_TLS,CUT_OFFS,indicator,map_data$PR,map_data$population_and_pfa_bool)
@@ -188,7 +199,7 @@ inmu_plot_map_data <- function(LANG_TLS,YEAR_CAMP_SR,COUNTRY_NAME,YEAR_LIST,ZERO
       domain = c(0,6)
     )
     legend_colors = c("#920000","#e8132b","#fec000","#92d050")
-    legend_values = c("< 80%","≥ 80% <b>;</b> < 90%","≥ 90% <b>;</b> < 95%","≥ 95% <b>;</b> ≤ 100%")
+    legend_values = c("< 80%","80-90%","90-95%","95-100%")
     
     if (0 %in% map_data$cob_level_num) {
       legend_colors = c("#666666",legend_colors)

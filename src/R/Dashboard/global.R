@@ -27,7 +27,7 @@ library(tidyverse)
 library(scales)
 library(mapview)
 library(webshot)
-webshot::install_phantomjs(force = TRUE)
+webshot::install_phantomjs()
 
 options(shiny.fullstacktrace = TRUE)
 
@@ -115,6 +115,7 @@ plot_pie_data <- function(LANG_TLS,ZERO_POB_LIST,CUT_OFFS,indicator,data,admin1_
     colnames(pie_data) = c(lang_label_tls(LANG_TLS,"risk_level"),"n")
     
     datos_table <- pie_data %>%
+      adorn_totals("row") %>% 
       datatable(
         rownames = F,
         extensions = 'Buttons',
@@ -136,6 +137,24 @@ plot_pie_data <- function(LANG_TLS,ZERO_POB_LIST,CUT_OFFS,indicator,data,admin1_
         )
       )
   }
+}
+
+apply_admin_pop_filters <- function(data, admin1_filter, pop_filter) {
+  data_filtered <- data
+  if (admin1_filter != lang_label("filter_all")) {
+    data_filtered <- data_filtered %>% 
+      filter(`ADMIN1 GEO_ID` == admin1_filter)
+  }
+  
+  if (pop_filter != lang_label("filter_all")) {
+    if (pop_filter == lang_label("less_than_100000")) {
+      data_filtered <- data_filtered %>% filter(POB15 < 100000)
+    } else if (pop_filter == lang_label("greater_than_100000")) {
+      data_filtered <- data_filtered %>% filter(POB15 >= 100000)
+    }
+  }
+  
+  return(data_filtered)
 }
 
 

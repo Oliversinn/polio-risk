@@ -91,17 +91,52 @@ get_risk_level_point_limit <- function(CUT_OFFS,indicator,risk_level, pfa) {
 
 ind_rangos_table <- function(LANG_TLS,CUT_OFFS,indicator, pfa) {
   
-  table_percentages <- c(lang_label_tls(LANG_TLS,"LR"),lang_label_tls(LANG_TLS,"MR"),lang_label_tls(LANG_TLS,"HR"),lang_label_tls(LANG_TLS,"VHR"))
-  table_intervals_min <- c(0,get_risk_level_point_limit(CUT_OFFS,indicator,"LR", pfa) + 1,get_risk_level_point_limit(CUT_OFFS,indicator,"MR", pfa) + 1,get_risk_level_point_limit(CUT_OFFS,indicator,"HR", pfa) + 1)
-  table_intervals_max <- c(get_risk_level_point_limit(CUT_OFFS,indicator,"LR", pfa),get_risk_level_point_limit(CUT_OFFS,indicator,"MR", pfa),get_risk_level_point_limit(CUT_OFFS,indicator,"HR", pfa),get_risk_level_point_limit(CUT_OFFS,indicator,"VHR", pfa))
-  table_colors <- c("rgba(146, 208, 80, 0.7)","rgba(254, 192, 0, 0.7)","rgba(232, 19, 43, 0.7)","rgba(146, 0, 0, 0.7)")
+  table_percentages <- c(
+    lang_label_tls(LANG_TLS,"LR"),
+    lang_label_tls(LANG_TLS,"MR"),
+    lang_label_tls(LANG_TLS,"HR")
+  )
+  table_intervals_min <- c(
+    0,
+    get_risk_level_point_limit(CUT_OFFS,indicator,"LR", pfa) + 1,
+    get_risk_level_point_limit(CUT_OFFS,indicator,"MR", pfa) + 1
+  )
+  table_intervals_max <- c(
+    get_risk_level_point_limit(CUT_OFFS,indicator,"LR", pfa),
+    get_risk_level_point_limit(CUT_OFFS,indicator,"MR", pfa),
+    get_risk_level_point_limit(CUT_OFFS,indicator,"HR", pfa)
+  )
+  table_colors <- c(
+    "rgba(146, 208, 80, 0.7)",
+    "rgba(254, 192, 0, 0.7)",
+    "rgba(232, 19, 43, 0.7)"
+  )
+  number_of_categories <- 3
+  
+  if (indicator %!in% c("determinants_score", "outbreaks_score")) {
+    table_percentages <- c(table_percentages, lang_label_tls(LANG_TLS,"VHR"))
+    table_intervals_min <- c(
+      table_intervals_min, 
+      get_risk_level_point_limit(CUT_OFFS,indicator,"HR", pfa) + 1
+    )
+    table_intervals_max <- c(
+      table_intervals_max,
+      get_risk_level_point_limit(CUT_OFFS,indicator,"VHR", pfa)
+    )
+    table_colors <- c(
+      table_colors,
+      "rgba(146, 0, 0, 0.7)"
+    )
+    
+    number_of_categories <- number_of_categories + 1
+  }
   
   rangos_df <- data.frame(table_percentages,table_intervals_min)
   rangos_df <- rangos_df %>% pivot_wider(names_from = table_percentages, values_from = table_intervals_min)
   rangos_df <- rbind(rangos_df,table_intervals_max)
   rangos_df <- cbind(c(lang_label_tls(LANG_TLS,"limit_min"),lang_label_tls(LANG_TLS,"limit_max")),rangos_df)
   colnames(rangos_df)[1] <- lang_label_tls(LANG_TLS,"risk")
-  
+
   datos_table <- rangos_df %>%
     datatable(
       rownames = F,
@@ -115,7 +150,7 @@ ind_rangos_table <- function(LANG_TLS,CUT_OFFS,indicator, pfa) {
       class = "display"
     ) %>% formatStyle(
       colnames(rangos_df)[-1],
-      backgroundColor = styleInterval(table_intervals_max %>% head(3),table_colors)
+      backgroundColor = styleInterval(table_intervals_max %>% head(number_of_categories - 1),table_colors)
     ) %>% formatStyle(0, target = 'row',lineHeight = '150%')
   
   return(datos_table)
@@ -514,11 +549,15 @@ ind_plot_map_data <- function(LANG_TLS,ZERO_POB_LIST,CUT_OFFS,map_data,indicator
     legend_values = c(lang_label_tls(LANG_TLS,"cut_offs_LR"))
     
   } else {
-    legend_colors = c("#920000","#e8132b","#fec000","#92d050")
-    legend_values = c(lang_label_tls(LANG_TLS,"cut_offs_VHR"),
-                      lang_label_tls(LANG_TLS,"cut_offs_HR"),
+    legend_colors = c("#e8132b","#fec000","#92d050")
+    legend_values = c(lang_label_tls(LANG_TLS,"cut_offs_HR"),
                       lang_label_tls(LANG_TLS,"cut_offs_MR"),
                       lang_label_tls(LANG_TLS,"cut_offs_LR"))
+    
+    if (indicator %!in% c("determinants_score", "outbreaks_score")) {
+      legend_colors <- c("#920000", legend_colors)
+      legend_values <- c(lang_label_tls(LANG_TLS,"cut_offs_VHR"), legend_values)
+    }
     
     
     if (0 %in% map_data$risk_level_num) {

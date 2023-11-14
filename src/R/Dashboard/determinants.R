@@ -42,8 +42,7 @@ determinants_plot_map_data <- function(LANG_TLS,COUNTRY_NAME,YEAR_LIST,ZERO_POB_
         risk_level == lang_label_tls(LANG_TLS,"LR") ~ 1,
         risk_level == lang_label_tls(LANG_TLS,"MR") ~ 2,
         risk_level == lang_label_tls(LANG_TLS,"HR") ~ 3,
-        risk_level == lang_label_tls(LANG_TLS,"VHR") ~ 4,
-        risk_level == "NO_HAB" ~ 5
+        risk_level == "NO_HAB" ~ 4
       ),
       risk_level_word = case_when(
         is.na(risk_level) ~ lang_label_tls(LANG_TLS,"no_data"),
@@ -53,13 +52,12 @@ determinants_plot_map_data <- function(LANG_TLS,COUNTRY_NAME,YEAR_LIST,ZERO_POB_
     )
     
     pal_gradient <- colorNumeric(
-      c("#666666","#92d050","#fec000","#e8132b","#920000","#9bc2e6"),
-      domain = c(0,5)
+      c("#666666","#92d050","#fec000","#e8132b","#9bc2e6"),
+      domain = c(0,4)
     )
     
-    legend_colors = c("#920000","#e8132b","#fec000","#92d050")
-    legend_values = c(lang_label_tls(LANG_TLS,"cut_offs_VHR"),
-                      lang_label_tls(LANG_TLS,"cut_offs_HR"),
+    legend_colors = c("#e8132b","#fec000","#92d050")
+    legend_values = c(lang_label_tls(LANG_TLS,"cut_offs_HR"),
                       lang_label_tls(LANG_TLS,"cut_offs_MR"),
                       lang_label_tls(LANG_TLS,"cut_offs_LR"))
     

@@ -214,7 +214,11 @@ function(input, output, session) {
   })
   
   # IMMUNITY ----
+  
   ## MAP ----
+  immunity_scores_reactive <- reactive({
+    apply_admin_pop_filters(immunity_scores, input$admin1_filter, input$population15_filter)
+  })
   ### IMMUNITY SCORE ----
   output$inmunidad_title_map_box <- renderText({
     title_map_box(lang_label("INM_POB"),input$admin1_filter)
@@ -223,7 +227,7 @@ function(input, output, session) {
   inmu_map_total <- reactiveValues(dat = 0)
   
   output$inmunidad_map_total <- renderLeaflet({
-    inmu_map_total$dat <- inmu_plot_map_data(LANG_TLS,YEAR_CAMP_SR,toupper(COUNTRY_NAME),YEAR_LIST,ZERO_POB_LIST,CUT_OFFS,country_shapes,immunity_scores,"immunity_score",input$admin1_filter,get_a1_geo_id(input$admin1_filter),admin1_geo_id_df)
+    inmu_map_total$dat <- inmu_plot_map_data(LANG_TLS,YEAR_CAMP_SR,toupper(COUNTRY_NAME),YEAR_LIST,ZERO_POB_LIST,CUT_OFFS,country_shapes,immunity_scores,"immunity_score",input$admin1_filter,get_a1_geo_id(input$admin1_filter),admin1_geo_id_df, input$population15_filter)
     inmu_map_total$dat
   })
   
