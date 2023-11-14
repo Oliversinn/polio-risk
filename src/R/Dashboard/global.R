@@ -51,9 +51,29 @@ admin1_transform <- function(LANG_TLS,COUNTRY_NAME,admin1) {
   }
 }
 
-plot_pie_data <- function(LANG_TLS,ZERO_POB_LIST,CUT_OFFS,indicator,data,admin1_id,return_table=F) {
+plot_pie_data <- function(LANG_TLS,ZERO_POB_LIST,CUT_OFFS,indicator,data,admin1_id,pop_filter, return_table=F) {
   data <- data %>% rename('var' = indicator)
   data$risk_level <- get_risk_level(LANG_TLS,CUT_OFFS,indicator,data$var, data$population_and_pfa_bool)
+  
+  if (pop_filter != lang_label("filter_all")) {
+    if (pop_filter == lang_label("less_than_100000")) {
+      data <- data %>% 
+        mutate(
+          risk_level = case_when(
+            POB15 >= 100000 ~ lang_label("na"),
+            T ~ risk_level
+          )
+        )
+    } else if (pop_filter == lang_label("greater_than_100000")) {
+      data <- data %>%
+        mutate(
+          risk_level = case_when(
+            POB15 < 100000 ~ lang_label("na"),
+            T ~ risk_level
+          )
+        )
+    }
+  }
   
   if (admin1_id == 0) {
     pie_data <- data %>% filter(!is.na(var)) %>% select(risk_level) %>% count(risk_level)
@@ -71,7 +91,8 @@ plot_pie_data <- function(LANG_TLS,ZERO_POB_LIST,CUT_OFFS,indicator,data,admin1_
       risk_level == lang_label_tls(LANG_TLS,"HR") ~ lang_label_tls(LANG_TLS,"cut_offs_HR"),
       risk_level == lang_label_tls(LANG_TLS,"VHR") ~ lang_label_tls(LANG_TLS,"cut_offs_VHR"),
       risk_level == "NA" | is.na(risk_level) ~ lang_label_tls(LANG_TLS,"no_data"),
-      risk_level == "NO_HAB" ~ lang_label_tls(LANG_TLS,"no_hab")
+      risk_level == "NO_HAB" ~ lang_label_tls(LANG_TLS,"no_hab"),
+      risk_level == lang_label("na") ~ lang_label("na")
     ),
     clas_color = case_when(
       risk_level == lang_label_tls(LANG_TLS,"LR") ~ "rgba(146, 208, 80, 0.7)",
@@ -79,7 +100,8 @@ plot_pie_data <- function(LANG_TLS,ZERO_POB_LIST,CUT_OFFS,indicator,data,admin1_
       risk_level == lang_label_tls(LANG_TLS,"HR") ~ "rgba(232, 19, 43, 0.7)",
       risk_level == lang_label_tls(LANG_TLS,"VHR") ~ "rgba(146, 0, 0, 0.7)",
       risk_level == "NA" | is.na(risk_level) ~ "rgba(0, 0, 0, 0.5)",
-      risk_level == "NO_HAB" ~ "rgba(155, 194, 230, 0.7)"
+      risk_level == "NO_HAB" ~ "rgba(155, 194, 230, 0.7)", 
+      risk_level == lang_label("na") ~ "rgba(17, 17, 17, 0.7)"
     ),
     clas_order = case_when(
       risk_level == lang_label_tls(LANG_TLS,"LR") ~ 1,
@@ -87,9 +109,12 @@ plot_pie_data <- function(LANG_TLS,ZERO_POB_LIST,CUT_OFFS,indicator,data,admin1_
       risk_level == lang_label_tls(LANG_TLS,"HR") ~ 3,
       risk_level == lang_label_tls(LANG_TLS,"VHR") ~ 4,
       risk_level == "NA" | is.na(risk_level) ~ 5,
-      risk_level == "NO_HAB" ~ 6
+      risk_level == "NO_HAB" ~ 6,
+      risk_level == lang_label("na") ~ 7
     )
   ) %>% arrange(clas_order)
+  
+  
   
   if (!return_table) {
     fig <- plot_ly(

@@ -305,11 +305,11 @@ function(input, output, session) {
   })
   
   output$inmunidad_plot_pie <- renderPlotly({
-    plot_pie_data(LANG_TLS,ZERO_POB_LIST,CUT_OFFS,"immunity_score",immunity_scores,get_a1_geo_id(input$admin1_filter),return_table = F)
+    plot_pie_data(LANG_TLS,ZERO_POB_LIST,CUT_OFFS,"immunity_score",immunity_scores,get_a1_geo_id(input$admin1_filter), input$population15_filter,return_table = F)
   })
   
   output$inmunidad_table_dist <- renderDataTable(server = FALSE,{
-    plot_pie_data(LANG_TLS,ZERO_POB_LIST,CUT_OFFS,"immunity_score",immunity_scores,get_a1_geo_id(input$admin1_filter),return_table = T)
+    plot_pie_data(LANG_TLS,ZERO_POB_LIST,CUT_OFFS,"immunity_score",immunity_scores,get_a1_geo_id(input$admin1_filter), input$population15_filter,return_table = T)
   })
   
   ## DATATABLE ----
@@ -471,11 +471,11 @@ function(input, output, session) {
   })
   
   output$calidad_plot_pie <- renderPlotly({
-    plot_pie_data(LANG_TLS,ZERO_POB_LIST,CUT_OFFS,"surveillance_score",surveillance_scores,get_a1_geo_id(input$admin1_filter),return_table = F)
+    plot_pie_data(LANG_TLS,ZERO_POB_LIST,CUT_OFFS,"surveillance_score",surveillance_scores,get_a1_geo_id(input$admin1_filter), input$population15_filter,return_table = F)
   })
   
   output$calidad_table_dist <- renderDataTable(server = FALSE,{
-    plot_pie_data(LANG_TLS,ZERO_POB_LIST,CUT_OFFS,"surveillance_score",surveillance_scores,get_a1_geo_id(input$admin1_filter),return_table = T)
+    plot_pie_data(LANG_TLS,ZERO_POB_LIST,CUT_OFFS,"surveillance_score",surveillance_scores,get_a1_geo_id(input$admin1_filter), input$population15_filter,return_table = T)
   })
   
   ## DATATABLE ----
@@ -563,11 +563,11 @@ function(input, output, session) {
   })
   
   output$determinants_plot_pie <- renderPlotly({
-    plot_pie_data(LANG_TLS,ZERO_POB_LIST,CUT_OFFS,"determinants_score",determinants_scores,get_a1_geo_id(input$admin1_filter),return_table = F)
+    plot_pie_data(LANG_TLS,ZERO_POB_LIST,CUT_OFFS,"determinants_score",determinants_scores,get_a1_geo_id(input$admin1_filter), input$population15_filter,return_table = F)
   })
   
   output$determinants_table_dist <- renderDataTable(server = FALSE,{
-    plot_pie_data(LANG_TLS,ZERO_POB_LIST,CUT_OFFS,"determinants_score",determinants_scores,get_a1_geo_id(input$admin1_filter),return_table = T)
+    plot_pie_data(LANG_TLS,ZERO_POB_LIST,CUT_OFFS,"determinants_score",determinants_scores,get_a1_geo_id(input$admin1_filter), input$population15_filter,return_table = T)
   })
   
   ## DATATABLE ----
