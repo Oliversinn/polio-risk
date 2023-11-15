@@ -342,7 +342,7 @@ function(input, output, session) {
   })
   
   output$inmunidad_table <- renderDataTable(server = FALSE,{
-    inmu_get_data_table(LANG_TLS,YEAR_LIST,CUT_OFFS,immunity_scores,get_a1_geo_id(input$admin1_filter), input$population15_filter)
+    inmu_get_data_table(LANG_TLS,YEAR_LIST,CUT_OFFS,immunity_scores,get_a1_geo_id(input$admin1_filter), input$population15_filter, risk_filter_rename(input$indicadores_select_risk))
   })
   
   ## CHEAT SHEET ----
