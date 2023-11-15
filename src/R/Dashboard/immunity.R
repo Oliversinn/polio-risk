@@ -24,8 +24,11 @@ inmu_title_map <- function(LANG_TLS,YEAR_CAMP_SR,COUNTRY_NAME,YEAR_LIST,admin1,v
 
 
 
-inmu_plot_map_data <- function(LANG_TLS,YEAR_CAMP_SR,COUNTRY_NAME,YEAR_LIST,ZERO_POB_LIST,CUT_OFFS,map_data,data,var_to_summarise,admin1,admin1_id,admin1_geo_id_df, pop_filter) {
-  pfa <- population_and_pfa(data)
+inmu_plot_map_data <- function(LANG_TLS,YEAR_CAMP_SR,COUNTRY_NAME,YEAR_LIST,
+                               ZERO_POB_LIST,CUT_OFFS,map_data,data,
+                               var_to_summarise,admin1,admin1_id,
+                               admin1_geo_id_df, pop_filter, 
+                               risk_filter=toupper(lang_label("filter_all"))) {
   indicator <- "immunity_score"
   data <- data %>% select(-ADMIN1,-ADMIN2)
   
@@ -41,7 +44,8 @@ inmu_plot_map_data <- function(LANG_TLS,YEAR_CAMP_SR,COUNTRY_NAME,YEAR_LIST,ZERO
   map_data <- full_join(map_data,data,by = c("GEO_ID" = "GEO_ID", "ADMIN1 GEO_ID" = "ADMIN1 GEO_ID"))
   
   map_data$`ADMIN1 GEO_ID`[is.na(map_data$`ADMIN1 GEO_ID`) & map_data$ADMIN1 == admin1] <- admin1_geo_id_df$`ADMIN1 GEO_ID`[admin1_geo_id_df$ADMIN1 == admin1]
-
+  map_data$risk_level <- get_risk_level(LANG_TLS,CUT_OFFS,indicator,map_data$immunity_score,map_data$population_and_pfa_bool)
+  
   if (var_to_summarise %in% c("immunity_score")) {
     map_data <- map_data %>% rename("PR" = var_to_summarise)
     
@@ -69,6 +73,10 @@ inmu_plot_map_data <- function(LANG_TLS,YEAR_CAMP_SR,COUNTRY_NAME,YEAR_LIST,ZERO
             )
           )
       }
+    }
+    
+    if (risk_filter != toupper(lang_label("filter_all"))) {
+      map_data$risk_level[map_data$risk_level != risk_filter] <- lang_label("na")
     }
     
     
@@ -102,11 +110,30 @@ inmu_plot_map_data <- function(LANG_TLS,YEAR_CAMP_SR,COUNTRY_NAME,YEAR_LIST,ZERO
         domain = c(0,6)
       )
       
-      legend_colors = c("#920000","#e8132b","#fec000","#92d050")
-      legend_values = c(lang_label_tls(LANG_TLS,"cut_offs_VHR"),
-                        lang_label_tls(LANG_TLS,"cut_offs_HR"),
-                        lang_label_tls(LANG_TLS,"cut_offs_MR"),
-                        lang_label_tls(LANG_TLS,"cut_offs_LR"))
+      if (risk_filter == lang_label("VHR")) {
+        legend_colors = c("#920000")
+        legend_values = c(lang_label_tls(LANG_TLS,"cut_offs_VHR"))
+        
+      } else if (risk_filter == lang_label("VHR")) {
+        legend_colors = c("#e8132b")
+        legend_values = c(lang_label_tls(LANG_TLS,"cut_offs_HR"))
+        
+      } else if (risk_filter == lang_label("MR")) {
+        legend_colors = c("#fec000")
+        legend_values = c(lang_label_tls(LANG_TLS,"cut_offs_MR"))
+        
+      } else if (risk_filter == lang_label("LR")) {
+        legend_colors = c("#92d050")
+        legend_values = c(lang_label_tls(LANG_TLS,"cut_offs_LR"))
+        
+      } else {
+        legend_colors = c("#920000","#e8132b","#fec000","#92d050")
+        legend_values = c(lang_label_tls(LANG_TLS,"cut_offs_VHR"),
+                          lang_label_tls(LANG_TLS,"cut_offs_HR"),
+                          lang_label_tls(LANG_TLS,"cut_offs_MR"),
+                          lang_label_tls(LANG_TLS,"cut_offs_LR"))
+      }
+      
       
       if (0 %in% map_data$risk_level_num) {
         legend_colors = c("#666666",legend_colors)
@@ -204,9 +231,12 @@ inmu_plot_map_data <- function(LANG_TLS,YEAR_CAMP_SR,COUNTRY_NAME,YEAR_LIST,ZERO
     map_data$COB <- round(map_data$COB,1)
     
     if (admin1_id == 0) {
-      map_data <- map_data %>% select(GEO_ID,ADMIN1,ADMIN2,COB,geometry, POB15)
+      map_data <- map_data %>% 
+        select(GEO_ID,ADMIN1,ADMIN2,COB,geometry, POB15, risk_level)
     } else {
-      map_data <- map_data %>% filter(`ADMIN1 GEO_ID` == admin1_id) %>% select(GEO_ID,ADMIN1,ADMIN2,COB,geometry, POB15)
+      map_data <- map_data %>% 
+        filter(`ADMIN1 GEO_ID` == admin1_id) %>% 
+        select(GEO_ID,ADMIN1,ADMIN2,COB,geometry, POB15, risk_level)
     }
 
     map_data <- map_data %>% mutate(
@@ -239,6 +269,10 @@ inmu_plot_map_data <- function(LANG_TLS,YEAR_CAMP_SR,COUNTRY_NAME,YEAR_LIST,ZERO
             )
           )
       }
+    }
+    
+    if (risk_filter != toupper(lang_label("filter_all"))) {
+      map_data$cob_level_num[map_data$risk_level != risk_filter] <- 7
     }
     
     pal_gradient <- colorNumeric(
@@ -309,9 +343,9 @@ inmu_plot_map_data <- function(LANG_TLS,YEAR_CAMP_SR,COUNTRY_NAME,YEAR_LIST,ZERO
     
 
     if (admin1_id == 0) {
-      map_data <- map_data %>% select(GEO_ID,ADMIN1,ADMIN2,COB,geometry, POB15)
+      map_data <- map_data %>% select(GEO_ID,ADMIN1,ADMIN2,COB,geometry, POB15, risk_level)
     } else {
-      map_data <- map_data %>% filter(`ADMIN1 GEO_ID` == admin1_id) %>% select(GEO_ID,ADMIN1,ADMIN2,COB,geometry, POB15)
+      map_data <- map_data %>% filter(`ADMIN1 GEO_ID` == admin1_id) %>% select(GEO_ID,ADMIN1,ADMIN2,COB,geometry, POB15, risk_level)
     }
     
     map_data <- map_data %>% mutate(
@@ -355,6 +389,11 @@ inmu_plot_map_data <- function(LANG_TLS,YEAR_CAMP_SR,COUNTRY_NAME,YEAR_LIST,ZERO
             )
           )
       }
+    }
+    
+    if (risk_filter != toupper(lang_label("filter_all"))) {
+      map_data$var_num[map_data$risk_level != risk_filter] <- 4
+      map_data$var_word[map_data$risk_level != risk_filter] <- lang_label("na")
     }
 
 

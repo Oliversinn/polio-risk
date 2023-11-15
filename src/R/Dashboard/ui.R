@@ -63,7 +63,7 @@ fluidPage(
           placement = "right", trigger = "hover",options = NULL
         ),
         
-        #### CUT OFF SELECTOR
+        #### CUT OFF SELECTOR ----
         selectInput("indicadores_select_risk",label = paste0(lang_label("general_select_risk"),":"),
                     choices = c(toupper(lang_label("rep_label_all")),
                                 lang_label("cut_offs_VHR"),

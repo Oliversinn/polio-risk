@@ -34,6 +34,18 @@ function(input, output, session) {
     )
   }
   
+  risk_filter_rename <- function(risk_filter) {
+    return(
+      case_when(
+        toupper(lang_label("rep_label_all")) == risk_filter ~ toupper(lang_label("filter_all")),
+        lang_label("cut_offs_VHR") == risk_filter ~ lang_label("VHR"),
+        lang_label("cut_offs_HR") == risk_filter ~ lang_label("HR"),
+        lang_label("cut_offs_MR") == risk_filter ~ lang_label("MR"),
+        lang_label("cut_offs_LR") == risk_filter ~ lang_label("LR")
+      )
+    )
+  }
+  
   box_lugar <- function(admin1) {
     if (admin1 == toupper(lang_label("rep_label_all"))) {
       return(toupper(COUNTRY_NAME))
@@ -43,7 +55,7 @@ function(input, output, session) {
   }
   
   
-  #### VALUE BOXES ----
+  ## VALUE BOXES ----
   box_data <- reactiveValues()
   box_data$a1 <- 0
   box_data$a2 <- 0
@@ -127,7 +139,7 @@ function(input, output, session) {
     input$indicadores_select_indicador
   })
   
-  #### MAP ----
+  ## MAP ----
   indicadores_prep_map_data <- reactive({
     ind_prep_map_data(LANG_TLS,ZERO_POB_LIST,CUT_OFFS,country_shapes,scores_data,ind_rename(input$indicadores_select_indicador),get_a1_geo_id(input$admin1_filter),risk_rename(input$indicadores_select_risk), input$population15_filter)
   })
@@ -218,9 +230,6 @@ function(input, output, session) {
   # IMMUNITY ----
   
   ## MAP ----
-  immunity_scores_reactive <- reactive({
-    apply_admin_pop_filters(immunity_scores, input$admin1_filter, input$population15_filter)
-  })
   ### IMMUNITY SCORE ----
   output$inmunidad_title_map_box <- renderText({
     title_map_box(lang_label("INM_POB"),input$admin1_filter)
@@ -229,7 +238,11 @@ function(input, output, session) {
   inmu_map_total <- reactiveValues(dat = 0)
   
   output$inmunidad_map_total <- renderLeaflet({
-    inmu_map_total$dat <- inmu_plot_map_data(LANG_TLS,YEAR_CAMP_SR,toupper(COUNTRY_NAME),YEAR_LIST,ZERO_POB_LIST,CUT_OFFS,country_shapes,immunity_scores,"immunity_score",input$admin1_filter,get_a1_geo_id(input$admin1_filter),admin1_geo_id_df, input$population15_filter)
+    inmu_map_total$dat <- inmu_plot_map_data(
+      LANG_TLS,YEAR_CAMP_SR,toupper(COUNTRY_NAME),YEAR_LIST,ZERO_POB_LIST,
+      CUT_OFFS,country_shapes,immunity_scores,"immunity_score",
+      input$admin1_filter,get_a1_geo_id(input$admin1_filter),admin1_geo_id_df, 
+      input$population15_filter, risk_filter_rename(input$indicadores_select_risk))
     inmu_map_total$dat
   })
   
@@ -254,7 +267,12 @@ function(input, output, session) {
       input$radio_inmunidad_cob_1 == paste(lang_label("vac_coverage"),YEAR_5) ~ "year5",
       input$radio_inmunidad_cob_1 == lang_label("risk_points") ~ "SRP1_PR"
     )
-    inmu_map_cob_1$dat <- inmu_plot_map_data(LANG_TLS,YEAR_CAMP_SR,toupper(COUNTRY_NAME),YEAR_LIST,ZERO_POB_LIST,CUT_OFFS,country_shapes,immunity_scores,var_srp1,input$admin1_filter,get_a1_geo_id(input$admin1_filter),admin1_geo_id_df, input$population15_filter)
+    inmu_map_cob_1$dat <- inmu_plot_map_data(
+      LANG_TLS,YEAR_CAMP_SR,toupper(COUNTRY_NAME),YEAR_LIST,ZERO_POB_LIST,
+      CUT_OFFS,country_shapes,immunity_scores,var_srp1,input$admin1_filter,
+      get_a1_geo_id(input$admin1_filter),admin1_geo_id_df, 
+      input$population15_filter, risk_filter_rename(input$indicadores_select_risk)
+    )
     inmu_map_cob_1$dat
   })
   
@@ -271,7 +289,11 @@ function(input, output, session) {
   inmu_map_cob_2 <- reactiveValues(dat = 0)
   
   output$inmunidad_map_cob_2 <- renderLeaflet({
-    inmu_map_cob_2$dat <- inmu_plot_map_data(LANG_TLS,YEAR_CAMP_SR,toupper(COUNTRY_NAME),YEAR_LIST,ZERO_POB_LIST,CUT_OFFS,country_shapes,immunity_scores,"ipv2",input$admin1_filter,get_a1_geo_id(input$admin1_filter),admin1_geo_id_df, input$population15_filter)
+    inmu_map_cob_2$dat <- inmu_plot_map_data(
+      LANG_TLS,YEAR_CAMP_SR,toupper(COUNTRY_NAME),YEAR_LIST,ZERO_POB_LIST,
+      CUT_OFFS,country_shapes,immunity_scores,"ipv2",input$admin1_filter,
+      get_a1_geo_id(input$admin1_filter),admin1_geo_id_df, 
+      input$population15_filter, risk_filter_rename(input$indicadores_select_risk))
     inmu_map_cob_2$dat
   })
   
@@ -288,7 +310,7 @@ function(input, output, session) {
   inmu_map_effective <- reactiveValues(dat = 0)
   
   output$inmunidad_map_effective <- renderLeaflet({
-    inmu_map_effective$dat <- inmu_plot_map_data(LANG_TLS,YEAR_CAMP_SR,toupper(COUNTRY_NAME),YEAR_LIST,ZERO_POB_LIST,CUT_OFFS,country_shapes,immunity_scores,"effective_campaign",input$admin1_filter,get_a1_geo_id(input$admin1_filter),admin1_geo_id_df, input$population15_filter)
+    inmu_map_effective$dat <- inmu_plot_map_data(LANG_TLS,YEAR_CAMP_SR,toupper(COUNTRY_NAME),YEAR_LIST,ZERO_POB_LIST,CUT_OFFS,country_shapes,immunity_scores,"effective_campaign",input$admin1_filter,get_a1_geo_id(input$admin1_filter),admin1_geo_id_df, input$population15_filter, risk_filter_rename(input$indicadores_select_risk))
     inmu_map_effective$dat
   })
   
