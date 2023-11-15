@@ -530,7 +530,7 @@ function(input, output, session) {
   determinants_map_total <- reactiveValues(dat = 0)
   
   output$determinants_map_total <- renderLeaflet({
-    determinants_map_total$dat <- determinants_plot_map_data(LANG_TLS,toupper(COUNTRY_NAME),YEAR_LIST,ZERO_POB_LIST,CUT_OFFS,country_shapes,determinants_scores,"determinants_score",input$admin1_filter,get_a1_geo_id(input$admin1_filter),admin1_geo_id_df, input$population15_filter)
+    determinants_map_total$dat <- determinants_plot_map_data(LANG_TLS,toupper(COUNTRY_NAME),YEAR_LIST,ZERO_POB_LIST,CUT_OFFS,country_shapes,determinants_scores,"determinants_score",input$admin1_filter,get_a1_geo_id(input$admin1_filter),admin1_geo_id_df, input$population15_filter, risk_filter_rename(input$indicadores_select_risk))
     determinants_map_total$dat
   })
   
@@ -547,7 +547,7 @@ function(input, output, session) {
   determinants_map_water <- reactiveValues(dat = 0)
   
   output$determinants_map_water <- renderLeaflet({
-    determinants_map_water$dat <- determinants_plot_map_data(LANG_TLS,toupper(COUNTRY_NAME),YEAR_LIST,ZERO_POB_LIST,CUT_OFFS,country_shapes,determinants_scores,"drinking_water_percent",input$admin1_filter,get_a1_geo_id(input$admin1_filter),admin1_geo_id_df, input$population15_filter)
+    determinants_map_water$dat <- determinants_plot_map_data(LANG_TLS,toupper(COUNTRY_NAME),YEAR_LIST,ZERO_POB_LIST,CUT_OFFS,country_shapes,determinants_scores,"drinking_water_percent",input$admin1_filter,get_a1_geo_id(input$admin1_filter),admin1_geo_id_df, input$population15_filter, risk_filter_rename(input$indicadores_select_risk))
     determinants_map_water$dat
   })
   
@@ -564,7 +564,7 @@ function(input, output, session) {
   determinants_map_sanitation <- reactiveValues(dat = 0)
   
   output$determinants_map_sanitation <- renderLeaflet({
-    determinants_map_sanitation$dat <- determinants_plot_map_data(LANG_TLS,toupper(COUNTRY_NAME),YEAR_LIST,ZERO_POB_LIST,CUT_OFFS,country_shapes,determinants_scores,"sanitation_services_percent",input$admin1_filter,get_a1_geo_id(input$admin1_filter),admin1_geo_id_df, input$population15_filter)
+    determinants_map_sanitation$dat <- determinants_plot_map_data(LANG_TLS,toupper(COUNTRY_NAME),YEAR_LIST,ZERO_POB_LIST,CUT_OFFS,country_shapes,determinants_scores,"sanitation_services_percent",input$admin1_filter,get_a1_geo_id(input$admin1_filter),admin1_geo_id_df, input$population15_filter, risk_filter_rename(input$indicadores_select_risk))
     determinants_map_sanitation$dat
   })
   
@@ -600,7 +600,7 @@ function(input, output, session) {
   })
   
   output$determinants_table <- renderDataTable(server = FALSE,{
-    determinants_get_data_table(LANG_TLS,CUT_OFFS,determinants_scores,get_a1_geo_id(input$admin1_filter), input$population15_filter)
+    determinants_get_data_table(LANG_TLS,CUT_OFFS,determinants_scores,get_a1_geo_id(input$admin1_filter), input$population15_filter, risk_filter_rename(input$indicadores_select_risk))
   })
   
   ## CHEAT SHEET ----

@@ -15,7 +15,7 @@ determinants_title_map <- function(LANG_TLS,COUNTRY_NAME,YEAR_LIST,admin1,var) {
 }
 
 
-determinants_plot_map_data <- function(LANG_TLS,COUNTRY_NAME,YEAR_LIST,ZERO_POB_LIST,CUT_OFFS,map_data,data,var_to_summarise,admin1,admin1_id,admin1_geo_id_df, pop_filter = lang_label("filter_all")) {
+determinants_plot_map_data <- function(LANG_TLS,COUNTRY_NAME,YEAR_LIST,ZERO_POB_LIST,CUT_OFFS,map_data,data,var_to_summarise,admin1,admin1_id,admin1_geo_id_df, pop_filter = lang_label("filter_all"), risk_filter=toupper(lang_label("filter_all"))) {
 
   indicator <- "determinants_score"
   data <- data %>% select(-ADMIN1,-ADMIN2)
@@ -25,6 +25,7 @@ determinants_plot_map_data <- function(LANG_TLS,COUNTRY_NAME,YEAR_LIST,ZERO_POB_
   map_data <- full_join(map_data,data,by = "GEO_ID")
   
   map_data$`ADMIN1 GEO_ID`[is.na(map_data$`ADMIN1 GEO_ID`) & map_data$ADMIN1 == admin1] <- admin1_geo_id_df$`ADMIN1 GEO_ID`[admin1_geo_id_df$ADMIN1 == admin1]
+  map_data$risk_level <- get_risk_level(LANG_TLS,CUT_OFFS,indicator,map_data$determinants_score, map_data$population_and_pfa_bool)
   
   if (var_to_summarise == "determinants_score") {
     map_data$risk_level <- get_risk_level(LANG_TLS,CUT_OFFS,indicator,map_data$determinants_score, map_data$population_and_pfa_bool)
@@ -56,6 +57,10 @@ determinants_plot_map_data <- function(LANG_TLS,COUNTRY_NAME,YEAR_LIST,ZERO_POB_
       }
     }
     
+    if (risk_filter != toupper(lang_label("filter_all"))) {
+      map_data$risk_level[map_data$risk_level != risk_filter] <- lang_label("na")
+    }
+    
     map_data <- map_data %>% mutate(
       risk_level_num = case_when(
         is.na(risk_level) ~ 0,
@@ -77,10 +82,24 @@ determinants_plot_map_data <- function(LANG_TLS,COUNTRY_NAME,YEAR_LIST,ZERO_POB_
       domain = c(0,5)
     )
     
-    legend_colors = c("#e8132b","#fec000","#92d050")
-    legend_values = c(lang_label_tls(LANG_TLS,"cut_offs_HR"),
-                      lang_label_tls(LANG_TLS,"cut_offs_MR"),
-                      lang_label_tls(LANG_TLS,"cut_offs_LR"))
+    if (risk_filter == lang_label("VHR")) {
+      legend_colors = c("#e8132b")
+      legend_values = c(lang_label_tls(LANG_TLS,"cut_offs_HR"))
+      
+    } else if (risk_filter == lang_label("MR")) {
+      legend_colors = c("#fec000")
+      legend_values = c(lang_label_tls(LANG_TLS,"cut_offs_MR"))
+      
+    } else if (risk_filter == lang_label("LR")) {
+      legend_colors = c("#92d050")
+      legend_values = c(lang_label_tls(LANG_TLS,"cut_offs_LR"))
+      
+    } else {
+      legend_colors = c("#e8132b","#fec000","#92d050")
+      legend_values = c(lang_label_tls(LANG_TLS,"cut_offs_HR"),
+                        lang_label_tls(LANG_TLS,"cut_offs_MR"),
+                        lang_label_tls(LANG_TLS,"cut_offs_LR"))
+    }
     
     if (0 %in% map_data$risk_level_num) {
       legend_colors = c("#666666",legend_colors)
@@ -138,9 +157,9 @@ determinants_plot_map_data <- function(LANG_TLS,COUNTRY_NAME,YEAR_LIST,ZERO_POB_
     
     
     if (admin1_id == 0) {
-      map_data <- map_data %>% select(GEO_ID,ADMIN1,ADMIN2,COB,geometry, POB15)
+      map_data <- map_data %>% select(GEO_ID,ADMIN1,ADMIN2,COB,geometry, POB15, risk_level)
     } else {
-      map_data <- map_data %>% filter(`ADMIN1 GEO_ID` == admin1_id) %>% select(GEO_ID,ADMIN1,ADMIN2,COB,geometry, POB15)
+      map_data <- map_data %>% filter(`ADMIN1 GEO_ID` == admin1_id) %>% select(GEO_ID,ADMIN1,ADMIN2,COB,geometry, POB15, risk_level)
     }
     
     map_data <- map_data %>% mutate(
@@ -187,7 +206,10 @@ determinants_plot_map_data <- function(LANG_TLS,COUNTRY_NAME,YEAR_LIST,ZERO_POB_
       }
     }
     
-    
+    if (risk_filter != toupper(lang_label("filter_all"))) {
+      map_data$var_num[map_data$risk_level != risk_filter] <- 4
+      map_data$var_word[map_data$risk_level != risk_filter] <- lang_label("na")
+    }
     
     
     pal_gradient <- colorNumeric(
@@ -251,7 +273,7 @@ determinants_plot_map_data <- function(LANG_TLS,COUNTRY_NAME,YEAR_LIST,ZERO_POB_
 
 
 
-determinants_get_data_table <- function(LANG_TLS,CUT_OFFS,data,admin1_id, pop_filter = lang_label("filter_all")) {
+determinants_get_data_table <- function(LANG_TLS,CUT_OFFS,data,admin1_id, pop_filter = lang_label("filter_all"), risk_filter=toupper(lang_label("filter_all"))) {
 
   data$risk_level <- get_risk_level(LANG_TLS,CUT_OFFS,"determinants_score",data$determinants_score, data$population_and_pfa_bool)
   
@@ -260,6 +282,10 @@ determinants_get_data_table <- function(LANG_TLS,CUT_OFFS,data,admin1_id, pop_fi
            ADMIN1,ADMIN2,determinants_score,risk_level, POB1, POB5, POB15,
            drinking_water_percent, drinking_water_score,
            sanitation_services_percent, sanitation_services_score) 
+  
+  if (risk_filter != toupper(lang_label("filter_all"))) {
+    data <- data %>% filter(risk_level == risk_filter)
+  }
   
   if (admin1_id == 0) {
     data <- data %>% select(-`ADMIN1 GEO_ID`)
