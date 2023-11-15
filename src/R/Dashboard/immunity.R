@@ -456,7 +456,7 @@ inmu_plot_map_data <- function(LANG_TLS,YEAR_CAMP_SR,COUNTRY_NAME,YEAR_LIST,
   
 }
 
-inmu_get_data_table <- function(LANG_TLS,YEAR_LIST,CUT_OFFS,data,admin1_id, pop_filter, risk_filter) {
+inmu_get_data_table <- function(LANG_TLS,YEAR_LIST,CUT_OFFS,data,admin1_id, pop_filter, risk_filter=toupper(lang_label("filter_all"))) {
   YEAR_1=YEAR_LIST[1];YEAR_2=YEAR_LIST[2];YEAR_3=YEAR_LIST[3];YEAR_4=YEAR_LIST[4];YEAR_5=YEAR_LIST[5];
   
   data$risk_level <- get_risk_level(LANG_TLS,CUT_OFFS,"immunity_score",data$immunity_score, data$population_and_pfa_bool)

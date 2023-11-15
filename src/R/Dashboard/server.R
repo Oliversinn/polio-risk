@@ -364,7 +364,7 @@ function(input, output, session) {
   cal_map_total <- reactiveValues(dat = 0)
   
   output$calidad_map_total <- renderLeaflet({
-    cal_map_total$dat <- cal_plot_map_data(LANG_TLS,toupper(COUNTRY_NAME),YEAR_LIST,ZERO_POB_LIST,CUT_OFFS,country_shapes,surveillance_scores,"surveillance_score",input$admin1_filter,get_a1_geo_id(input$admin1_filter),admin1_geo_id_df, input$population15_filter)
+    cal_map_total$dat <- cal_plot_map_data(LANG_TLS,toupper(COUNTRY_NAME),YEAR_LIST,ZERO_POB_LIST,CUT_OFFS,country_shapes,surveillance_scores,"surveillance_score",input$admin1_filter,get_a1_geo_id(input$admin1_filter),admin1_geo_id_df, input$population15_filter, risk_filter_rename(input$indicadores_select_risk))
     cal_map_total$dat
   })
   
@@ -380,7 +380,7 @@ function(input, output, session) {
   ### REPORTING UNITS ----
   cal_map_2 <- reactiveValues(dat = 0)
   output$calidad_map_2 <- renderLeaflet({
-    cal_map_2$dat <- cal_plot_map_data(LANG_TLS,toupper(COUNTRY_NAME),YEAR_LIST,ZERO_POB_LIST,CUT_OFFS,country_shapes,surveillance_scores,"compliant_units_percent",input$admin1_filter,get_a1_geo_id(input$admin1_filter),admin1_geo_id_df, input$population15_filter)
+    cal_map_2$dat <- cal_plot_map_data(LANG_TLS,toupper(COUNTRY_NAME),YEAR_LIST,ZERO_POB_LIST,CUT_OFFS,country_shapes,surveillance_scores,"compliant_units_percent",input$admin1_filter,get_a1_geo_id(input$admin1_filter),admin1_geo_id_df, input$population15_filter, risk_filter_rename(input$indicadores_select_risk))
     cal_map_2$dat
   })
   
@@ -396,7 +396,7 @@ function(input, output, session) {
   ### PFA RATE ----
   cal_map_3 <- reactiveValues(dat = 0)
   output$calidad_map_3 <- renderLeaflet({
-    cal_map_3$dat <- cal_plot_map_data(LANG_TLS,toupper(COUNTRY_NAME),YEAR_LIST,ZERO_POB_LIST,CUT_OFFS,country_shapes,surveillance_scores,"pfa_rate",input$admin1_filter,get_a1_geo_id(input$admin1_filter),admin1_geo_id_df, input$population15_filter)
+    cal_map_3$dat <- cal_plot_map_data(LANG_TLS,toupper(COUNTRY_NAME),YEAR_LIST,ZERO_POB_LIST,CUT_OFFS,country_shapes,surveillance_scores,"pfa_rate",input$admin1_filter,get_a1_geo_id(input$admin1_filter),admin1_geo_id_df, input$population15_filter, risk_filter_rename(input$indicadores_select_risk))
     cal_map_3$dat
   })
   
@@ -412,7 +412,7 @@ function(input, output, session) {
   ### PFA NOTIFICATION ----
   cal_map_4 <- reactiveValues(dat = 0)
   output$calidad_map_4 <- renderLeaflet({
-    cal_map_4$dat <- cal_plot_map_data(LANG_TLS,toupper(COUNTRY_NAME),YEAR_LIST,ZERO_POB_LIST,CUT_OFFS,country_shapes,surveillance_scores,"pfa_notified_percent",input$admin1_filter,get_a1_geo_id(input$admin1_filter),admin1_geo_id_df, input$population15_filter)
+    cal_map_4$dat <- cal_plot_map_data(LANG_TLS,toupper(COUNTRY_NAME),YEAR_LIST,ZERO_POB_LIST,CUT_OFFS,country_shapes,surveillance_scores,"pfa_notified_percent",input$admin1_filter,get_a1_geo_id(input$admin1_filter),admin1_geo_id_df, input$population15_filter, risk_filter_rename(input$indicadores_select_risk))
     cal_map_4$dat
   })
   
@@ -428,7 +428,7 @@ function(input, output, session) {
   ### PFA INVESTIGATED ----
   cal_map_5 <- reactiveValues(dat = 0)
   output$calidad_map_5 <- renderLeaflet({
-    cal_map_5$dat <- cal_plot_map_data(LANG_TLS,toupper(COUNTRY_NAME),YEAR_LIST,ZERO_POB_LIST,CUT_OFFS,country_shapes,surveillance_scores,"pfa_investigated_percent",input$admin1_filter,get_a1_geo_id(input$admin1_filter),admin1_geo_id_df, input$population15_filter)
+    cal_map_5$dat <- cal_plot_map_data(LANG_TLS,toupper(COUNTRY_NAME),YEAR_LIST,ZERO_POB_LIST,CUT_OFFS,country_shapes,surveillance_scores,"pfa_investigated_percent",input$admin1_filter,get_a1_geo_id(input$admin1_filter),admin1_geo_id_df, input$population15_filter, risk_filter_rename(input$indicadores_select_risk))
     cal_map_5$dat
   })
   
@@ -444,7 +444,7 @@ function(input, output, session) {
   ### SUITABLE SAMPLES ----
   cal_map_6 <- reactiveValues(dat = 0)
   output$calidad_map_6 <- renderLeaflet({
-    cal_map_6$dat <- cal_plot_map_data(LANG_TLS,toupper(COUNTRY_NAME),YEAR_LIST,ZERO_POB_LIST,CUT_OFFS,country_shapes,surveillance_scores,"suitable_samples_percent",input$admin1_filter,get_a1_geo_id(input$admin1_filter),admin1_geo_id_df, input$population15_filter)
+    cal_map_6$dat <- cal_plot_map_data(LANG_TLS,toupper(COUNTRY_NAME),YEAR_LIST,ZERO_POB_LIST,CUT_OFFS,country_shapes,surveillance_scores,"suitable_samples_percent",input$admin1_filter,get_a1_geo_id(input$admin1_filter),admin1_geo_id_df, input$population15_filter, risk_filter_rename(input$indicadores_select_risk))
     cal_map_6$dat
   })
   
@@ -460,7 +460,7 @@ function(input, output, session) {
   ### FOLLOWUPS ----
   cal_map_7 <- reactiveValues(dat = 0)
   output$calidad_map_7 <- renderLeaflet({
-    cal_map_7$dat <- cal_plot_map_data(LANG_TLS,toupper(COUNTRY_NAME),YEAR_LIST,ZERO_POB_LIST,CUT_OFFS,country_shapes,surveillance_scores,"followups_percent",input$admin1_filter,get_a1_geo_id(input$admin1_filter),admin1_geo_id_df, input$population15_filter)
+    cal_map_7$dat <- cal_plot_map_data(LANG_TLS,toupper(COUNTRY_NAME),YEAR_LIST,ZERO_POB_LIST,CUT_OFFS,country_shapes,surveillance_scores,"followups_percent",input$admin1_filter,get_a1_geo_id(input$admin1_filter),admin1_geo_id_df, input$population15_filter, risk_filter_rename(input$indicadores_select_risk))
     cal_map_7$dat
   })
   
@@ -476,7 +476,7 @@ function(input, output, session) {
   ### ACTIVE SEARCH ----
   cal_map_8 <- reactiveValues(dat = 0)
   output$calidad_map_8 <- renderLeaflet({
-    cal_map_8$dat <- cal_plot_map_data(LANG_TLS,toupper(COUNTRY_NAME),YEAR_LIST,ZERO_POB_LIST,CUT_OFFS,country_shapes,surveillance_scores,"active_search",input$admin1_filter,get_a1_geo_id(input$admin1_filter),admin1_geo_id_df, input$population15_filter)
+    cal_map_8$dat <- cal_plot_map_data(LANG_TLS,toupper(COUNTRY_NAME),YEAR_LIST,ZERO_POB_LIST,CUT_OFFS,country_shapes,surveillance_scores,"active_search",input$admin1_filter,get_a1_geo_id(input$admin1_filter),admin1_geo_id_df, input$population15_filter, risk_filter_rename(input$indicadores_select_risk))
     cal_map_8$dat
   })
   
@@ -508,7 +508,7 @@ function(input, output, session) {
   })
   
   output$calidad_table <- renderDataTable(server = FALSE,{
-    cal_get_data_table(LANG_TLS,CUT_OFFS,surveillance_scores,get_a1_geo_id(input$admin1_filter), input$population15_filter)
+    cal_get_data_table(LANG_TLS,CUT_OFFS,surveillance_scores,get_a1_geo_id(input$admin1_filter), input$population15_filter, risk_filter_rename(input$indicadores_select_risk))
   })
   
   ## CHEAT SHEET ----
