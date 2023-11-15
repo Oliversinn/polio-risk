@@ -490,15 +490,15 @@ cal_plot_map_data <- function(LANG_TLS,COUNTRY_NAME,YEAR_LIST,ZERO_POB_LIST,CUT_
           population_and_pfa_bool ~ 4,
           GEO_ID %in% ZERO_POB_LIST ~ 3,
           is.na(var) ~ 0,
-          var == lang_label_tls(LANG_TLS,"yes") | var == lang_label_tls(LANG_TLS,"yes_upper") ~ 1,
-          var == lang_label_tls(LANG_TLS,"no") | var == lang_label_tls(LANG_TLS,"no_upper") ~ 2
+          tolower(var) == tolower(lang_label_tls(LANG_TLS,"yes")) | var == lang_label_tls(LANG_TLS,"yes_upper") ~ 1,
+          tolower(var) == tolower(lang_label_tls(LANG_TLS,"no")) | var == lang_label_tls(LANG_TLS,"no_upper") ~ 2
         ),
         var_word = case_when(
           population_and_pfa_bool ~ lang_label_tls(LANG_TLS,"na"),
           GEO_ID %in% ZERO_POB_LIST ~ lang_label_tls(LANG_TLS,"no_hab"),
           is.na(var) ~ lang_label_tls(LANG_TLS,"no_data"),
-          var == lang_label_tls(LANG_TLS,"yes") | var == lang_label_tls(LANG_TLS,"yes_upper") ~ lang_label_tls(LANG_TLS,"yes"),
-          var == lang_label_tls(LANG_TLS,"no") | var == lang_label_tls(LANG_TLS,"no_upper") ~ lang_label_tls(LANG_TLS,"no")
+          tolower(var) == tolower(lang_label_tls(LANG_TLS,"yes")) | var == lang_label_tls(LANG_TLS,"yes_upper") ~ lang_label_tls(LANG_TLS,"yes"),
+          tolower(var) == tolower(lang_label_tls(LANG_TLS,"no")) | var == lang_label_tls(LANG_TLS,"no_upper") ~ lang_label_tls(LANG_TLS,"no")
         )
       )
       

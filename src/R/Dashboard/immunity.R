@@ -5,7 +5,6 @@
 # Última fecha de modificación: 2023-11-06
 # R 4.3.1
 
-# Dashboard ----
 
 inmu_title_map <- function(LANG_TLS,YEAR_CAMP_SR,COUNTRY_NAME,YEAR_LIST,admin1,var) {
   YEAR_1=YEAR_LIST[1];YEAR_2=YEAR_LIST[2];YEAR_3=YEAR_LIST[3];YEAR_4=YEAR_LIST[4];YEAR_5=YEAR_LIST[5];
@@ -44,6 +43,7 @@ inmu_plot_map_data <- function(LANG_TLS,YEAR_CAMP_SR,COUNTRY_NAME,YEAR_LIST,
   map_data <- full_join(map_data,data,by = c("GEO_ID" = "GEO_ID", "ADMIN1 GEO_ID" = "ADMIN1 GEO_ID"))
   
   map_data$`ADMIN1 GEO_ID`[is.na(map_data$`ADMIN1 GEO_ID`) & map_data$ADMIN1 == admin1] <- admin1_geo_id_df$`ADMIN1 GEO_ID`[admin1_geo_id_df$ADMIN1 == admin1]
+
   map_data$risk_level <- get_risk_level(LANG_TLS,CUT_OFFS,indicator,map_data$immunity_score,map_data$population_and_pfa_bool)
   
   if (var_to_summarise %in% c("immunity_score")) {
@@ -352,14 +352,14 @@ inmu_plot_map_data <- function(LANG_TLS,YEAR_CAMP_SR,COUNTRY_NAME,YEAR_LIST,
       var_num = case_when(
         GEO_ID %in% ZERO_POB_LIST ~ 3,
         is.na(COB) ~ 0,
-        COB == "Si" ~ 1,
-        COB == "No" ~ 2
+        tolower(COB) == tolower(lang_label_tls(LANG_TLS,"yes")) ~ 1,
+        tolower(COB) == tolower(lang_label_tls(LANG_TLS,"no")) ~ 2
       ),
       var_word = case_when(
         GEO_ID %in% ZERO_POB_LIST ~ lang_label_tls(LANG_TLS,"no_hab"),
         is.na(COB) ~ lang_label_tls(LANG_TLS,"no_data"),
-        COB == "Si" ~ lang_label_tls(LANG_TLS,"yes"),
-        COB == "No" ~ lang_label_tls(LANG_TLS,"no")
+        tolower(COB) == tolower(lang_label_tls(LANG_TLS,"yes")) ~ lang_label_tls(LANG_TLS,"yes"),
+        tolower(COB) == tolower(lang_label_tls(LANG_TLS,"no")) ~ lang_label_tls(LANG_TLS,"no")
       )
     )
     
