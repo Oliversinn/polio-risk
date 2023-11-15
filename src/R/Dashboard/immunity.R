@@ -475,6 +475,23 @@ inmu_get_data_table <- function(LANG_TLS,YEAR_LIST,CUT_OFFS,data,admin1_id, pop_
       year5=round(year5,0)
     )
   
+  if (pop_filter != lang_label("filter_all")) {
+    if (pop_filter == lang_label("less_than_100000")) {
+      data <- data %>% filter(POB15 < 100000)
+    } else if (pop_filter == lang_label("greater_than_100000")) {
+      data <- data %>% filter(POB15 >= 100000)
+    }
+  }
+  
+  
+  
+  data <- data %>%
+    mutate(
+      POB1 = cFormat(POB1,0),
+      POB5 = cFormat(POB5,0),
+      POB15 = cFormat(POB15,0)
+    )
+  
   if (risk_filter != toupper(lang_label("filter_all"))) {
     data <- data %>% filter(risk_level == risk_filter)
   }
@@ -524,22 +541,7 @@ inmu_get_data_table <- function(LANG_TLS,YEAR_LIST,CUT_OFFS,data,admin1_id, pop_
     lang_label_tls(LANG_TLS,"immunity_effective_cob")
   )
   
-  if (pop_filter != lang_label("filter_all")) {
-    if (pop_filter == lang_label("less_than_100000")) {
-      data <- data %>% filter(POB15 < 100000)
-    } else if (pop_filter == lang_label("greater_than_100000")) {
-      data <- data %>% filter(POB15 >= 100000)
-    }
-  }
   
-
-
-  data <- data %>%
-    mutate(
-      POB1 = cFormat(POB1,0),
-      POB5 = cFormat(POB5,0),
-      POB15 = cFormat(POB15,0)
-    )
   
   datos_table <- data %>%
     datatable(

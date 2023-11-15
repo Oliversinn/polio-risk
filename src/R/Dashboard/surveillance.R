@@ -664,6 +664,21 @@ cal_get_data_table <- function(LANG_TLS,CUT_OFFS,data,admin1_id,pop_filter,risk_
         population_and_pfa_bool ~ lang_label("na")
       ),
     )
+  if (pop_filter != lang_label("filter_all")) {
+    if (pop_filter == lang_label("less_than_100000")) {
+      data <- data %>% filter(POB15 < 100000)
+    } else if (pop_filter == lang_label("greater_than_100000")) {
+      data <- data %>% filter(POB15 >= 100000)
+    }
+  }
+  
+  data <- data %>% 
+    select(-population_and_pfa_bool) %>% 
+    mutate(
+      POB1 = cFormat(POB1,0),
+      POB5 = cFormat(POB5,0),
+      POB15 = cFormat(POB15,0)
+    )
   
   if (risk_filter != toupper(lang_label("filter_all"))) {
     data <- data %>% filter(risk_level == risk_filter)
@@ -701,21 +716,7 @@ cal_get_data_table <- function(LANG_TLS,CUT_OFFS,data,admin1_id,pop_filter,risk_
     )
   }
   
-  if (pop_filter != lang_label("filter_all")) {
-    if (pop_filter == lang_label("less_than_100000")) {
-      data <- data %>% filter(POB15 < 100000)
-    } else if (pop_filter == lang_label("greater_than_100000")) {
-      data <- data %>% filter(POB15 >= 100000)
-    }
-  }
   
-  data <- data %>% 
-    select(-population_and_pfa_bool) %>% 
-    mutate(
-      POB1 = cFormat(POB1,0),
-      POB5 = cFormat(POB5,0),
-      POB15 = cFormat(POB15,0)
-    )
   
   datos_table <- data %>%
     datatable(
