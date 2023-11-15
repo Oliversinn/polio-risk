@@ -492,7 +492,8 @@ outbreaks_scores <- outbreaks_data %>%
     rubella_score = score_outbreak(outbreaks_data, 'rubella'),
     diphtheria_score = score_outbreak(outbreaks_data, 'diphtheria'),
     yellow_fever_score = score_outbreak(outbreaks_data, 'yellow_fever'),
-    tetanus_score = score_outbreak(outbreaks_data, 'tetanus')
+    tetanus_score = score_outbreak(outbreaks_data, 'tetanus'),
+    population_and_pfa_bool = population_and_pfa(outbreaks_data)
   ) %>% 
   rowwise() %>% 
   mutate(

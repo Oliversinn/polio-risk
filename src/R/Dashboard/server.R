@@ -612,4 +612,98 @@ function(input, output, session) {
     ind_rangos_table(LANG_TLS,CUT_OFFS,"determinants_score", pfa_filter)
   })
   
+  # OUTBREAKS ----
+  ## MAP ----
+  output$outbreaks_map_box_title <- renderText({
+    title_map_box(lang_label("determinants_score"),input$admin1_filter)
+  })
+  
+  ### OUTBREAK SCORE ----
+  outbreaks_map_total <- reactiveValues(dat = 0)
+  
+  output$outbreaks_map_total <- renderLeaflet({
+    outbreaks_map_total$dat <- outbreaks_plot_map_data(
+      LANG_TLS,YEAR_CAMP_SR,toupper(COUNTRY_NAME),YEAR_LIST,ZERO_POB_LIST,
+      CUT_OFFS,country_shapes,outbreaks_scores,"outbreaks_score",
+      input$admin1_filter,get_a1_geo_id(input$admin1_filter),admin1_geo_id_df, 
+      input$population15_filter, risk_filter_rename(input$indicadores_select_risk))
+    outbreaks_map_total$dat
+  })
+  
+  output$dl_outbreaks_map_total <- downloadHandler(
+    filename = function() {
+      paste0(lang_label("map")," ",input$admin1_filter," ",toupper(COUNTRY_NAME)," ",lang_label("outbreaks_score")," (",YEAR_1,"-",YEAR_5,").png")
+    },
+    content = function(file) {
+      mapshot(outbreaks_map_total$dat, file = file)
+    }
+  )
+  
+  ### DISEASES ----
+  outbreaks_diseases <- reactiveValues(dat = 0)
+  
+  output$outbreaks_disease_map <- renderLeaflet({
+    which_var <- case_when(
+      input$outbreaks_disease_filter == lang_label("outbreaks_polio") ~ "polio",
+      input$outbreaks_disease_filter == lang_label("outbreaks_measles") ~ "measles",
+      input$outbreaks_disease_filter == lang_label("outbreaks_rubella") ~ "rubella",
+      input$outbreaks_disease_filter == lang_label("outbreaks_diphtheria") ~ "diphtheria",
+      input$outbreaks_disease_filter == lang_label("outbreaks_yellow_fever") ~ "yellow_fever",
+      input$outbreaks_disease_filter == lang_label("outbreaks_tetanus") ~ "tetanus"
+    )
+    outbreaks_diseases$dat <- outbreaks_plot_map_data(
+      LANG_TLS,YEAR_CAMP_SR,toupper(COUNTRY_NAME),YEAR_LIST,ZERO_POB_LIST,
+      CUT_OFFS,country_shapes,outbreaks_scores,which_var,
+      input$admin1_filter,get_a1_geo_id(input$admin1_filter),admin1_geo_id_df, 
+      input$population15_filter, risk_filter_rename(input$indicadores_select_risk))
+    outbreaks_diseases$dat
+  })
+  
+  output$dl_outbreaks_disease_map <- downloadHandler(
+    filename = function() {
+      paste0(lang_label("map")," ",input$admin1_filter," ",toupper(COUNTRY_NAME)," ",lang_label("outbreaks_title_map_disease")," (",input$outbreaks_disease_filter,").png")
+    },
+    content = function(file) {
+      mapshot(outbreaks_diseases$dat, file = file)
+    }
+  )
+  
+  ## PIE ----
+  output$outbreaks_title_pie_box <- renderText({
+    title_pie_box(lang_label("outbreaks_score"),input$admin1_filter)
+  })
+  
+  output$outbreaks_plot_pie <- renderPlotly({
+    plot_pie_data(LANG_TLS,ZERO_POB_LIST,CUT_OFFS,"outbreaks_score",outbreaks_scores,get_a1_geo_id(input$admin1_filter), input$population15_filter,return_table = F)
+  })
+  
+  output$outbreaks_table_dist <- renderDataTable(server = FALSE,{
+    plot_pie_data(LANG_TLS,ZERO_POB_LIST,CUT_OFFS,"outbreaks_score",outbreaks_scores,get_a1_geo_id(input$admin1_filter), input$population15_filter,return_table = T)
+  })
+  
+  ## DATATABLE ----
+  output$outbreaks_title_data_box <- renderText({
+    title_data_box(lang_label("outbreaks_score"),input$admin1_filter)
+  })
+  
+  output$outbreaks_table <- renderDataTable(server = FALSE,{
+    outbreaks_get_data_table(LANG_TLS,YEAR_LIST,CUT_OFFS,outbreaks_scores,get_a1_geo_id(input$admin1_filter), input$population15_filter, risk_filter_rename(input$indicadores_select_risk))
+  })
+  
+  ## CHEAT SHEET ----
+  output$outbreaks_rangos_table <- renderDataTable(server = FALSE,{
+    pfa_filter <- case_when(
+      input$outbreaks_limits_table_filter == lang_label("population_pfa_filter") ~ TRUE,
+      input$outbreaks_limits_table_filter == lang_label("population_pfa_no_filter") ~ FALSE,
+    )
+    ind_rangos_table(LANG_TLS,CUT_OFFS,"outbreaks_score", pfa_filter)
+  })
+  
+ 
+    
+    
+    
+    
+    
+  
 }

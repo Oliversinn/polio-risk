@@ -122,6 +122,13 @@ fluidPage(
           text = lang_label("menuitem_determinants"),
           tabName = "DETERMINANTS",
           icon = icon("person-dots-from-line")
+        ),
+        
+        ### OUTBREAKS SCORES ----
+        menuItem(
+          text = lang_label("menuitem_outbreaks"),
+          tabName = "OUTBREAKS",
+          icon = icon("viruses")
         )
       )
     ),
@@ -597,6 +604,100 @@ fluidPage(
                   ),
                 ),
                 shinycssloaders::withSpinner(dataTableOutput("determinants_rangos_table"),color = "#1c9ad6", type = "8", size = 0.3)
+              )
+            )
+          ),
+          
+          ### TAB OUTBREAKS ----
+          tabItem(
+            tabName = "OUTBREAKS",
+            h2(lang_label("outbreaks_title")),
+            br(),
+            
+            fluidRow(
+              #### MAP ----
+              box(
+                width = 7,
+                solidHeader = TRUE,
+                collapsible = TRUE,
+                title = textOutput("outbreaks_map_box_title"),
+                tabBox(
+                  width = 12,
+                  height = NULL,
+                  ##### TOTAL PR ----
+                  tabPanel(
+                    title = lang_label("total_pr"),
+                    icon = icon("square-check"),
+                    shinycssloaders::withSpinner(leafletOutput("outbreaks_map_total",height = 600),color = "#1c9ad6", type = "8", size = 0.5),
+                    br(),div(style = "text-align: center;",downloadButton(outputId = "dl_outbreaks_map_total",lang_label("button_download_map"),icon = icon('camera')))
+                  ),
+                  tabPanel(
+                    title = lang_label("immunity_polio_cob"),icon = icon("syringe"),
+                    column(width = 12,
+                           selectInput("outbreaks_disease_filter", label = "", 
+                                       choices = c(
+                                         paste(lang_label("outbreaks_polio")),
+                                         paste(lang_label("outbreaks_measles")),
+                                         paste(lang_label("outbreaks_rubella")),
+                                         paste(lang_label("outbreaks_diphtheria")),
+                                         paste(lang_label("outbreaks_yellow_fever")),
+                                         paste(lang_label("outbreaks_tetanus"))
+                                       ),
+                           ),style = "z-index:2000;"),
+                    shinycssloaders::withSpinner(leafletOutput("outbreaks_disease_map",height = 600),color = "#1c9ad6", type = "8", size = 0.5),
+                    br(),div(style = "text-align: center;",downloadButton(outputId = "dl_outbreaks_disease_map",lang_label("button_download_map"),icon = icon('camera')))
+                  )
+                )
+              ),
+              
+              #### PIE CHART ----
+              box(
+                width = 5,
+                solidHeader = TRUE,
+                collapsible = TRUE,
+                title = textOutput("outbreaks_title_pie_box"),
+                
+                tabBox(
+                  width = 12,
+                  height = NULL,
+                  tabPanel(
+                    title = lang_label("button_plot"),icon = icon("pie-chart"),
+                    br(),
+                    shinycssloaders::withSpinner(plotlyOutput("outbreaks_plot_pie", height = 600),color = "#1c9ad6", type = "8", size = 0.5)
+                  ),
+                  tabPanel(
+                    title = lang_label("button_datatable"),icon = icon("table"),
+                    br(),
+                    shinycssloaders::withSpinner(dataTableOutput("outbreaks_table_dist"),color = "#1c9ad6", type = "8", size = 0.5)
+                  )
+                )
+              )
+            ),
+            
+            #### DATATABLE ----
+            fluidRow(
+              box(width = 12,
+                  solidHeader = TRUE,
+                  collapsible = TRUE,
+                  title = textOutput("outbreaks_title_data_box"),
+                  column(width = 12,shinycssloaders::withSpinner(dataTableOutput("outbreaks_table"),color = "#1c9ad6", type = "8", size = 0.5))
+              )
+            ),
+            
+            #### SCORE CHEAT SHEET ----
+            fluidRow(
+              box(
+                width = 12,
+                olidHeader = TRUE,collapsible = TRUE,title = lang_label("general_title_limits_table"),
+                selectInput(
+                  "outbreaks_limits_table_filter", 
+                  label = "", 
+                  choices = c(
+                    lang_label("population_pfa_filter"),
+                    lang_label("population_pfa_no_filter")
+                  ),
+                ),
+                shinycssloaders::withSpinner(dataTableOutput("outbreaks_rangos_table"),color = "#1c9ad6", type = "8", size = 0.3)
               )
             )
           )
