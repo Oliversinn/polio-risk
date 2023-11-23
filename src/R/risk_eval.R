@@ -641,7 +641,7 @@ rm(determinants_scores_join,
    outbreaks_scores_join,
    surveillance_scores_join,
    sheet_cut_off)
-save.image(file = "POLIO.RData")
+save.image(file = paste0(PATH_global, "R/Dashboard/POLIO.RData"))
 
 # CLEAN ----
 #rm(list = ls())
