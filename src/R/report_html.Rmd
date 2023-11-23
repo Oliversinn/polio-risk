@@ -1,0 +1,113 @@
+---
+title: "`r library(readxl); read_excel('../Data/country_data.xlsx',sheet = 1)[1,2];`"
+author: "`r library(readxl); if (read_excel('../Data/country_data.xlsx')[8,2] == 'SPA') {paste(read_excel('translations.xlsx',sheet='REPORT')[2,2])} else if (read_excel('../Data/country_data.xlsx')[8,2] == 'ENG') {paste(read_excel('translations.xlsx',sheet='REPORT')[2,3])} else if (read_excel('../Data/country_data.xlsx')[8,2] == 'POR') {paste(read_excel('translations.xlsx',sheet='REPORT')[2,4])} else if (read_excel('../Data/country_data.xlsx')[8,2] == 'FRA') {paste(read_excel('translations.xlsx',sheet='REPORT')[2,5])};`, `r format(Sys.Date(),'%d.%m.%Y')`"
+date: "![](Dashboard/www/country_flag.png){width=20%}"
+output:
+  html_document:
+    toc: yes
+    toc_float: yes
+---
+
+```{r setup, include=FALSE}
+# Authorship ----
+# Organización Panamericana de la Salud
+# Autor: Oliver Mazariegos
+# Última fecha de modificación: 2023-11-21
+# R 4.3.0
+
+Sys.setlocale(locale = "es_ES.UTF-8")
+options(knitr.duplicate.label = "allow", scipen = 999)
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
+
+# Load RData created by risk_tool.R
+load(file = "Dashboard/POLIO.RData")
+
+# Libraries
+library(mapview)
+library(knitr)
+library(leaflet)
+library(htmltools)
+library(RColorBrewer)
+library(readxl)
+library(sf)
+library(tidyverse)
+library(janitor)
+
+# SOURCE
+source("Dashboard/general.R")
+source("Dashboard/immunity.R")
+source("Dashboard/surveillance.R")
+source("Dashboard/determinants.R")
+source("Dashboard/outbreaks.R")
+
+# LANG
+LANG_TLS <- read_excel("translations.xlsx",sheet = "REPORT") %>% select(LABEL,all_of(LANG))
+colnames(LANG_TLS) <- c("LABEL","LANG")
+lang_label <- function(label) {
+  return(LANG_TLS$LANG[LANG_TLS$LABEL == label])
+}
+
+rep_label_admin2_name <- lang_label("rep_label_admin2_name")
+rep_label_admin2_name_plural <- lang_label("rep_label_admin2_name_plural")
+title_name_figure <- lang_label("title_name_figure")
+title_name_table <- lang_label("title_name_table")
+title_name_section <- lang_label("title_name_section")
+rep_label_all <- lang_label("rep_label_all")
+
+# VARS
+ref_country_name = COUNTRY_NAME
+admin1_geo_id_df <- id_data %>% select(`ADMIN1 GEO_ID`,ADMIN1) %>% unique()
+admin1_geo_id_df <- rbind(admin1_geo_id_df,c(0,rep_label_all))
+
+# HTML - CSS
+html_white_background <- htmltools::tags$style(".leaflet-container { background: #FFF; }" ) 
+html_leaflet_round_legend <- htmltools::tags$style((".leaflet .legend i{ margin-top: 0px;margin-bottom: 5px;border-radius: 5px;}"))
+ZOOM_CONFIG = "Mozilla/5.0 (compatible; MSIE 10.6; Windows NT 6.1; Trident/5.0; InfoPath.2; SLCC1; .NET CLR 3.0.4506.2152; .NET CLR 3.5.30729; .NET CLR 2.0.50727) 3gpp-gba UNTRUSTED/1.0"
+
+# Functions
+cFormat <- function(x,n) {
+  cf <- format(round(as.numeric(x),n), nsmall=n, big.mark=",")
+  return (cf)
+}
+
+tidy_map <- function(map) {
+  map <- map %>% clearTiles() %>% 
+    removeControl(layerId = "map_title") %>%
+    htmlwidgets::prependContent(html_white_background) %>%  
+    htmlwidgets::prependContent(html_leaflet_round_legend)
+  return(map)
+}
+
+get_sec_table <- function(risk_levels_df,title_sec) {
+  rep_label_num_admin2_VHR = sum(risk_levels_df$n[risk_levels_df$level == lang_label("VHR")])
+  rep_label_num_admin2_HR = sum(risk_levels_df$n[risk_levels_df$level == lang_label("HR")])
+  rep_label_num_admin2_MR = sum(risk_levels_df$n[risk_levels_df$level == lang_label("MR")])
+  rep_label_num_admin2_LR = sum(risk_levels_df$n[risk_levels_df$level == lang_label("LR")])
+  rep_label_pct_admin2_VHR = round(rep_label_num_admin2_VHR/ref_num_admin2*100,1)
+  rep_label_pct_admin2_HR = round(rep_label_num_admin2_HR/ref_num_admin2*100,1)
+  rep_label_pct_admin2_MR = round(rep_label_num_admin2_MR/ref_num_admin2*100,1)
+  rep_label_pct_admin2_LR = round(rep_label_num_admin2_LR/ref_num_admin2*100,1)
+  
+  mun_risk_levels_df <- data.frame(
+    cat=c(lang_label("table_cut_offs_LR"),lang_label("table_cut_offs_MR"),
+        lang_label("table_cut_offs_HR"),lang_label("table_cut_offs_VHR")),
+    num=c(rep_label_num_admin2_LR,rep_label_num_admin2_MR,rep_label_num_admin2_HR,rep_label_num_admin2_VHR),
+    pct=c(rep_label_pct_admin2_LR,rep_label_pct_admin2_MR,rep_label_pct_admin2_HR,rep_label_pct_admin2_VHR)
+  ) %>% adorn_totals("row")
+  if (ref_num_admin2 == mun_risk_levels_df$num[mun_risk_levels_df$cat == "Total"]) {mun_risk_levels_df$pct[mun_risk_levels_df$cat == "Total"] = 100}
+  mun_risk_levels_df$num <- cFormat(mun_risk_levels_df$num,0)
+  mun_risk_levels_df$pct <- paste0(cFormat(mun_risk_levels_df$pct,1),"%")
+  
+  colnames(mun_risk_levels_df) <- c(
+    title_sec,
+    paste0(lang_label("table_number_of")," ",rep_label_admin2_name_plural),
+    paste0(lang_label("table_pct_of")," ",rep_label_admin2_name_plural))
+  return(mun_risk_levels_df)
+}
+
+```
+
+
+`r lang_label("background_par_1")`
+
+`r lang_label("background_par_2")`
