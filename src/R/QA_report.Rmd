@@ -346,6 +346,14 @@ YEAR_4 = YEAR_EVAL - 2
 YEAR_5 = YEAR_EVAL - 1
 
 data_sheet_3 <- read_excel(PATH_country_data,sheet = 3)
+as_is_colnames <- colnames(data_sheet_3)
+as_is_colnames[9:13] <- c(
+  paste(lang_label("immunity_polio_coverage"), YEAR_1),
+  paste(lang_label("immunity_polio_coverage"), YEAR_2),
+  paste(lang_label("immunity_polio_coverage"), YEAR_3),
+  paste(lang_label("immunity_polio_coverage"), YEAR_4),
+  paste(lang_label("immunity_polio_coverage"), YEAR_5)
+)
 colnames(data_sheet_3)[5:15] <- c(
    'POB1', 'POB5', 'POB15',
    lang_label("immunity_populations_and_pfa"),
@@ -361,7 +369,6 @@ row_offset <- 2
 
 data_sheet_3 <- data_sheet_3[-c(1),] # Remove calc year row
 dat_test_na_df3 <- get_test_na_df(data_sheet_3)
-as_is_colnames <- colnames(data_sheet_3)
 colnames(data_sheet_3) <- c(
   "ADMIN1 GEO_ID","GEO_ID","ADMIN1","ADMIN2",
   'POB1', 'POB5', 'POB15',
@@ -382,10 +389,15 @@ if (test_na_admin1_id) {text_na_admin1_id = ""} else {text_na_admin1_id = lang_l
 test_na_admin1 <- sum(is.na(data_sheet_3$ADMIN1)) == 0
 if (test_na_admin1) {text_na_admin1 = ""} else {text_na_admin1 = lang_label("test_na_admin1")}
 
+badrows_num_population_and_pfa <- which(!(data_sheet_3[[lang_label("immunity_populations_and_pfa")]] %in% yes_no_opts))
+badrows_num_effective_cob <- which(!(data_sheet_3[[lang_label("immunity_effective_cob")]] %in% yes_no_opts))
+
 colnames(data_sheet_3) = as_is_colnames
 data_sheet_3$FILA <- as.numeric(rownames(data_sheet_3))+row_offset
 data_sheet_3 <- data_sheet_3 %>% select(FILA,everything())
 colnames(data_sheet_3)[1] = lang_label("row")
+
+
 ```
 
 #### `r lang_label("title_na_vars")`.
@@ -408,6 +420,19 @@ if (has_invalid_geoid(data_sheet_3) != "") {report_has_errors <- T}
 cat_invalid_geoid_table(data_sheet_3)
 ```
 `r has_invalid_geoid(data_sheet_3)`
+
+#### `r lang_label("res_rap_invalid_yesno")` '`r lang_label("immunity_populations_and_pfa")`'.
+```{r, echo=F}
+test_table <- data_sheet_3[badrows_num_population_and_pfa,]
+test_table <- test_table %>% select(c(1,2,3,9))
+if (nrow(test_table) == 0) {
+  test_table <- data.frame(V1="")
+  colnames(test_table) = lang_label("no_invalid_data")
+} else {
+  report_has_errors <- T
+}
+knitr::kable(test_table, booktabs = T)
+```
 
 #### `r lang_label("no_na_nonnum_data")` (`r lang_label("immunity_polio_coverage")`)
 ```{r, echo=F}
@@ -461,4 +486,16 @@ if (nrow(test_table) == 0) {
 knitr::kable(test_table, booktabs = T)
 ```
 
+#### `r lang_label("res_rap_invalid_yesno")` '`r lang_label("immunity_effective_cob")`'.
+```{r, echo=F}
+test_table <- data_sheet_3[badrows_num_effective_cob,]
+test_table <- test_table %>% select(c(1,2,3,16))
+if (nrow(test_table) == 0) {
+  test_table <- data.frame(V1="")
+  colnames(test_table) = lang_label("no_invalid_data")
+} else {
+  report_has_errors <- T
+}
+knitr::kable(test_table, booktabs = T)
+```
 
