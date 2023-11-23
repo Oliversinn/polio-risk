@@ -59,3 +59,14 @@ notebooks
 
 # geo.csv
 geo.csv
+
+# Word cache
+~$*.docx
+
+# QA report
+QA_report.docx
+
+# QA figures
+figures/
+
+# Report
