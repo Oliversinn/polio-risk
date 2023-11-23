@@ -335,16 +335,130 @@ knitr::kable(test_table, booktabs = T)
 ```
 
 
+\newpage
+### 3. `r lang_label("title_cdata_inm")`
+```{r rev_data_3, echo=F}
+YEAR_EVAL <- as.integer(data_sheet_1$VAL[2])
+YEAR_1 = YEAR_EVAL - 5
+YEAR_2 = YEAR_EVAL - 4
+YEAR_3 = YEAR_EVAL - 3
+YEAR_4 = YEAR_EVAL - 2
+YEAR_5 = YEAR_EVAL - 1
 
+data_sheet_3 <- read_excel(PATH_country_data,sheet = 3)
+colnames(data_sheet_3)[5:15] <- c(
+   'POB1', 'POB5', 'POB15',
+   lang_label("immunity_populations_and_pfa"),
+   paste(lang_label("immunity_polio_coverage"), YEAR_1),
+   paste(lang_label("immunity_polio_coverage"), YEAR_2),
+   paste(lang_label("immunity_polio_coverage"), YEAR_3),
+   paste(lang_label("immunity_polio_coverage"), YEAR_4),
+   paste(lang_label("immunity_polio_coverage"), YEAR_5),
+   lang_label("immunity_ipv_coverage"),
+   lang_label("immunity_effective_cob")
+)
+row_offset <- 2
 
+data_sheet_3 <- data_sheet_3[-c(1),] # Remove calc year row
+dat_test_na_df3 <- get_test_na_df(data_sheet_3)
+as_is_colnames <- colnames(data_sheet_3)
+colnames(data_sheet_3) <- c(
+  "ADMIN1 GEO_ID","GEO_ID","ADMIN1","ADMIN2",
+  'POB1', 'POB5', 'POB15',
+   lang_label("immunity_populations_and_pfa"),
+   paste(lang_label("immunity_polio_coverage"), YEAR_1),
+   paste(lang_label("immunity_polio_coverage"), YEAR_2),
+   paste(lang_label("immunity_polio_coverage"), YEAR_3),
+   paste(lang_label("immunity_polio_coverage"), YEAR_4),
+   paste(lang_label("immunity_polio_coverage"), YEAR_5),
+   lang_label("immunity_ipv_coverage"),
+   lang_label("immunity_effective_cob")
+)
+data_sheet_3$`ADMIN1 GEO_ID` <- as.character(data_sheet_3$`ADMIN1 GEO_ID`)
+data_sheet_3$GEO_ID <- as.character(data_sheet_3$GEO_ID)
 
+test_na_admin1_id <- sum(is.na(data_sheet_3$`ADMIN1 GEO_ID`)) == 0
+if (test_na_admin1_id) {text_na_admin1_id = ""} else {text_na_admin1_id = lang_label("test_na_admin1_id")}
+test_na_admin1 <- sum(is.na(data_sheet_3$ADMIN1)) == 0
+if (test_na_admin1) {text_na_admin1 = ""} else {text_na_admin1 = lang_label("test_na_admin1")}
 
+colnames(data_sheet_3) = as_is_colnames
+data_sheet_3$FILA <- as.numeric(rownames(data_sheet_3))+row_offset
+data_sheet_3 <- data_sheet_3 %>% select(FILA,everything())
+colnames(data_sheet_3)[1] = lang_label("row")
+```
 
+#### `r lang_label("title_na_vars")`.
+```{r, echo=F}
+if (sum(dat_test_na_df3[3]) > 0) {report_has_errors <- T}
+knitr::kable(dat_test_na_df3,align = "lrrrrrr", booktabs = T)
+```
+- `r text_na_admin1_id`
+- `r text_na_admin1`
 
+#### `r lang_label("title_missing_id")`^[`r lang_label("footnote_na")`].
+```{r, echo=F}
+na_table <- data_sheet_3 %>% select(c(1:5))
+cat_na_table(na_table,in_cols=c(3,5))
+```
 
+#### `r lang_label("title_invalid_geocode")`.
+```{r, echo=F}
+if (has_invalid_geoid(data_sheet_3) != "") {report_has_errors <- T}
+cat_invalid_geoid_table(data_sheet_3)
+```
+`r has_invalid_geoid(data_sheet_3)`
 
+#### `r lang_label("no_na_nonnum_data")` (`r lang_label("immunity_polio_coverage")`)
+```{r, echo=F}
+idx <- c(10:14)
+temp_data_sheet_3 <- data_sheet_3
+temp_data_sheet_3[, idx] <- lapply(temp_data_sheet_3[, idx], as.numeric)
 
+non_numeric_rows = c()
+for (col in idx) {
+  non_numeric_rows <- c(non_numeric_rows,which(is.na(temp_data_sheet_3[, col])))
+}
+non_numeric_rows <- sort(unique(non_numeric_rows))+row_offset
 
+idx <- c(1,2,3,idx)
+test_table <- data_sheet_3[,idx]
+colnames(test_table)[1] = "FILA"
+test_table <- test_table %>% filter(FILA %in% non_numeric_rows)
+if (nrow(test_table) == 0) {
+  test_table <- data.frame(V1="")
+  colnames(test_table) = lang_label("no_na_nonnum_data")
+} else {
+  report_has_errors <- T
+  colnames(test_table)[1] = lang_label("row")
+}
+knitr::kable(test_table, booktabs = T)
+```
 
+#### `r lang_label("no_na_nonnum_data")` (`r lang_label("immunity_ipv_coverage")`)
+```{r, echo=F}
+idx <- c(15)
+temp_data_sheet_3 <- data_sheet_3
+temp_data_sheet_3[, idx] <- lapply(temp_data_sheet_3[, idx], as.numeric)
+
+non_numeric_rows = c()
+for (col in idx) {
+  non_numeric_rows <- c(non_numeric_rows,which(is.na(temp_data_sheet_3[, col])))
+}
+non_numeric_rows <- sort(unique(non_numeric_rows))+row_offset
+
+idx <- c(1,2,3,idx)
+test_table <- data_sheet_3[,idx]
+colnames(test_table)[1] = "FILA"
+test_table <- test_table %>% filter(FILA %in% non_numeric_rows)
+if (nrow(test_table) == 0) {
+  test_table <- data.frame(V1="")
+  colnames(test_table) = lang_label("no_na_nonnum_data")
+} else {
+  report_has_errors <- T
+  colnames(test_table)[1] = lang_label("row")
+}
+knitr::kable(test_table, booktabs = T)
+```
 
 
