@@ -26,7 +26,7 @@ PATH_shapefiles     = paste0(PATH_global,"Data/shapefiles/")
 PATH_translations   = paste0(PATH_global,"R/translations.xlsx")
 
 # VARS ----
-LANG <- as.character(read_excel(PATH_country_data,sheet = 1)[8,2])
+LANG <- as.character(read_excel(PATH_country_data,sheet = 1)[3,2])
 
 # LANG ----
 LANG_TLS <- read_excel(PATH_translations,sheet = "DASHBOARD") %>% 
@@ -308,14 +308,13 @@ id_data <- id_data %>% filter(!is.na(`ADMIN1 GEO_ID`) & !is.na(GEO_ID))
 config_data <- read_excel(PATH_country_data,sheet = 1)
 colnames(config_data) <- c("var","val")
 YEAR_EVAL <- as.integer(config_data$val[2])
-YEAR_CAMP_SR <- as.integer(config_data$val[4])
 YEAR_1 = YEAR_EVAL - 5
 YEAR_2 = YEAR_EVAL - 4
 YEAR_3 = YEAR_EVAL - 3
 YEAR_4 = YEAR_EVAL - 2
 YEAR_5 = YEAR_EVAL - 1
 COUNTRY_NAME <- config_data$val[1]
-REPORT_FILE_FORMAT <- config_data$val[8]
+REPORT_FILE_FORMAT <- config_data$val[3]
 scores_data <- id_data
 
 # RISK CUT OFFS ----
