@@ -168,7 +168,7 @@ function(input, output, session) {
     }
   )
   
-  output$indicadores_table <- renderDataTable(server = FALSE,{
+  output$indicadores_table <- DT::renderDataTable(server = FALSE,{
     ind_get_bar_table(LANG_TLS,CUT_OFFS,scores_data,ind_rename(input$indicadores_select_indicador),get_a1_geo_id(input$admin1_filter),risk_rename(input$indicadores_select_risk))
   })
   
@@ -186,7 +186,7 @@ function(input, output, session) {
     }
   )
   
-  output$indicadores_table_2 <- renderDataTable(server = FALSE,{
+  output$indicadores_table_2 <- DT::renderDataTable(server = FALSE,{
     ind_get_bar_table(LANG_TLS,CUT_OFFS,scores_data,ind_rename(input$indicadores_select_indicador),get_a1_geo_id(input$admin1_filter),risk_rename(input$indicadores_select_risk))
   })
   
@@ -219,7 +219,7 @@ function(input, output, session) {
   })
   
   ### INDICATORS CHEAT SHEET ----
-  output$indicadores_rangos_table <- renderDataTable(server = FALSE,{
+  output$indicadores_rangos_table <- DT::renderDataTable(server = FALSE,{
     pfa_filter <- case_when(
       input$general_limits_table_filter == lang_label("population_pfa_filter") ~ TRUE,
       input$general_limits_table_filter == lang_label("population_pfa_no_filter") ~ FALSE,
@@ -332,7 +332,7 @@ function(input, output, session) {
     plot_pie_data(LANG_TLS,ZERO_POB_LIST,CUT_OFFS,"immunity_score",immunity_scores,get_a1_geo_id(input$admin1_filter), input$population15_filter,return_table = F)
   })
   
-  output$inmunidad_table_dist <- renderDataTable(server = FALSE,{
+  output$inmunidad_table_dist <- DT::renderDataTable(server = FALSE,{
     plot_pie_data(LANG_TLS,ZERO_POB_LIST,CUT_OFFS,"immunity_score",immunity_scores,get_a1_geo_id(input$admin1_filter), input$population15_filter,return_table = T)
   })
   
@@ -341,12 +341,12 @@ function(input, output, session) {
     title_data_box(lang_label("INM_POB"),input$admin1_filter)
   })
   
-  output$inmunidad_table <- renderDataTable(server = FALSE,{
+  output$inmunidad_table <- DT::renderDataTable(server = FALSE,{
     inmu_get_data_table(LANG_TLS,YEAR_LIST,CUT_OFFS,immunity_scores,get_a1_geo_id(input$admin1_filter), input$population15_filter, risk_filter_rename(input$indicadores_select_risk))
   })
   
   ## CHEAT SHEET ----
-  output$inmu_rangos_table <- renderDataTable(server = FALSE,{
+  output$inmu_rangos_table <- DT::renderDataTable(server = FALSE,{
     pfa_filter <- case_when(
       input$immunity_limits_table_filter == lang_label("population_pfa_filter") ~ TRUE,
       input$immunity_limits_table_filter == lang_label("population_pfa_no_filter") ~ FALSE,
@@ -498,7 +498,7 @@ function(input, output, session) {
     plot_pie_data(LANG_TLS,ZERO_POB_LIST,CUT_OFFS,"surveillance_score",surveillance_scores,get_a1_geo_id(input$admin1_filter), input$population15_filter,return_table = F)
   })
   
-  output$calidad_table_dist <- renderDataTable(server = FALSE,{
+  output$calidad_table_dist <- DT::renderDataTable(server = FALSE,{
     plot_pie_data(LANG_TLS,ZERO_POB_LIST,CUT_OFFS,"surveillance_score",surveillance_scores,get_a1_geo_id(input$admin1_filter), input$population15_filter,return_table = T)
   })
   
@@ -507,12 +507,12 @@ function(input, output, session) {
     title_data_box(lang_label("SURV_QUAL"),input$admin1_filter)
   })
   
-  output$calidad_table <- renderDataTable(server = FALSE,{
+  output$calidad_table <- DT::renderDataTable(server = FALSE,{
     cal_get_data_table(LANG_TLS,CUT_OFFS,surveillance_scores,get_a1_geo_id(input$admin1_filter), input$population15_filter, risk_filter_rename(input$indicadores_select_risk))
   })
   
   ## CHEAT SHEET ----
-  output$surveillance_rangos_table <- renderDataTable(server = FALSE,{
+  output$surveillance_rangos_table <- DT::renderDataTable(server = FALSE,{
     pfa_filter <- case_when(
       input$surveillance_limits_table_filter == lang_label("population_pfa_filter") ~ TRUE,
       input$surveillance_limits_table_filter == lang_label("population_pfa_no_filter") ~ FALSE,
@@ -590,7 +590,7 @@ function(input, output, session) {
     plot_pie_data(LANG_TLS,ZERO_POB_LIST,CUT_OFFS,"determinants_score",determinants_scores,get_a1_geo_id(input$admin1_filter), input$population15_filter,return_table = F)
   })
   
-  output$determinants_table_dist <- renderDataTable(server = FALSE,{
+  output$determinants_table_dist <- DT::renderDataTable(server = FALSE,{
     plot_pie_data(LANG_TLS,ZERO_POB_LIST,CUT_OFFS,"determinants_score",determinants_scores,get_a1_geo_id(input$admin1_filter), input$population15_filter,return_table = T)
   })
   
@@ -599,12 +599,12 @@ function(input, output, session) {
     title_data_box(lang_label("determinants_score"),input$admin1_filter)
   })
   
-  output$determinants_table <- renderDataTable(server = FALSE,{
+  output$determinants_table <- DT::renderDataTable(server = FALSE,{
     determinants_get_data_table(LANG_TLS,CUT_OFFS,determinants_scores,get_a1_geo_id(input$admin1_filter), input$population15_filter, risk_filter_rename(input$indicadores_select_risk))
   })
   
   ## CHEAT SHEET ----
-  output$determinants_rangos_table <- renderDataTable(server = FALSE,{
+  output$determinants_rangos_table <- DT::renderDataTable(server = FALSE,{
     pfa_filter <- case_when(
       input$determinants_limits_table_filter == lang_label("population_pfa_filter") ~ TRUE,
       input$determinants_limits_table_filter == lang_label("population_pfa_no_filter") ~ FALSE,
@@ -677,7 +677,7 @@ function(input, output, session) {
     plot_pie_data(LANG_TLS,ZERO_POB_LIST,CUT_OFFS,"outbreaks_score",outbreaks_scores,get_a1_geo_id(input$admin1_filter), input$population15_filter,return_table = F)
   })
   
-  output$outbreaks_table_dist <- renderDataTable(server = FALSE,{
+  output$outbreaks_table_dist <- DT::renderDataTable(server = FALSE,{
     plot_pie_data(LANG_TLS,ZERO_POB_LIST,CUT_OFFS,"outbreaks_score",outbreaks_scores,get_a1_geo_id(input$admin1_filter), input$population15_filter,return_table = T)
   })
   
@@ -686,12 +686,12 @@ function(input, output, session) {
     title_data_box(lang_label("outbreaks_score"),input$admin1_filter)
   })
   
-  output$outbreaks_table <- renderDataTable(server = FALSE,{
+  output$outbreaks_table <- DT::renderDataTable(server = FALSE,{
     outbreaks_get_data_table(LANG_TLS,YEAR_LIST,CUT_OFFS,outbreaks_scores,get_a1_geo_id(input$admin1_filter), input$population15_filter, risk_filter_rename(input$indicadores_select_risk))
   })
   
   ## CHEAT SHEET ----
-  output$outbreaks_rangos_table <- renderDataTable(server = FALSE,{
+  output$outbreaks_rangos_table <- DT::renderDataTable(server = FALSE,{
     pfa_filter <- case_when(
       input$outbreaks_limits_table_filter == lang_label("population_pfa_filter") ~ TRUE,
       input$outbreaks_limits_table_filter == lang_label("population_pfa_no_filter") ~ FALSE,

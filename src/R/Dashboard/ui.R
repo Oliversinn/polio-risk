@@ -176,7 +176,7 @@ fluidPage(
                     ###### TABLE ----
                     tabPanel(
                       title = lang_label("button_datatable"),icon = icon("table"),
-                      shinycssloaders::withSpinner(dataTableOutput("indicadores_table",height = 620),color = "#1c9ad6", type = "8", size = 0.5)
+                      shinycssloaders::withSpinner(DT::dataTableOutput("indicadores_table"),color = "#1c9ad6", type = "8", size = 0.5)
                     )
                   )
                 )
@@ -204,7 +204,7 @@ fluidPage(
                     ##### TABLE ----
                     tabPanel(
                       title = lang_label("button_datatable"),icon = icon("table"),
-                      shinycssloaders::withSpinner(dataTableOutput("indicadores_table_2",height = 620),color = "#1c9ad6", type = "8", size = 0.5)
+                      shinycssloaders::withSpinner(DT::dataTableOutput("indicadores_table_2"),color = "#1c9ad6", type = "8", size = 0.5)
                     )
                   )
                 ),
@@ -261,7 +261,7 @@ fluidPage(
                       lang_label("population_pfa_no_filter")
                     ),
                   ),
-                  shinycssloaders::withSpinner(dataTableOutput("indicadores_rangos_table"),color = "#1c9ad6", type = "8", size = 0.3)
+                  shinycssloaders::withSpinner(DT::dataTableOutput("indicadores_rangos_table"),color = "#1c9ad6", type = "8", size = 0.3)
                 )
               )
             )
@@ -344,7 +344,7 @@ fluidPage(
                   tabPanel(
                     title = lang_label("button_datatable"),icon = icon("table"),
                     br(),
-                    shinycssloaders::withSpinner(dataTableOutput("inmunidad_table_dist"),color = "#1c9ad6", type = "8", size = 0.5)
+                    shinycssloaders::withSpinner(DT::dataTableOutput("inmunidad_table_dist"),color = "#1c9ad6", type = "8", size = 0.5)
                   )
                 )
               )
@@ -355,7 +355,7 @@ fluidPage(
                   solidHeader = TRUE,
                   collapsible = TRUE,
                   title = textOutput("inmunidad_title_data_box"),
-                  column(width = 12,shinycssloaders::withSpinner(dataTableOutput("inmunidad_table"),color = "#1c9ad6", type = "8", size = 0.5))
+                  column(width = 12,shinycssloaders::withSpinner(DT::dataTableOutput("inmunidad_table"),color = "#1c9ad6", type = "8", size = 0.5))
               )
             ),
             
@@ -372,7 +372,7 @@ fluidPage(
                     lang_label("population_pfa_no_filter")
                   ),
                 ),
-                shinycssloaders::withSpinner(dataTableOutput("inmu_rangos_table"),color = "#1c9ad6", type = "8", size = 0.3)
+                shinycssloaders::withSpinner(DT::dataTableOutput("inmu_rangos_table"),color = "#1c9ad6", type = "8", size = 0.3)
               )
               
             )
@@ -478,7 +478,7 @@ fluidPage(
                   tabPanel(
                     title = lang_label("button_datatable"),icon = icon("table"),
                     br(),
-                    shinycssloaders::withSpinner(dataTableOutput("calidad_table_dist"),color = "#1c9ad6", type = "8", size = 0.5)
+                    shinycssloaders::withSpinner(DT::dataTableOutput("calidad_table_dist"),color = "#1c9ad6", type = "8", size = 0.5)
                   )
                 )
               )
@@ -491,7 +491,7 @@ fluidPage(
                 solidHeader = TRUE,
                 collapsible = TRUE,
                 title = textOutput("calidad_title_data_box"),
-                column(width = 12,shinycssloaders::withSpinner(dataTableOutput("calidad_table"),color = "#1c9ad6", type = "8", size = 0.5))
+                column(width = 12,shinycssloaders::withSpinner(DT::dataTableOutput("calidad_table"),color = "#1c9ad6", type = "8", size = 0.5))
               )
             ),
             
@@ -508,7 +508,7 @@ fluidPage(
                     lang_label("population_pfa_no_filter")
                   ),
                 ),
-                shinycssloaders::withSpinner(dataTableOutput("surveillance_rangos_table"),color = "#1c9ad6", type = "8", size = 0.3)
+                shinycssloaders::withSpinner(DT::dataTableOutput("surveillance_rangos_table"),color = "#1c9ad6", type = "8", size = 0.3)
               )
             )
           ),
@@ -573,7 +573,7 @@ fluidPage(
                   tabPanel(
                     title = lang_label("button_datatable"),icon = icon("table"),
                     br(),
-                    shinycssloaders::withSpinner(dataTableOutput("determinants_table_dist"),color = "#1c9ad6", type = "8", size = 0.5)
+                    shinycssloaders::withSpinner(DT::dataTableOutput("determinants_table_dist"),color = "#1c9ad6", type = "8", size = 0.5)
                   )
                 )
               )
@@ -586,7 +586,7 @@ fluidPage(
                 solidHeader = TRUE,
                 collapsible = TRUE,
                 title = textOutput("determinants_title_data_box"),
-                column(width = 12,shinycssloaders::withSpinner(dataTableOutput("determinants_table"),color = "#1c9ad6", type = "8", size = 0.5))
+                column(width = 12,shinycssloaders::withSpinner(DT::dataTableOutput("determinants_table"),color = "#1c9ad6", type = "8", size = 0.5))
               )
             ),
             
@@ -603,7 +603,7 @@ fluidPage(
                     lang_label("population_pfa_no_filter")
                   ),
                 ),
-                shinycssloaders::withSpinner(dataTableOutput("determinants_rangos_table"),color = "#1c9ad6", type = "8", size = 0.3)
+                shinycssloaders::withSpinner(DT::dataTableOutput("determinants_rangos_table"),color = "#1c9ad6", type = "8", size = 0.3)
               )
             )
           ),
@@ -668,7 +668,7 @@ fluidPage(
                   tabPanel(
                     title = lang_label("button_datatable"),icon = icon("table"),
                     br(),
-                    shinycssloaders::withSpinner(dataTableOutput("outbreaks_table_dist"),color = "#1c9ad6", type = "8", size = 0.5)
+                    shinycssloaders::withSpinner(DT::dataTableOutput("outbreaks_table_dist"),color = "#1c9ad6", type = "8", size = 0.5)
                   )
                 )
               )
@@ -680,7 +680,7 @@ fluidPage(
                   solidHeader = TRUE,
                   collapsible = TRUE,
                   title = textOutput("outbreaks_title_data_box"),
-                  column(width = 12,shinycssloaders::withSpinner(dataTableOutput("outbreaks_table"),color = "#1c9ad6", type = "8", size = 0.5))
+                  column(width = 12,shinycssloaders::withSpinner(DT::dataTableOutput("outbreaks_table"),color = "#1c9ad6", type = "8", size = 0.5))
               )
             ),
             
@@ -697,7 +697,7 @@ fluidPage(
                     lang_label("population_pfa_no_filter")
                   ),
                 ),
-                shinycssloaders::withSpinner(dataTableOutput("outbreaks_rangos_table"),color = "#1c9ad6", type = "8", size = 0.3)
+                shinycssloaders::withSpinner(DT::dataTableOutput("outbreaks_rangos_table"),color = "#1c9ad6", type = "8", size = 0.3)
               )
             )
           )
