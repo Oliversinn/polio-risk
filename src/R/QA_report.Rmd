@@ -1,0 +1,350 @@
+---
+title: "`r library(readxl); if (read_excel('../Data/country_data.xlsx')[3,2] == 'SPA') {paste(read_excel('translations.xlsx',sheet='QA_REPORT')[1,2])} else if (read_excel('../Data/country_data.xlsx')[3,2] == 'ENG') {paste(read_excel('translations.xlsx',sheet='QA_REPORT')[1,3])} else if (read_excel('../Data/country_data.xlsx')[3,2] == 'POR') {paste(read_excel('translations.xlsx',sheet='QA_REPORT')[1,4])} else if (read_excel('../Data/country_data.xlsx')[3,2] == 'FRA') {paste(read_excel('translations.xlsx',sheet='QA_REPORT')[1,5])} else {paste(read_excel('translations.xlsx',sheet='QA_REPORT')[1,2])};`  - `r library(readxl); read_excel('../Data/country_data.xlsx',sheet = 1)[1,2];`"
+author: "`r library(readxl); if (read_excel('../Data/country_data.xlsx')[3,2] == 'SPA') {paste(read_excel('translations.xlsx',sheet='QA_REPORT')[2,2])} else if (read_excel('../Data/country_data.xlsx')[3,2] == 'ENG') {paste(read_excel('translations.xlsx',sheet='QA_REPORT')[2,3])} else if (read_excel('../Data/country_data.xlsx')[3,2] == 'POR') {paste(read_excel('translations.xlsx',sheet='QA_REPORT')[2,4])} else if (read_excel('../Data/country_data.xlsx')[3,2] == 'FRA') {paste(read_excel('translations.xlsx',sheet='QA_REPORT')[2,5])} else {paste(read_excel('translations.xlsx',sheet='QA_REPORT')[2,2])};`"
+date: "`r format(Sys.Date(),'%d.%m.%Y')`"
+output:
+  word_document: default
+---
+
+```{r setup, include=FALSE, echo=F}
+##############################################################
+# Herramienta digital Análisis de Riesgo SR - QA_report.Rmd
+# Organización Panamericana de la Salud
+# Autor: Luis Quezada
+# Última fecha de modificación: 2023-10-11
+# R 4.3.0
+##############################################################
+
+Sys.setlocale(locale = "es_ES.UTF-8")
+options(knitr.duplicate.label = "allow", scipen = 999)
+knitr::opts_chunk$set(echo = F, warning = F, message = F)
+
+# Libraries
+library(pacman)
+p_load(tidyverse,tidyr,readxl,
+       webshot,sf,sp,mapview,leaflet,
+       htmltools,DT,data.table)
+
+# PATHS ----
+file_path = rstudioapi::getSourceEditorContext()$path
+file_path_index = unlist(gregexec('R/QA_report.Rmd',file_path))[1]
+PATH_global = substr(file_path,1,file_path_index - 1)
+PATH_country_data   =  paste0(PATH_global, "Data/country_data.xlsx")
+PATH_country_flag   = paste0(PATH_global, "Data/country_flag.png")
+PATH_shapefiles     = paste0(PATH_global, "Data/shapefiles/")
+
+# HTML - CSS
+html_white_background <- htmltools::tags$style(".leaflet-container { background: #FFF; }")
+
+# LANG
+LANG <- as.character(read_excel(PATH_country_data,sheet = 1)[3,2])
+if (!(LANG %in% c("SPA","ENG","FRA","POR"))) {LANG = "SPA"}
+LANG_TLS <- read_excel("translations.xlsx",sheet="QA_REPORT") %>% select(LABEL,all_of(LANG))
+colnames(LANG_TLS) <- c("LABEL","LANG")
+lang_label <- function(label) {
+  return(LANG_TLS$LANG[LANG_TLS$LABEL == label])
+}
+
+# Functions
+cFormat <- function(x,n) {
+  cf <- format(round(as.numeric(x),n), nsmall=n, big.mark=",")
+  return (cf)
+}
+
+get_test_na_df <- function(df) {
+  dat_test_na_df <- as.data.frame(colSums(is.na(df)))
+  colnames(dat_test_na_df) <- c("n_miss")
+  dat_test_na_df$var <- rownames(dat_test_na_df)
+  rownames(dat_test_na_df) = NULL
+  dat_test_na_df <- dat_test_na_df %>% mutate(test_na = case_when(
+    n_miss > 0 ~ lang_label("na_test_yes"),
+    n_miss <= 0 ~ lang_label("na_test_no")
+  )) %>% select(var,test_na,n_miss)
+  colnames(dat_test_na_df) = c(lang_label("na_test_var"),
+                               lang_label("na_test_na_data"),
+                               lang_label("na_test_n"))
+  return(dat_test_na_df)
+}
+
+cat_na_table <- function(df_all,in_cols=NULL) {
+  if (is.null(in_cols)) {
+    na_rows_df <- df_all[!complete.cases(df_all),]
+  } else {
+    na_rows_df <- df_all[!complete.cases(df_all[in_cols]),]
+  }
+  if (nrow(na_rows_df) == 0) {
+    na_rows_df <- data.frame(V1="")
+    colnames(na_rows_df) <- lang_label("no_missing_data")
+  }
+  return(knitr::kable(na_rows_df, row.names = F, booktabs = T))
+}
+
+cat_invalid_geoid_table <- function(data_df) {
+  data_df <- data_df[c(1,3)]
+  geo_id_colname <- colnames(data_df)[2]
+  colnames(data_df) <- c("FILA","GEO_ID")
+  data_df$GEO_ID <- as.character(data_df$GEO_ID)
+  country_shapefiles$GEO_ID <- as.character(country_shapefiles$GEO_ID)
+  geo_id_merge_df <- full_join(
+    data_df,
+    as.data.frame(country_shapefiles) %>% select(-geometry),
+    by="GEO_ID"
+  )
+  geo_id_merge_df <- geo_id_merge_df[!complete.cases(geo_id_merge_df),]
+  geo_id_merge_df <- geo_id_merge_df %>% filter(!is.na(FILA)) %>% select(-ADMIN1,-ADMIN2)
+  colnames(geo_id_merge_df)[1] = lang_label("row")
+  if ("ADMIN1_GEO_ID" %in% colnames(geo_id_merge_df)) {
+    geo_id_merge_df <- geo_id_merge_df %>% select(-ADMIN1_GEO_ID)
+  }
+  colnames(geo_id_merge_df)[2] <- geo_id_colname
+  if (nrow(geo_id_merge_df) == 0) {
+    geo_id_merge_df <- data.frame(V1="")
+    colnames(geo_id_merge_df) = c(lang_label("no_invalid_geocode"))
+  }
+  return(knitr::kable(geo_id_merge_df, booktabs = T))
+}
+
+has_invalid_geoid <- function(data_df) {
+  data_df <- data_df[c(1,3)]
+  colnames(data_df) <- c("FILA","GEO_ID")
+  data_df$GEO_ID <- as.character(data_df$GEO_ID)
+  country_shapefiles$GEO_ID <- as.character(country_shapefiles$GEO_ID)
+  geo_id_merge_df <- full_join(
+    data_df,
+    as.data.frame(country_shapefiles) %>% select(-geometry),
+    by="GEO_ID"
+  )
+  geo_id_merge_df <- geo_id_merge_df[!complete.cases(geo_id_merge_df),]
+  geo_id_merge_df <- geo_id_merge_df %>% filter(!is.na(FILA)) %>% select(-ADMIN1,-ADMIN2)
+  colnames(geo_id_merge_df)[1] = lang_label("row")
+  if (nrow(geo_id_merge_df) != 0) {
+    return(paste0("- ",lang_label("no_match_geocode"),"\n"))
+  } else {
+    return("")
+  }
+}
+
+# Shapefiles
+country_shapefiles <- st_read(PATH_shapefiles,layer="admin2")
+if ("ADMIN1_" %in% colnames(country_shapefiles)) {
+  country_shapefiles <- country_shapefiles %>% rename("ADMIN1_GEO_ID"="ADMIN1_")}
+country_shapefiles <- country_shapefiles[!duplicated(country_shapefiles$GEO_ID),]
+
+
+# OPTS
+OPTS_DF <- read_xlsx(PATH_country_data,sheet = "_ListValues")
+
+sex_opts <- unique(OPTS_DF$Sex)
+sex_opts <- sex_opts[!is.na(sex_opts)]
+
+yes_no_opts <- unique(OPTS_DF$`Yes No`)
+yes_no_opts <- yes_no_opts[!is.na(yes_no_opts)]
+
+# Error flag
+report_has_errors <- F
+```
+
+\newpage
+# `r lang_label("title_rev_shp")`
+```{r rev_shapefiles, echo=F, out.width="100%"}
+fig_map = leaflet(country_shapefiles) %>%
+  addPolygons(fillColor = "#079992",fillOpacity = .9,
+              weight = 1.5,color = "white", opacity = .7) %>%
+  clearTiles() %>% 
+  htmlwidgets::prependContent(html_white_background)
+mapshot(fig_map, file = "figures/country_shapefiles.png")
+knitr::include_graphics("figures/country_shapefiles.png")
+```
+
+```{r res_rev_shapefiles, include=FALSE, echo=F}
+shp_unique_geoid <- length(unique(country_shapefiles$GEO_ID))
+shp_unique_geometry <- length(unique(country_shapefiles$geometry))
+
+shp_test_match_geoid_geometry <- shp_unique_geoid == shp_unique_geometry
+shp_test_na_geoid <- sum(is.na(country_shapefiles$GEO_ID)) == 0
+shp_test_na_admin1 <- sum(is.na(country_shapefiles$ADMIN1)) == 0
+shp_test_na_admin2 <- sum(is.na(country_shapefiles$ADMIN2)) == 0
+shp_test_na_geometry <- sum(st_is_empty(country_shapefiles$geometry)) == 0
+
+ERROR_LIST <- ""
+if (!shp_test_match_geoid_geometry) {
+  ERROR_LIST <- paste0(ERROR_LIST,"- ",lang_label("shp_test_match_geoid_geometry_1")," (",shp_unique_geoid ,") ",lang_label("shp_test_match_geoid_geometry_2")," (",shp_unique_geometry,").\n")
+}
+if (!shp_test_na_geoid) {
+  ERROR_LIST <- paste0(ERROR_LIST,"- ",lang_label("shp_test_na_geoid"),".\n")
+}
+if (!shp_test_na_admin1) {
+  ERROR_LIST <- paste0(ERROR_LIST,"- ",lang_label("shp_test_na_admin1"),".\n")
+}
+if (!shp_test_na_admin2) {
+  ERROR_LIST <- paste0(ERROR_LIST,"- ",lang_label("shp_test_na_admin2"),".\n")
+}
+if (!shp_test_na_geometry) {
+  ERROR_LIST <- paste0(ERROR_LIST,"- ",lang_label("shp_test_na_geometry"),".\n")
+}
+if (ERROR_LIST == "") {
+  ERROR_LIST = paste0("- ",lang_label("test_error_none"),".")
+} else {
+  report_has_errors <- T
+}
+```
+
+
+#### `r lang_label("title_errors_found")`:
+
+`r ERROR_LIST`
+
+#### `r lang_label("title_na_rows")`^[`r lang_label("footnote_na")`].
+```{r res_rev_shapefiles_na, echo=F}
+na_rows_df <- as.data.frame(country_shapefiles) %>% select(-geometry)
+cat_na_table(na_rows_df,in_cols=NULL)
+```
+
+\newpage
+# `r lang_label("title_rev_country_data")`
+
+### 1. `r lang_label("title_cdata_general")`
+```{r rev_data_1, echo=F}
+data_sheet_1 <- read_excel(PATH_country_data,sheet = 1)
+colnames(data_sheet_1) <- c("VAR","VAL")
+
+dat_test_na_val <- sum(is.na(data_sheet_1$VAL)) == 0
+dat_test_int_yeareval <- !is.na(as.integer(data_sheet_1$VAL[2]))
+dat_test_language <- data_sheet_1$VAL[3] %in% c("SPA","ENG","FRA","POR")
+dat_test_int_total_admin2 <- !is.na(as.integer(data_sheet_1$VAL[4]))
+dat_test_int_polio <- !is.na(as.integer(data_sheet_1$VAL[5]))
+
+
+ERROR_LIST <- ""
+if (!dat_test_na_val) {
+  ERROR_LIST <- paste0(ERROR_LIST,"- ",lang_label("cdata_test_na_val"),"\n")
+}
+if (!dat_test_int_yeareval) {
+  ERROR_LIST <- paste0(ERROR_LIST,"- ",lang_label("cdata_error_non_numeric")," *'",data_sheet_1$VAR[2],"'*.\n")
+}
+if (!dat_test_language) {
+  ERROR_LIST <- paste0(ERROR_LIST,"- ",lang_label("cdata_test_language"),": 'SPA', 'ENG', 'FRA', 'POR'.\n")
+}
+if (!dat_test_int_total_admin2) {
+  ERROR_LIST <- paste0(ERROR_LIST,"- ",lang_label("cdata_error_non_numeric")," *'",data_sheet_1$VAR[4],"'*.\n")
+}
+if (!dat_test_int_polio) {
+  ERROR_LIST <- paste0(ERROR_LIST,"- ",lang_label("cdata_error_non_numeric")," *'",data_sheet_1$VAR[5],"'*.\n")
+}
+if (ERROR_LIST == "") {
+  ERROR_LIST = paste0("- ",lang_label("test_error_none"),".")
+} else {
+  report_has_errors <- T
+}
+```
+
+#### `r lang_label("title_errors_found")`:
+
+`r ERROR_LIST`
+
+\newpage
+### 2. `r lang_label("title_cdata_pob_area")`
+```{r rev_data_2, echo=F}
+data_sheet_2 <- read_excel(PATH_country_data,sheet = 2)
+row_offset <- 1
+as_is_colnames <- colnames(data_sheet_2)
+dat_test_na_df2 <- get_test_na_df(data_sheet_2)
+colnames(data_sheet_2) <- c("ADMIN1 GEO_ID","GEO_ID","ADMIN1","ADMIN2","POB1","POB5","POB15")
+data_sheet_2$`ADMIN1 GEO_ID` <- as.character(data_sheet_2$`ADMIN1 GEO_ID`)
+data_sheet_2$GEO_ID <- as.character(data_sheet_2$GEO_ID)
+
+temp_ds_2 <- data_sheet_2
+temp_ds_2$POB1[is.na(temp_ds_2$POB1)] = 0
+temp_ds_2$POB5[is.na(temp_ds_2$POB5)] = 0
+temp_ds_2$POB15[is.na(temp_ds_2$POB15)] = 0
+
+badrows_num_pob1 <- which(is.na(as.numeric(temp_ds_2$POB1)))
+badrows_num_pob5 <- which(is.na(as.numeric(temp_ds_2$POB5)))
+badrows_num_pob15 <- which(is.na(as.numeric(temp_ds_2$POB15)))
+
+test_na_admin1_id <- sum(is.na(data_sheet_2$`ADMIN1 GEO_ID`)) == 0
+if (test_na_admin1_id) {text_na_admin1_id = ""} else {text_na_admin1_id = lang_label("test_na_admin1_id")}
+test_na_admin1 <- sum(is.na(data_sheet_2$ADMIN1)) == 0
+if (test_na_admin1) {text_na_admin1 = ""} else {text_na_admin1 = lang_label("test_na_admin1")}
+
+colnames(data_sheet_2) = as_is_colnames
+data_sheet_2$FILA <- as.numeric(rownames(data_sheet_2))+row_offset
+data_sheet_2 <- data_sheet_2 %>% select(FILA,everything())
+colnames(data_sheet_2)[1] = lang_label("row")
+```
+
+#### `r lang_label("title_na_vars")`.
+```{r, echo=F}
+if (sum(dat_test_na_df2[3]) > 0) {report_has_errors <- T}
+knitr::kable(dat_test_na_df2,align = "lrrrrrr", booktabs = T)
+```
+- `r text_na_admin1_id`
+- `r text_na_admin1`
+
+#### `r lang_label("title_na_rows")`^[`r lang_label("footnote_na")`].
+```{r, echo=F}
+na_table <- data_sheet_2
+cat_na_table(na_table,in_cols=c(3,5,6,7, 8))
+```
+
+
+#### `r lang_label("title_invalid_geocode")`.
+```{r, echo=F}
+if (has_invalid_geoid(data_sheet_2) != "") {report_has_errors <- T}
+cat_invalid_geoid_table(data_sheet_2)
+```
+`r has_invalid_geoid(data_sheet_2)`
+
+#### `r lang_label("cdata_error_non_numeric_plural")` '`r colnames(data_sheet_2)[6]`'.
+```{r, echo=F}
+test_table <- data_sheet_2[badrows_num_pob1,]
+test_table <- test_table %>% select(c(1,2,3,6))
+if (nrow(test_table) == 0) {
+  test_table <- data.frame(V1="")
+  colnames(test_table) = lang_label("no_non_numeric_data")
+} else {
+  report_has_errors <- T
+}
+knitr::kable(test_table, booktabs = T)
+```
+
+#### `r lang_label("cdata_error_non_numeric_plural")` '`r colnames(data_sheet_2)[7]`'.
+```{r, echo=F}
+test_table <- data_sheet_2[badrows_num_pob5,]
+test_table <- test_table %>% select(c(1,2,3,7))
+if (nrow(test_table) == 0) {
+  test_table <- data.frame(V1="")
+  colnames(test_table) = lang_label("no_non_numeric_data")
+} else {
+  report_has_errors <- T
+}
+knitr::kable(test_table, booktabs = T)
+```
+
+#### `r lang_label("cdata_error_non_numeric_plural")` '`r colnames(data_sheet_2)[8]`'.
+```{r, echo=F}
+test_table <- data_sheet_2[badrows_num_pob15,]
+test_table <- test_table %>% select(c(1,2,3,8))
+if (nrow(test_table) == 0) {
+  test_table <- data.frame(V1="")
+  colnames(test_table) = lang_label("no_non_numeric_data")
+} else {
+  report_has_errors <- T
+}
+knitr::kable(test_table, booktabs = T)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
