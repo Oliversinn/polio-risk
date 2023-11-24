@@ -903,4 +903,152 @@ knitr::kable(test_table, booktabs = T)
 ```
 
 
+\newpage
+### 6. `r lang_label("title_outbreaks")`
 
+```{r rev_data_6, echo=F}
+data_sheet_6 <- read_excel(PATH_country_data,sheet = 6, skip = 1, guess_max = 1000)
+data_sheet_fake <- read_excel(PATH_country_data,sheet = 6, guess_max = 1000)
+first_colnames <- colnames(data_sheet_fake)[1:8]
+as_is_colnames <- colnames(data_sheet_6)
+
+as_is_colnames[1:8] <- first_colnames
+colnames(data_sheet_6)[1:15] <- c(
+  first_colnames[1:4],
+  'POB1', 'POB5', 'POB15',
+  lang_label("immunity_populations_and_pfa"),
+  lang_label("outbreaks_polio"),
+  lang_label("outbreaks_measles"),
+  lang_label("outbreaks_rubella"),
+  lang_label("outbreaks_diphtheria"),
+  lang_label("outbreaks_yellow_feverr"),
+  lang_label("outbreaks_tetanus")
+)
+row_offset <- 2
+
+population_and_pfa_bool <- population_and_pfa(data_sheet_6)
+
+
+
+
+dat_test_na_df6 <- get_test_na_df(data_sheet_6)
+
+
+colnames(data_sheet_6) <- c(
+  "ADMIN1 GEO_ID","GEO_ID","ADMIN1","ADMIN2",
+  'POB1', 'POB5', 'POB15',
+  lang_label("immunity_populations_and_pfa"),
+  lang_label("outbreaks_polio"),
+  lang_label("outbreaks_measles"),
+  lang_label("outbreaks_rubella"),
+  lang_label("outbreaks_diphtheria"),
+  lang_label("outbreaks_yellow_feverr"),
+  lang_label("outbreaks_tetanus")
+)
+data_sheet_6$`ADMIN1 GEO_ID` <- as.character(data_sheet_6$`ADMIN1 GEO_ID`)
+data_sheet_6$GEO_ID <- as.character(data_sheet_6$GEO_ID)
+
+test_na_admin1_id <- sum(is.na(data_sheet_6$`ADMIN1 GEO_ID`)) == 0
+if (test_na_admin1_id) {text_na_admin1_id = ""} else {text_na_admin1_id = lang_label("test_na_admin1_id")}
+test_na_admin1 <- sum(is.na(data_sheet_6$ADMIN1)) == 0
+if (test_na_admin1) {text_na_admin1 = ""} else {text_na_admin1 = lang_label("test_na_admin1")}
+
+badrows_num_polio = which(!(data_sheet_6[[lang_label("outbreaks_polio")]] %in% yes_no_opts))
+badrows_num_measles = which(!(data_sheet_6[[lang_label("outbreaks_measles")]] %in% yes_no_opts))
+badrows_num_rubella = which(!(data_sheet_6[[lang_label("outbreaks_rubella")]] %in% yes_no_opts))
+badrows_num_diphtheria = which(!(data_sheet_6[[lang_label("outbreaks_diphtheria")]] %in% yes_no_opts))
+badrows_num_yellow_fever = which(!(data_sheet_6[[lang_label("outbreaks_yellow_fever")]] %in% yes_no_opts))
+badrows_num_tetanus = which(!(data_sheet_6[[lang_label("outbreaks_tetanus")]] %in% yes_no_opts))
+
+colnames(data_sheet_6) = as_is_colnames
+data_sheet_6$FILA <- as.numeric(rownames(data_sheet_6))+row_offset
+data_sheet_6 <- data_sheet_6 %>% select(FILA,everything())
+colnames(data_sheet_6)[1] = lang_label("row")
+
+```
+
+#### `r lang_label("title_na_vars")`.
+```{r, echo=F}
+if (sum(dat_test_na_df6[3]) > 0) {report_has_errors <- T}
+knitr::kable(dat_test_na_df6,align = "lrrrrrr", booktabs = T)
+```
+- `r text_na_admin1_id`
+- `r text_na_admin1`
+
+#### `r lang_label("res_rap_invalid_yesno")` '`r lang_label("outbreaks_polio")`'.
+```{r, echo=F}
+test_table <- data_sheet_6[badrows_num_polio,]
+test_table <- test_table %>% select(c(1,2,3,10))
+if (nrow(test_table) == 0) {
+  test_table <- data.frame(V1="")
+  colnames(test_table) = lang_label("no_invalid_data")
+} else {
+  report_has_errors <- T
+}
+knitr::kable(test_table, booktabs = T)
+```
+
+#### `r lang_label("res_rap_invalid_yesno")` '`r lang_label("outbreaks_measles")`'.
+```{r, echo=F}
+test_table <- data_sheet_6[badrows_num_measles,]
+test_table <- test_table %>% select(c(1,2,3,11))
+if (nrow(test_table) == 0) {
+  test_table <- data.frame(V1="")
+  colnames(test_table) = lang_label("no_invalid_data")
+} else {
+  report_has_errors <- T
+}
+knitr::kable(test_table, booktabs = T)
+```
+
+#### `r lang_label("res_rap_invalid_yesno")` '`r lang_label("outbreaks_rubella")`'.
+```{r, echo=F}
+test_table <- data_sheet_6[badrows_num_rubella,]
+test_table <- test_table %>% select(c(1,2,3,12))
+if (nrow(test_table) == 0) {
+  test_table <- data.frame(V1="")
+  colnames(test_table) = lang_label("no_invalid_data")
+} else {
+  report_has_errors <- T
+}
+knitr::kable(test_table, booktabs = T)
+```
+
+#### `r lang_label("res_rap_invalid_yesno")` '`r lang_label("outbreaks_diphtheria")`'.
+```{r, echo=F}
+test_table <- data_sheet_6[badrows_num_diphtheria,]
+test_table <- test_table %>% select(c(1,2,3,13))
+if (nrow(test_table) == 0) {
+  test_table <- data.frame(V1="")
+  colnames(test_table) = lang_label("no_invalid_data")
+} else {
+  report_has_errors <- T
+}
+knitr::kable(test_table, booktabs = T)
+```
+
+#### `r lang_label("res_rap_invalid_yesno")` '`r lang_label("outbreaks_yellow_fever")`'.
+```{r, echo=F}
+test_table <- data_sheet_6[badrows_num_yellow_fever,]
+test_table <- test_table %>% select(c(1,2,3,14))
+if (nrow(test_table) == 0) {
+  test_table <- data.frame(V1="")
+  colnames(test_table) = lang_label("no_invalid_data")
+} else {
+  report_has_errors <- T
+}
+knitr::kable(test_table, booktabs = T)
+```
+
+#### `r lang_label("res_rap_invalid_yesno")` '`r lang_label("outbreaks_tetanus")`'.
+```{r, echo=F}
+test_table <- data_sheet_6[badrows_num_tetanus,]
+test_table <- test_table %>% select(c(1,2,3,15))
+if (nrow(test_table) == 0) {
+  test_table <- data.frame(V1="")
+  colnames(test_table) = lang_label("no_invalid_data")
+} else {
+  report_has_errors <- T
+}
+knitr::kable(test_table, booktabs = T)
+```
