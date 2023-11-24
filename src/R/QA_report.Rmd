@@ -604,7 +604,31 @@ knitr::kable(dat_test_na_df4,align = "lrrrrrr", booktabs = T)
 - `r text_na_admin1_id`
 - `r text_na_admin1`
 
+#### `r lang_label("no_na_nonnum_data")` (`r lang_label("surveillance_reporting_units_var")`)
+```{r, echo=F}
+idx <- c(9)
+temp_data_sheet_4 <- data_sheet_4
+temp_data_sheet_4[, idx] <- lapply(temp_data_sheet_4[, idx], as.numeric)
 
+non_numeric_rows = c()
+for (col in idx) {
+  non_numeric_rows <- c(non_numeric_rows,which(is.na(temp_data_sheet_4[, col])))
+}
+non_numeric_rows <- sort(unique(non_numeric_rows))+row_offset
+
+idx <- c(1,2,3,idx)
+test_table <- data_sheet_4[,idx]
+colnames(test_table)[1] = "FILA"
+test_table <- test_table %>% filter(FILA %in% non_numeric_rows)
+if (nrow(test_table) == 0) {
+  test_table <- data.frame(V1="")
+  colnames(test_table) = lang_label("no_na_nonnum_data")
+} else {
+  report_has_errors <- T
+  colnames(test_table)[1] = lang_label("row")
+}
+knitr::kable(test_table, booktabs = T)
+```
 
 
 
