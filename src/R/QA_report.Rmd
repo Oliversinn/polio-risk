@@ -789,3 +789,118 @@ if (nrow(test_table) == 0) {
 }
 knitr::kable(test_table, booktabs = T)
 ```
+
+\newpage
+### 5. `r lang_label("title_determinants")`
+
+```{r rev_data_5, echo=F}
+data_sheet_5 <- read_excel(PATH_country_data,sheet = 5, skip= 1, guess_max = 1000)
+data_sheet_fake <- read_excel(PATH_country_data,sheet = 5, guess_max = 1000)
+first_colnames <- colnames(data_sheet_fake)[1:8]
+as_is_colnames <- colnames(data_sheet_5)
+
+as_is_colnames[1:8] <- first_colnames
+colnames(data_sheet_5)[1:15] <- c(
+  first_colnames[1:4],
+  'POB1', 'POB5', 'POB15',
+  lang_label("immunity_populations_and_pfa"),
+  lang_label("determinants_water_var"),
+  lang_label("determinants_sanitation_var")
+)
+row_offset <- 2
+
+population_and_pfa_bool <- population_and_pfa(data_sheet_5)
+
+
+
+# consider population and pfa rule for na
+
+dat_test_na_df5 <- get_test_na_df(data_sheet_5)
+
+
+colnames(data_sheet_5) <- c(
+  "ADMIN1 GEO_ID","GEO_ID","ADMIN1","ADMIN2",
+  'POB1', 'POB5', 'POB15',
+  lang_label("immunity_populations_and_pfa"),
+  lang_label("determinants_water_var"),
+  lang_label("determinants_sanitation_var")
+)
+data_sheet_5$`ADMIN1 GEO_ID` <- as.character(data_sheet_5$`ADMIN1 GEO_ID`)
+data_sheet_5$GEO_ID <- as.character(data_sheet_5$GEO_ID)
+
+test_na_admin1_id <- sum(is.na(data_sheet_5$`ADMIN1 GEO_ID`)) == 0
+if (test_na_admin1_id) {text_na_admin1_id = ""} else {text_na_admin1_id = lang_label("test_na_admin1_id")}
+test_na_admin1 <- sum(is.na(data_sheet_5$ADMIN1)) == 0
+if (test_na_admin1) {text_na_admin1 = ""} else {text_na_admin1 = lang_label("test_na_admin1")}
+
+
+colnames(data_sheet_5) = as_is_colnames
+data_sheet_5$FILA <- as.numeric(rownames(data_sheet_5))+row_offset
+data_sheet_5 <- data_sheet_5 %>% select(FILA,everything())
+colnames(data_sheet_5)[1] = lang_label("row")
+
+```
+
+#### `r lang_label("title_na_vars")`.
+```{r, echo=F}
+if (sum(dat_test_na_df5[3]) > 0) {report_has_errors <- T}
+knitr::kable(dat_test_na_df5,align = "lrrrrrr", booktabs = T)
+```
+
+- `r text_na_admin1_id`
+- `r text_na_admin1`
+
+#### `r lang_label("no_na_nonnum_data")` (`r lang_label("determinants_water_var")`)
+```{r, echo=F}
+idx <- c(10)
+temp_data_sheet_5 <- data_sheet_5
+temp_data_sheet_5[, idx] <- lapply(temp_data_sheet_5[, idx], as.numeric)
+
+non_numeric_rows = c()
+for (col in idx) {
+  non_numeric_rows <- c(non_numeric_rows,which(is.na(temp_data_sheet_5[, col])))
+}
+non_numeric_rows <- sort(unique(non_numeric_rows))+row_offset
+
+idx <- c(1,2,3,idx)
+test_table <- data_sheet_5[,idx]
+colnames(test_table)[1] = "FILA"
+test_table <- test_table %>% filter(FILA %in% non_numeric_rows)
+if (nrow(test_table) == 0) {
+  test_table <- data.frame(V1="")
+  colnames(test_table) = lang_label("no_na_nonnum_data")
+} else {
+  report_has_errors <- T
+  colnames(test_table)[1] = lang_label("row")
+}
+knitr::kable(test_table, booktabs = T)
+```
+
+#### `r lang_label("no_na_nonnum_data")` (`r lang_label("determinants_sanitation_var")`)
+```{r, echo=F}
+idx <- c(11)
+temp_data_sheet_5 <- data_sheet_5
+temp_data_sheet_5[, idx] <- lapply(temp_data_sheet_5[, idx], as.numeric)
+
+non_numeric_rows = c()
+for (col in idx) {
+  non_numeric_rows <- c(non_numeric_rows,which(is.na(temp_data_sheet_5[, col])))
+}
+non_numeric_rows <- sort(unique(non_numeric_rows))+row_offset
+
+idx <- c(1,2,3,idx)
+test_table <- data_sheet_5[,idx]
+colnames(test_table)[1] = "FILA"
+test_table <- test_table %>% filter(FILA %in% non_numeric_rows)
+if (nrow(test_table) == 0) {
+  test_table <- data.frame(V1="")
+  colnames(test_table) = lang_label("no_na_nonnum_data")
+} else {
+  report_has_errors <- T
+  colnames(test_table)[1] = lang_label("row")
+}
+knitr::kable(test_table, booktabs = T)
+```
+
+
+
