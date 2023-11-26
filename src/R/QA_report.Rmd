@@ -257,7 +257,7 @@ data_sheet_2 <- read_excel(PATH_country_data,sheet = 2)
 row_offset <- 1
 as_is_colnames <- colnames(data_sheet_2)
 dat_test_na_df2 <- get_test_na_df(data_sheet_2)
-colnames(data_sheet_2) <- c("ADMIN1 GEO_ID","GEO_ID","ADMIN1","ADMIN2","POB1","POB5","POB15")
+colnames(data_sheet_2) <- c("ADMIN1 GEO_ID","GEO_ID","ADMIN1","ADMIN2","POB1","POB5","POB15", "POB")
 data_sheet_2$`ADMIN1 GEO_ID` <- as.character(data_sheet_2$`ADMIN1 GEO_ID`)
 data_sheet_2$GEO_ID <- as.character(data_sheet_2$GEO_ID)
 
@@ -265,10 +265,12 @@ temp_ds_2 <- data_sheet_2
 temp_ds_2$POB1[is.na(temp_ds_2$POB1)] = 0
 temp_ds_2$POB5[is.na(temp_ds_2$POB5)] = 0
 temp_ds_2$POB15[is.na(temp_ds_2$POB15)] = 0
+temp_ds_2$POB[is.na(temp_ds_2$POB)] = 0
 
 badrows_num_pob1 <- which(is.na(as.numeric(temp_ds_2$POB1)))
 badrows_num_pob5 <- which(is.na(as.numeric(temp_ds_2$POB5)))
 badrows_num_pob15 <- which(is.na(as.numeric(temp_ds_2$POB15)))
+badrows_num_pob <- which(is.na(as.numeric(temp_ds_2$POB)))
 
 test_na_admin1_id <- sum(is.na(data_sheet_2$`ADMIN1 GEO_ID`)) == 0
 if (test_na_admin1_id) {text_na_admin1_id = ""} else {text_na_admin1_id = lang_label("test_na_admin1_id")}
@@ -342,6 +344,18 @@ if (nrow(test_table) == 0) {
 knitr::kable(test_table, booktabs = T)
 ```
 
+#### `r lang_label("cdata_error_non_numeric_plural")` '`r colnames(data_sheet_2)[9]`'.
+```{r, echo=F}
+test_table <- data_sheet_2[badrows_num_pob,]
+test_table <- test_table %>% select(c(1,2,3,9))
+if (nrow(test_table) == 0) {
+  test_table <- data.frame(V1="")
+  colnames(test_table) = lang_label("no_non_numeric_data")
+} else {
+  report_has_errors <- T
+}
+knitr::kable(test_table, booktabs = T)
+```
 
 \newpage
 ### 3. `r lang_label("title_cdata_inm")`

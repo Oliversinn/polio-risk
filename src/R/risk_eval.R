@@ -324,12 +324,15 @@ CUT_OFFS <- CUT_OFFS %>% pivot_longer(!RV:PFA,names_to = "risk_level")
 
 # POPULATION AREA ----
 pop_data <- read_excel(PATH_country_data,sheet = 2)
-colnames(pop_data) <- c("ADMIN1 GEO_ID","GEO_ID","ADMIN1","ADMIN2",'POB1', 'POB5', "POB15")
+colnames(pop_data) <- c("ADMIN1 GEO_ID","GEO_ID","ADMIN1","ADMIN2",'POB1', 'POB5', "POB15", "POB")
 pop_data <- admin_normalizer(pop_data)
 pop_data$`ADMIN1 GEO_ID` <- as.character(pop_data$`ADMIN1 GEO_ID`)
 pop_data$GEO_ID <- as.character(pop_data$GEO_ID)
 pop_data <- pop_data %>% filter(!is.na(`ADMIN1 GEO_ID`) & !is.na(GEO_ID))
+pop_data$POB1 <- as.numeric(pop_data$POB1)
+pop_data$POB5 <- as.numeric(pop_data$POB5)
 pop_data$POB15 <- as.numeric(pop_data$POB15)
+pop_data$POB <- as.numeric(pop_data$POB)
 ZERO_POB_LIST <- pop_data %>% filter(POB15 <= 0) %>% select(GEO_ID)
 ZERO_POB_LIST <- ZERO_POB_LIST$GEO_ID
 
