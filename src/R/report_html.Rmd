@@ -1,6 +1,6 @@
 ---
 title: "`r library(readxl); read_excel('../Data/country_data.xlsx',sheet = 1)[1,2];`"
-author: "`r library(readxl); if (read_excel('../Data/country_data.xlsx')[8,2] == 'SPA') {paste(read_excel('translations.xlsx',sheet='REPORT')[2,2])} else if (read_excel('../Data/country_data.xlsx')[8,2] == 'ENG') {paste(read_excel('translations.xlsx',sheet='REPORT')[2,3])} else if (read_excel('../Data/country_data.xlsx')[8,2] == 'POR') {paste(read_excel('translations.xlsx',sheet='REPORT')[2,4])} else if (read_excel('../Data/country_data.xlsx')[8,2] == 'FRA') {paste(read_excel('translations.xlsx',sheet='REPORT')[2,5])};`, `r format(Sys.Date(),'%d.%m.%Y')`"
+author: "`r library(readxl); if (read_excel('../Data/country_data.xlsx')[3,2] == 'SPA') {paste(read_excel('translations.xlsx',sheet='REPORT')[2,2])} else if (read_excel('../Data/country_data.xlsx')[3,2] == 'ENG') {paste(read_excel('translations.xlsx',sheet='REPORT')[2,3])} else if (read_excel('../Data/country_data.xlsx')[3,2] == 'POR') {paste(read_excel('translations.xlsx',sheet='REPORT')[2,4])} else if (read_excel('../Data/country_data.xlsx')[3,2] == 'FRA') {paste(read_excel('translations.xlsx',sheet='REPORT')[2,5])};`, `r format(Sys.Date(),'%d.%m.%Y')`"
 date: "![](Dashboard/www/country_flag.png){width=20%}"
 output:
   html_document:
@@ -20,7 +20,7 @@ options(knitr.duplicate.label = "allow", scipen = 999)
 knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
 
 # Load RData created by risk_tool.R
-load(file = "Dashboard/POLIO.RData")
+load(file = "./Dashboard/POLIO.RData")
 
 # Libraries
 library(mapview)
@@ -107,7 +107,53 @@ get_sec_table <- function(risk_levels_df,title_sec) {
 
 ```
 
+\newpage
+# `r lang_label("title_background")`
 
 `r lang_label("background_par_1")`
 
 `r lang_label("background_par_2")`
+
+```{r table_cut_offs, echo=F}
+lim_bajo = CUT_OFFS$value[CUT_OFFS$RV == "total_score" & CUT_OFFS$risk_level == "LR" & CUT_OFFS$PFA]
+lim_mediano = CUT_OFFS$value[CUT_OFFS$RV == "total_score" & CUT_OFFS$risk_level == "MR" & CUT_OFFS$PFA]
+lim_alto = CUT_OFFS$value[CUT_OFFS$RV == "total_score" & CUT_OFFS$risk_level == "HR" & CUT_OFFS$PFA]
+lim_muyalto = CUT_OFFS$value[CUT_OFFS$RV == "total_score" & CUT_OFFS$risk_level == "VHR" & CUT_OFFS$PFA]
+
+cut_offs_table <- data.frame(
+  cat=c(lang_label("table_cut_offs_LR"),lang_label("table_cut_offs_MR"),
+        lang_label("table_cut_offs_HR"),lang_label("table_cut_offs_VHR")),
+  pts=c(
+    paste0(lang_label("table_cut_offs_less")," ",lim_bajo+1," ",lang_label("table_cut_offs_unit")),
+    paste0(lang_label("table_cut_offs_btwn")," ",lim_bajo+1," ",lang_label("and")," ",lim_mediano," ",lang_label("table_cut_offs_unit")),
+    paste0(lang_label("table_cut_offs_btwn")," ",lim_mediano+1," ",lang_label("and")," ",lim_alto," ",lang_label("table_cut_offs_unit")),
+    paste0(lang_label("table_cut_offs_more")," ",lim_alto," ",lang_label("table_cut_offs_unit"))
+  )
+)
+colnames(cut_offs_table) = c(lang_label("table_cut_offs_riskcats"),lang_label("table_cut_offs_risktotal"))
+
+knitr::kable(cut_offs_table,align = "lr", booktabs = T)
+```
+
+`r lang_label("background_par_3")`
+
+# __`r lang_label("title_name_section")` 1: `r lang_label("title_section_1")`__
+
+```{r table_general_profile, echo=F}
+ref_num_admin2 = nrow(scores_data)
+risk_levels_df <- data.frame(level=get_risk_level(LANG_TLS,CUT_OFFS,"total_score",scores_data$total_score, population_and_pfa(scores_data)),n=1)
+
+rep_label_num_admin2_VHR = sum(risk_levels_df$n[risk_levels_df$level == lang_label("VHR")])
+rep_label_num_admin2_HR = sum(risk_levels_df$n[risk_levels_df$level == lang_label("HR")])
+rep_label_num_admin2_MR = sum(risk_levels_df$n[risk_levels_df$level == lang_label("MR")])
+rep_label_num_admin2_LR = sum(risk_levels_df$n[risk_levels_df$level == lang_label("LR")])
+
+rep_label_pct_admin2_VHR = round(rep_label_num_admin2_VHR/ref_num_admin2*100,1)
+rep_label_pct_admin2_HR = round(rep_label_num_admin2_HR/ref_num_admin2*100,1)
+rep_label_pct_admin2_MR = round(rep_label_num_admin2_MR/ref_num_admin2*100,1)
+rep_label_pct_admin2_LR = round(rep_label_num_admin2_LR/ref_num_admin2*100,1)
+```
+
+`r lang_label("from")` `r ref_num_admin2` `r rep_label_admin2_name_plural` `r lang_label("in")` `r ref_country_name`, `r rep_label_num_admin2_VHR` (`r rep_label_pct_admin2_VHR`%) `r lang_label("section_1_table_VHR")`, `r rep_label_num_admin2_HR` (`r rep_label_pct_admin2_HR`%) `r lang_label("section_1_table_HR")`, `r rep_label_num_admin2_MR` (`r rep_label_pct_admin2_MR`%) `r lang_label("section_1_table_MR")`, `r lang_label("and")` `r rep_label_num_admin2_LR` (`r rep_label_pct_admin2_LR`%) `r lang_label("section_1_table_LR")`.
+
+## `r title_name_table` 1a: `r lang_label("title_table_1a")`
