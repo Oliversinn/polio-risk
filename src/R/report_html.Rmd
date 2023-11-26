@@ -16,7 +16,11 @@ output:
 # R 4.3.0
 
 Sys.setlocale(locale = "es_ES.UTF-8")
-options(knitr.duplicate.label = "allow", scipen = 999)
+options(
+  knitr.duplicate.label = "allow",
+  knitr.table.format = "html",
+  scipen = 999
+)
 knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
 
 # Load RData created by risk_tool.R
@@ -32,6 +36,8 @@ library(readxl)
 library(sf)
 library(tidyverse)
 library(janitor)
+library(kableExtra)
+library(DT)
 
 # SOURCE
 source("Dashboard/general.R")
@@ -132,7 +138,8 @@ cut_offs_table <- data.frame(
 )
 colnames(cut_offs_table) = c(lang_label("table_cut_offs_riskcats"),lang_label("table_cut_offs_risktotal"))
 
-knitr::kable(cut_offs_table,align = "lr", booktabs = T)
+knitr::kable(cut_offs_table,align = "lr", booktabs = T) %>% 
+  kable_styling()
 ```
 
 `r lang_label("background_par_3")`
@@ -227,5 +234,140 @@ table_1a <- data.frame(
   )
 )
 
-knitr::kable(table_1a, align = "lr", booktabs = TRUE, col.names = NULL)
+knitr::kable(table_1a, align = "lr", booktabs = TRUE, col.names = NULL) %>% 
+  kable_styling()
 ```
+
+## `r title_name_table` 1b: `r lang_label("table_1b_title")`, `r ref_country_name`, `r YEAR_1`-`r YEAR_5`.
+```{r table_1a, echo=F,results="asis"}
+
+pop_LR <- pop_data[which(risk_levels_df$level == lang_label("LR")),]
+pob1_LR <- sum(pop_LR$POB1, na.rm = TRUE)
+pob1_LR <- ifelse(is.na(pob1_LR) | pob1_LR == 0, NA, round(pob1_LR/sum(pop_data$POB1 * 100,2)))
+pob5_LR <- sum(pop_LR$POB5, na.rm = TRUE)
+pob5_LR <- ifelse(is.na(pob5_LR) | pob5_LR == 0, NA, round(pob5_LR/sum(pop_data$POB5) * 100, 2))
+pob15_LR <- sum(pop_LR$POB15, na.rm = TRUE)
+pob15_LR <- ifelse(is.na(pob15_LR) | pob15_LR == 0, NA, round(pob15_LR/sum(pop_data$POB15) * 100, 2))
+pob_LR <- sum(pop_LR$POB, na.rm = TRUE)
+pob_LR <- ifelse(is.na(pob_LR) | pob_LR == 0, NA, round(pob_LR/sum(pop_data$POB) * 100, 2))
+
+
+pop_MR <- pop_data[which(risk_levels_df$level == lang_label("MR")),]
+pob1_MR <- sum(pop_MR$POB1, na.rm = TRUE)
+pob1_MR <- ifelse(is.na(pob1_MR) | pob1_MR == 0, NA, round(pob1_MR/sum(pop_data$POB1 * 100,2)))
+pob5_MR <- sum(pop_MR$POB5, na.rm = TRUE)
+pob5_MR <- ifelse(is.na(pob5_MR) | pob5_MR == 0, NA, round(pob5_MR/sum(pop_data$POB5) * 100, 2))
+pob15_MR <- sum(pop_MR$POB15, na.rm = TRUE)
+pob15_MR <- ifelse(is.na(pob15_MR) | pob15_MR == 0, NA, round(pob15_MR/sum(pop_data$POB15) * 100, 2))
+pob_MR <- sum(pop_MR$POB, na.rm = TRUE)
+pob_MR <- ifelse(is.na(pob_MR) | pob_MR == 0, NA, round(pob_MR/sum(pop_data$POB) * 100, 2))
+
+
+pop_HR <- pop_data[which(risk_levels_df$level == lang_label("HR")),]
+pob1_HR <- sum(pop_HR$POB1, na.rm = TRUE)
+pob1_HR <- ifelse(is.na(pob1_HR) | pob1_HR == 0, NA, round(pob1_HR/sum(pop_data$POB1 * 100,2)))
+pob5_HR <- sum(pop_HR$POB5, na.rm = TRUE)
+pob5_HR <- ifelse(is.na(pob5_HR) | pob5_HR == 0, NA, round(pob5_HR/sum(pop_data$POB5) * 100, 2))
+pob15_HR <- sum(pop_HR$POB15, na.rm = TRUE)
+pob15_HR <- ifelse(is.na(pob15_HR) | pob15_HR == 0, NA, round(pob15_HR/sum(pop_data$POB15) * 100, 2))
+pob_HR <- sum(pop_HR$POB, na.rm = TRUE)
+pob_HR <- ifelse(is.na(pob_HR) | pob_HR == 0, NA, round(pob_HR/sum(pop_data$POB) * 100, 2))
+
+
+pop_VHR <- pop_data[which(risk_levels_df$level == lang_label("VHR")),]
+pob1_VHR <- sum(pop_VHR$POB1, na.rm = TRUE)
+pob1_VHR <- ifelse(is.na(pob1_VHR) | pob1_VHR == 0, NA, round(pob1_VHR/sum(pop_data$POB1 * 100,2)))
+pob5_VHR <- sum(pop_VHR$POB5, na.rm = TRUE)
+pob5_VHR <- ifelse(is.na(pob5_VHR) | pob5_VHR == 0, NA, round(pob5_VHR/sum(pop_data$POB5) * 100, 2))
+pob15_VHR <- sum(pop_VHR$POB15, na.rm = TRUE)
+pob15_VHR <- ifelse(is.na(pob15_VHR) | pob15_VHR == 0, NA, round(pob15_VHR/sum(pop_data$POB15) * 100, 2))
+pob_VHR <- sum(pop_VHR$POB, na.rm = TRUE)
+pob_VHR <- ifelse(is.na(pob_VHR) | pob_VHR == 0, NA, round(pob_VHR/sum(pop_data$POB) * 100, 2))
+
+
+
+
+mun_risk_levels_df <- data.frame(
+  cat=c(lang_label("table_cut_offs_LR"),lang_label("table_cut_offs_MR"),
+        lang_label("table_cut_offs_HR"),lang_label("table_cut_offs_VHR")),
+  num=c(rep_label_num_admin2_LR,rep_label_num_admin2_MR,rep_label_num_admin2_HR,rep_label_num_admin2_VHR),
+  pct=c(rep_label_pct_admin2_LR,rep_label_pct_admin2_MR,rep_label_pct_admin2_HR,rep_label_pct_admin2_VHR),
+  pob1 = c(pob1_LR, pob1_MR, pob1_HR, pob1_VHR),
+  pob5 = c(pob5_LR, pob5_MR, pob5_HR, pob5_VHR),
+  pob15 = c(pob15_LR, pob15_MR, pob15_HR, pob15_VHR)
+) %>% adorn_totals("row")
+if (ref_num_admin2 == mun_risk_levels_df$num[mun_risk_levels_df$cat == "Total"]) {
+  mun_risk_levels_df$pct[mun_risk_levels_df$cat == "Total"] = 100
+  mun_risk_levels_df$pob1[mun_risk_levels_df$cat == "Total"] = ceiling(
+    sum(as.numeric(mun_risk_levels_df$pob1[mun_risk_levels_df$cat != "Total"]), na.rm = TRUE)
+  )
+  mun_risk_levels_df$pob5[mun_risk_levels_df$cat == "Total"] = ceiling(
+    sum(as.numeric(mun_risk_levels_df$pob5[mun_risk_levels_df$cat != "Total"]), na.rm = TRUE)
+  )
+  mun_risk_levels_df$pob15[mun_risk_levels_df$cat == "Total"] = ceiling(
+    sum(as.numeric(mun_risk_levels_df$pob15[mun_risk_levels_df$cat != "Total"]), na.rm = TRUE)
+  )
+}
+mun_risk_levels_df$num <- cFormat(mun_risk_levels_df$num,0)
+mun_risk_levels_df$pct <- paste0(cFormat(mun_risk_levels_df$pct,1),"%")
+mun_risk_levels_df$pob1 <- paste0(cFormat(mun_risk_levels_df$pob1,2),"%")
+mun_risk_levels_df$pob5 <- paste0(cFormat(mun_risk_levels_df$pob5,2),"%")
+mun_risk_levels_df$pob15 <- paste0(cFormat(mun_risk_levels_df$pob15,2),"%")
+
+colnames(mun_risk_levels_df) <- c(
+  lang_label("table_cut_offs_riskcats"),
+  paste0(lang_label("table_number_of")," ",rep_label_admin2_name_plural),
+  paste0(lang_label("table_pct_of")," ",rep_label_admin2_name_plural),
+  lang_label("table_1b_pob1"),
+  lang_label("table_1b_pob5"),
+  lang_label("table_1b_pob15")
+)
+
+knitr::kable(mun_risk_levels_df,align = "lrrrrrr", booktabs = T) %>% 
+  add_footnote(lang_label("table_1b_footnote"), notation = "none") %>% 
+  kable_styling()
+```
+
+
+### `r title_name_figure` 1a: `r lang_label("figure_1a_title")` `r ref_country_name`, `r YEAR_1`-`r YEAR_5`.
+```{r figure_1a, echo=F, out.width="100%", fig.align="center"}
+indicadores_prep_map_data = ind_prep_map_data(LANG_TLS,ZERO_POB_LIST,CUT_OFFS,country_shapes,scores_data,"total_score",0,"ALL", lang_label("filter_all"))
+fig_map <- ind_plot_map_data(LANG_TLS,ZERO_POB_LIST,CUT_OFFS,indicadores_prep_map_data,"PR",0,"ALL")
+fig_map <- tidy_map(fig_map)
+fig_map
+```
+
+```{r cheat_sheet_figura_1a, echo=FALSE}
+cheat_cheet_figura_1a = ind_rangos_table(LANG_TLS,CUT_OFFS,"total_score", TRUE)
+cheat_cheet_figura_1a
+```
+
+
+### `r title_name_figure` 1b: `r lang_label("figure_1b_title")` `r ref_country_name`, `r YEAR_1`-`r YEAR_5`.
+```{r figure_1b, echo=F, out.width="100%", fig.align="center"}
+indicadores_prep_map_data = ind_prep_map_data(LANG_TLS,ZERO_POB_LIST,CUT_OFFS,country_shapes,scores_data,"total_score",0,"ALL", lang_label("greater_than_100000"))
+fig_map <- ind_plot_map_data(LANG_TLS,ZERO_POB_LIST,CUT_OFFS,indicadores_prep_map_data,"PR",0,"ALL")
+fig_map <- tidy_map(fig_map)
+fig_map
+```
+
+```{r cheat_sheet_figura_1b, echo=FALSE}
+cheat_cheet_figura_1b = ind_rangos_table(LANG_TLS,CUT_OFFS,"total_score", TRUE)
+cheat_cheet_figura_1b
+```
+
+
+### `r title_name_figure` 1c: `r lang_label("figure_1c_title")` `r ref_country_name`, `r YEAR_1`-`r YEAR_5`.
+```{r figure_1c, echo=F, out.width="100%", fig.align="center"}
+indicadores_prep_map_data = ind_prep_map_data(LANG_TLS,ZERO_POB_LIST,CUT_OFFS,country_shapes,scores_data,"total_score",0,"ALL", lang_label("less_than_100000"))
+fig_map <- ind_plot_map_data(LANG_TLS,ZERO_POB_LIST,CUT_OFFS,indicadores_prep_map_data,"PR",0,"ALL")
+fig_map <- tidy_map(fig_map)
+fig_map
+```
+
+```{r cheat_sheet_figura_1c, echo=FALSE}
+cheat_cheet_figura_1b = ind_rangos_table(LANG_TLS,CUT_OFFS,"total_score", TRUE)
+cheat_cheet_figura_1b
+```
+
+
