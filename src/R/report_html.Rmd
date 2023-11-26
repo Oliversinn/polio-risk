@@ -157,3 +157,75 @@ rep_label_pct_admin2_LR = round(rep_label_num_admin2_LR/ref_num_admin2*100,1)
 `r lang_label("from")` `r ref_num_admin2` `r rep_label_admin2_name_plural` `r lang_label("in")` `r ref_country_name`, `r rep_label_num_admin2_VHR` (`r rep_label_pct_admin2_VHR`%) `r lang_label("section_1_table_VHR")`, `r rep_label_num_admin2_HR` (`r rep_label_pct_admin2_HR`%) `r lang_label("section_1_table_HR")`, `r rep_label_num_admin2_MR` (`r rep_label_pct_admin2_MR`%) `r lang_label("section_1_table_MR")`, `r lang_label("and")` `r rep_label_num_admin2_LR` (`r rep_label_pct_admin2_LR`%) `r lang_label("section_1_table_LR")`.
 
 ## `r title_name_table` 1a: `r lang_label("title_table_1a")`
+
+```{r table_perfil_de_pais, echo=FALSE}
+
+total_population <- sum(pop_data$POB, na.rm = TRUE)
+total_population <- ifelse(is.na(total_population) | total_population == 0, lang_label("na_test_na_data"), cFormat(total_population,0))
+
+total_population1 <- sum(pop_data$POB1, na.rm = TRUE)
+total_population1 <- ifelse(is.na(total_population1) | total_population1 == 0, lang_label("na_test_na_data"), cFormat(total_population1,0))
+
+total_population5 <- sum(pop_data$POB5, na.rm = TRUE)
+total_population5 <- ifelse(is.na(total_population5) | total_population5 == 0, lang_label("na_test_na_data"), cFormat(total_population5,0))
+
+total_population15 <- sum(pop_data$POB15, na.rm = TRUE)
+total_population15 <- ifelse(is.na(total_population15) | total_population15 == 0, lang_label("na_test_na_data"), cFormat(total_population15,0))
+
+total_admin2 <- config_data[4,2][[1]]
+total_admin2 <- ifelse(is.na(total_admin2), lang_label("na_test_na_data"), cFormat(total_admin2,0))
+
+polio_scheme <- config_data[5,2][[1]]
+polio_scheme <- ifelse(is.na(polio_scheme), lang_label("na_test_na_data"), cFormat(polio_scheme,0))
+
+polio3_year1 <- mean(immunity_scores$year1, na.rm = TRUE)
+polio3_year1 <- ifelse(is.na(polio3_year1), lang_label("na_test_na_data"), cFormat(polio3_year1,0))
+
+polio3_year2 <- mean(immunity_scores$year2, na.rm = TRUE)
+polio3_year2 <- ifelse(is.na(polio3_year2), lang_label("na_test_na_data"), cFormat(polio3_year2,0))
+
+polio3_year3 <- mean(immunity_scores$year3, na.rm = TRUE)
+polio3_year3 <- ifelse(is.na(polio3_year3), lang_label("na_test_na_data"), cFormat(polio3_year3,0))
+
+polio3_year4 <- mean(immunity_scores$year4, na.rm = TRUE)
+polio3_year4 <- ifelse(is.na(polio3_year4), lang_label("na_test_na_data"), cFormat(polio3_year4,0))
+
+polio3_year5 <- mean(immunity_scores$year5, na.rm = TRUE)
+polio3_year5 <- ifelse(is.na(polio3_year5), lang_label("na_test_na_data"), cFormat(polio3_year5,0))
+
+pfa_rate <- mean(surveillance_scores$pfa_rate, na.rm = TRUE)
+pfa_rate <- ifelse(is.na(pfa_rate), lang_label("na_test_na_data"), cFormat(pfa_rate,2))
+
+table_1a <- data.frame(
+  variable = c(
+    lang_label("table_1a_pob"),
+    lang_label("table_1a_pob1"),
+    lang_label("table_1a_pob5"),
+    lang_label("table_1a_pob15"),
+    lang_label("table_1a_admin2"),
+    lang_label("table_1a_polio_scheme"),
+    paste(lang_label("table_1a_polio_coverage"), YEAR_1),
+    paste(lang_label("table_1a_polio_coverage"), YEAR_2),
+    paste(lang_label("table_1a_polio_coverage"), YEAR_3),
+    paste(lang_label("table_1a_polio_coverage"), YEAR_4),
+    paste(lang_label("table_1a_polio_coverage"), YEAR_5),
+    lang_label("table_1a_pfa_rate")
+  ),
+  valor = c(
+    total_population,
+    total_population1,
+    total_population5,
+    total_population15,
+    total_admin2,
+    polio_scheme,
+    paste0(polio3_year1, "%"),
+    paste0(polio3_year2, "%"),
+    paste0(polio3_year3, "%"),
+    paste0(polio3_year4, "%"),
+    paste0(polio3_year5, "%"),
+    pfa_rate
+  )
+)
+
+knitr::kable(table_1a, align = "lr", booktabs = TRUE, col.names = NULL)
+```
