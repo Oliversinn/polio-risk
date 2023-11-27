@@ -330,7 +330,6 @@ colnames(mun_risk_levels_df) <- c(
 knitr::kable(mun_risk_levels_df,align = "lrrrrrr", booktabs = T) %>% 
   add_footnote(lang_label("table_1b_footnote"), notation = "none") 
 
-data.frame(mun_risk_levels_df)
 ```
 
 
