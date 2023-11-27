@@ -89,7 +89,7 @@ get_risk_level_point_limit <- function(CUT_OFFS,indicator,risk_level, pfa) {
 
 # Dashboard ----
 
-ind_rangos_table <- function(LANG_TLS,CUT_OFFS,indicator, pfa) {
+ind_rangos_table <- function(LANG_TLS,CUT_OFFS,indicator, pfa, footnote_caption = NULL) {
   
   table_percentages <- c(
     lang_label_tls(LANG_TLS,"LR"),
@@ -139,6 +139,10 @@ ind_rangos_table <- function(LANG_TLS,CUT_OFFS,indicator, pfa) {
 
   datos_table <- rangos_df %>%
     datatable(
+      caption = htmltools::tags$caption(
+        style = 'caption-side: bottom; text-align: center;',
+        htmltools::em(footnote_caption)
+      ),
       rownames = F,
       extensions = 'Buttons',
       options = list(

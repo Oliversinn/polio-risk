@@ -313,6 +313,7 @@ YEAR_2 = YEAR_EVAL - 4
 YEAR_3 = YEAR_EVAL - 3
 YEAR_4 = YEAR_EVAL - 2
 YEAR_5 = YEAR_EVAL - 1
+YEAR_CAMP_SR <- YEAR_EVAL
 COUNTRY_NAME <- config_data$val[1]
 REPORT_FILE_FORMAT <- config_data$val[3]
 scores_data <- id_data
