@@ -89,7 +89,7 @@ get_risk_level_point_limit <- function(CUT_OFFS,indicator,risk_level, pfa) {
 
 # Dashboard ----
 
-ind_rangos_table <- function(LANG_TLS,CUT_OFFS,indicator, pfa, footnote_caption = NULL) {
+ind_rangos_table <- function(LANG_TLS,CUT_OFFS,indicator, pfa, footnote_caption = NULL, return_html = TRUE) {
   
   table_percentages <- c(
     lang_label_tls(LANG_TLS,"LR"),
@@ -136,7 +136,6 @@ ind_rangos_table <- function(LANG_TLS,CUT_OFFS,indicator, pfa, footnote_caption 
   rangos_df <- rbind(rangos_df,table_intervals_max)
   rangos_df <- cbind(c(lang_label_tls(LANG_TLS,"limit_min"),lang_label_tls(LANG_TLS,"limit_max")),rangos_df)
   colnames(rangos_df)[1] <- lang_label_tls(LANG_TLS,"risk")
-
   datos_table <- rangos_df %>%
     datatable(
       caption = htmltools::tags$caption(
@@ -157,7 +156,13 @@ ind_rangos_table <- function(LANG_TLS,CUT_OFFS,indicator, pfa, footnote_caption 
       backgroundColor = styleInterval(table_intervals_max %>% head(number_of_categories - 1),table_colors)
     ) %>% formatStyle(0, target = 'row',lineHeight = '150%')
   
-  return(datos_table)
+  if (return_html) {
+    return(datos_table)
+  } else {
+    return(
+      rangos_df
+    )
+  }
 }
 
 
