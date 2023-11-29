@@ -10,6 +10,22 @@
 # SERVER ----
 function(input, output, session) {
   
+  # REPORTS ----
+  # DOWNLOAD Report ----
+  output$download_report_word <- downloadHandler(
+    filename = paste0(lang_label("report_filename")," ",toupper(COUNTRY_NAME),".docx"),
+    content = function(file) {
+      file.copy("www/report_word.docx", file)
+    }
+  )
+  
+  output$download_report_html <- downloadHandler(
+    filename = paste0(lang_label("report_filename")," ",toupper(COUNTRY_NAME),".html"),
+    content = function(file) {
+      file.copy("www/report_html.html", file)
+    }
+  )
+  
   # GENERAL FUNCTIONS ----
   ind_rename <- function(selected_ind) {
     renamed <- case_when(

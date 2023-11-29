@@ -32,6 +32,11 @@ fluidPage(
       
       sidebarMenu(
         id = "sidebarid",
+        ### REPORTS ----
+        div(
+          downloadButton("download_report_word",lang_label("download_report_word"), icon=icon("file-lines"), class = "button_word"),
+          downloadButton("download_report_html",lang_label("download_report_html"), icon=icon("file-lines"), class = "button_html")
+        ),
         
         ### GLOBAL FILTERS ----
         #### ADMIN1 ----
