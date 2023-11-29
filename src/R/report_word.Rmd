@@ -14,10 +14,7 @@ output:
 # R 4.3.0
 
 Sys.setlocale(locale = "es_ES.UTF-8")
-options(
-  knitr.duplicate.label = "allow",
-  kableExtra.auto_format = FALSE
-)
+
 knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
 
 # Load RData created by risk_tool.R
@@ -36,6 +33,11 @@ library(janitor)
 library(kableExtra)
 library(DT)
 if(is.null(webshot:::find_phantom())){webshot::install_phantomjs()}
+options(
+  knitr.duplicate.label = "allow",
+  kableExtra.auto_format = NULL,
+  knitr.table.format = "pandoc"
+)
 
 # SOURCE
 source("Dashboard/general.R")
@@ -239,7 +241,7 @@ table_1a <- data.frame(
   )
 )
 
-knitr::kable(table_1a, align = "lr", booktabs = TRUE, col.names = NULL) 
+knitr::kable(table_1a, align = "lr", booktabs = TRUE, col.names = NULL)
 ```
 
 ## `r title_name_table` 1b: `r lang_label("table_1b_title")`, `r ref_country_name`, `r YEAR_1`-`r YEAR_5`.
