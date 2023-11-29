@@ -16,11 +16,7 @@ output:
 # R 4.3.0
 
 Sys.setlocale(locale = "es_ES.UTF-8")
-options(
-  knitr.duplicate.label = "allow",
-  knitr.table.format = "html",
-  scipen = 999
-)
+
 knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
 
 # Load RData created by risk_tool.R
@@ -38,7 +34,11 @@ library(tidyverse)
 library(janitor)
 library(kableExtra)
 library(DT)
-
+options(
+  knitr.duplicate.label = "allow",
+  knitr.table.format = "html",
+  scipen = 999
+)
 # SOURCE
 source("Dashboard/general.R")
 source("Dashboard/immunity.R")
