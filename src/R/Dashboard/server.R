@@ -316,7 +316,7 @@ function(input, output, session) {
   output$dl_inmunidad_map_cob_2 <- downloadHandler(
     filename = function() {
       paste0(lang_label("map")," ",input$admin1_filter," ",toupper(COUNTRY_NAME)," ",lang_label("immunity_ipv2_cob")," (",YEAR_EVAL,").png")
-    },
+      },
     content = function(file) {
       mapshot(inmu_map_cob_2$dat, file = file)
     }
@@ -330,7 +330,7 @@ function(input, output, session) {
     inmu_map_effective$dat
   })
   
-  output$dl_inmunidad_map_cob_2 <- downloadHandler(
+  output$dl_inmunidad_map_effective <- downloadHandler(
     filename = function() {
       paste0(lang_label("map")," ",input$admin1_filter," ",toupper(COUNTRY_NAME)," ",lang_label("immunity_effective_cob")," (",YEAR_1, "-", YEAR_EVAL,").png")
     },
