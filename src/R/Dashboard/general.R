@@ -445,7 +445,13 @@ ind_plot_multibar_data <- function(LANG_TLS,CUT_OFFS,bar_data,admin1_id,selected
                x0 = get_risk_level_point_limit(CUT_OFFS,indicator,"HR", pfa_filter), x1 = max_y_point, xref = "x",
                y0 = -1, y1 = nrow(bar_data), yref = "y")
         )) %>%
-        layout(legend = list(orientation = 'h',x = 0, y = 50, bgcolor = 'rgba(0,0,0,0)', font = list(size = 10))) %>%
+        layout(
+          legend = list(
+            orientation = 'h',x = 0, y = 50,
+            traceorder= 'normal',
+            bgcolor = 'rgba(0,0,0,0)', font = list(size = 10)
+          )
+        ) %>%
         config(displaylogo = FALSE) %>%
         config(modeBarButtonsToRemove = c("sendDataToCloud", "editInChartStudio",
                                           "pan2d","select2d","drawclosedpath",
@@ -495,7 +501,7 @@ ind_plot_multibar_data <- function(LANG_TLS,CUT_OFFS,bar_data,admin1_id,selected
                x0 = get_risk_level_point_limit(CUT_OFFS,indicator,"HR", pfa_filter), x1 = max_y_point, xref = "x",
                y0 = -1, y1 = nrow(bar_data), yref = "y")
         )) %>%
-        layout(legend = list(orientation = 'h',x = 0, y = 50, bgcolor = 'rgba(0,0,0,0)', font = list(size = 10))) %>%
+        layout(legend = list(orientation = 'h',x = 0, y = 50, bgcolor = 'rgba(0,0,0,0)', font = list(size = 10), traceorder = 'normla')) %>%
         config(displaylogo = FALSE) %>%
         config(modeBarButtonsToRemove = c("sendDataToCloud", "editInChartStudio",
                                           "pan2d","select2d","drawclosedpath",

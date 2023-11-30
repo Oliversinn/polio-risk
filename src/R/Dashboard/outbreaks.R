@@ -20,7 +20,7 @@ outbreaks_title_map <- function(LANG_TLS,COUNTRY_NAME,YEAR_LIST,admin1,var) {
 outbreaks_plot_map_data <- function(
     LANG_TLS,YEAR_CAMP_SR,COUNTRY_NAME,YEAR_LIST,ZERO_POB_LIST,CUT_OFFS,
     map_data,data,var_to_summarise,admin1,admin1_id,admin1_geo_id_df, 
-    pop_filter, risk_filter=toupper(lang_label("filter_all"))) {
+    pop_filter, risk_filter=toupper(lang_label("filter_all")), disease = NULL) {
   
   indicator <- "outbreaks_score"
   data <- data %>% select(-ADMIN1,-ADMIN2)
@@ -268,7 +268,7 @@ outbreaks_plot_map_data <- function(
           direction = "auto")
       ) %>% 
       addLegend(layerId = "map_title","topright",color = "white", opacity = 0,labels=HTML(paste0("<strong>",outbreaks_title_map(LANG_TLS,COUNTRY_NAME,YEAR_LIST,admin1,var_to_summarise),"</strong>"))) %>%
-      addLegend(title = lang_label_tls(LANG_TLS,"immunity_effective_cob_legend"),colors = legend_colors,labels = legend_values, opacity = 0.5, position = 'topright')
+      addLegend(title = paste(lang_label_tls(LANG_TLS,"outbreaks_coverage_legend"), disease),colors = legend_colors,labels = legend_values, opacity = 0.5, position = 'topright')
     
   }
   

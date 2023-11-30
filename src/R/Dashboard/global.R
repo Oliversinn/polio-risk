@@ -188,9 +188,12 @@ apply_admin_pop_filters <- function(data, admin1_filter, pop_filter) {
 # TITLES ----
 
 title_map_box <- function(indicator,admin1) {
+  indicator_as_is <- indicator
   indicator = tolower(indicator)
   if (indicator == tolower(lang_label("menuitem_general_label"))) {
     indicator = lang_label("total")
+  } else if (indicator_as_is == lang_label("outbreaks_score")) {
+    indicator = paste0("(", indicator_as_is, ")")
   } else {
     indicator = paste0("(",indicator,")")
   }

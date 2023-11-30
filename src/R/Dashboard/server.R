@@ -631,7 +631,7 @@ function(input, output, session) {
   # OUTBREAKS ----
   ## MAP ----
   output$outbreaks_map_box_title <- renderText({
-    title_map_box(lang_label("determinants_score"),input$admin1_filter)
+    title_map_box(lang_label("outbreaks_score"),input$admin1_filter)
   })
   
   ### OUTBREAK SCORE ----
@@ -671,7 +671,8 @@ function(input, output, session) {
       LANG_TLS,YEAR_CAMP_SR,toupper(COUNTRY_NAME),YEAR_LIST,ZERO_POB_LIST,
       CUT_OFFS,country_shapes,outbreaks_scores,which_var,
       input$admin1_filter,get_a1_geo_id(input$admin1_filter),admin1_geo_id_df, 
-      input$population15_filter, risk_filter_rename(input$indicadores_select_risk))
+      input$population15_filter, risk_filter_rename(input$indicadores_select_risk),
+      input$outbreaks_disease_filter)
     outbreaks_diseases$dat
   })
   

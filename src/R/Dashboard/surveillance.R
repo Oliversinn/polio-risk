@@ -586,7 +586,7 @@ cal_plot_map_data <- function(LANG_TLS,COUNTRY_NAME,YEAR_LIST,ZERO_POB_LIST,CUT_
             direction = "auto")
         ) %>% 
         addLegend(layerId = "map_title","topright",color = "white", opacity = 0,labels=HTML(paste0("<strong>",cal_title_map(LANG_TLS,COUNTRY_NAME,YEAR_LIST,admin1,var_to_summarise),"</strong>"))) %>%
-        addLegend(title = lang_label_tls(LANG_TLS,"rap_pres_team"),colors = legend_colors,labels = legend_values, opacity = 0.5, position = 'topright')
+        addLegend(title = lang_label_tls(LANG_TLS,"surveillance_active_search_legend"),colors = legend_colors,labels = legend_values, opacity = 0.5, position = 'topright')
       
     }
   

@@ -637,7 +637,7 @@ fluidPage(
                     br(),div(style = "text-align: center;",downloadButton(outputId = "dl_outbreaks_map_total",lang_label("button_download_map"),icon = icon('camera')))
                   ),
                   tabPanel(
-                    title = lang_label("immunity_polio_cob"),icon = icon("syringe"),
+                    title = lang_label("outbreaks_coverage"),icon = icon("syringe"),
                     column(width = 12,
                            selectInput("outbreaks_disease_filter", label = "", 
                                        choices = c(
