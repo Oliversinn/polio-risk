@@ -751,3 +751,91 @@ cheat_cheet_figura_3c
 cheat_cheet_figura_3c = ind_rangos_table(LANG_TLS,CUT_OFFS,"surveillance_score", FALSE, lang_label("population_pfa_no_filter"))
 cheat_cheet_figura_3c
 ```
+
+# __`r lang_label("title_name_section")` 4: `r lang_label("quality_title")`__
+
+```{r quality_table, echo = FALSE}
+PATH_country_data   =  "../Data/country_data.xlsx"
+
+data_sheet_1 <- read_excel(PATH_country_data,sheet = 1)
+colnames(data_sheet_1) <- c("VAR","VAL")
+
+
+dat_test_int_total_admin2 <- !is.na(as.integer(data_sheet_1$VAL[4]))
+
+if (dat_test_int_total_admin2) {
+  admin2_total = as.integer(data_sheet_1$VAL[4])
+}
+
+population_data <- read_excel(PATH_country_data,sheet = 2)
+admin2_included <- nrow(unique(population_data[2]))
+
+admin2_missing_data <- population_data[!complete.cases(population_data), ][[2]]
+
+immunity_data <- read_excel(PATH_country_data, sheet = 3, skip = 1)
+
+for (i in 8:15) {
+  admin2_missing_data <- unique(c(
+  admin2_missing_data,
+  immunity_data[is.na(immunity_data[[i]]),][[2]]
+))
+}
+
+
+population_and_pfa_bool <- population_and_pfa(scores_data)
+
+surveillance_data <- read_excel(PATH_country_data, sheet = 4, skip = 1)
+
+admin2_missing_data <- unique(c(
+  admin2_missing_data,
+  surveillance_data[is.na(surveillance_data[[9]]),][[2]]
+))
+
+for (i in 10:14) {
+  admin2_missing_data <- unique(c(
+  admin2_missing_data,
+  surveillance_data[is.na(surveillance_data[[i]]) & population_and_pfa_bool,][[2]]
+))
+}
+
+admin2_missing_data <- unique(c(
+  admin2_missing_data,
+  surveillance_data[is.na(surveillance_data[[15]]) & !population_and_pfa_bool,][[2]]
+))
+
+determinants_data <- read_excel(PATH_country_data, sheet = 5, skip = 1)
+
+for (i in 9:10) {
+  admin2_missing_data <- unique(c(
+    admin2_missing_data,
+    determinants_data[is.na(determinants_data[[i]]),][[2]]
+  ))
+}
+
+outbreaks_data <- read_excel(PATH_country_data, sheet = 5, skip = 1)
+
+for (i in 9:10) {
+  admin2_missing_data <- unique(c(
+    admin2_missing_data,
+    outbreaks_data[is.na(outbreaks_data[[i]]),][[2]]
+  ))
+}
+
+admin2_complete <- admin2_total - length(admin2_missing_data)
+
+quality_df <- data.frame(
+  VAR = c(
+    lang_label("quality_admin2_total"),
+    lang_label("quality_admin2_included"),
+    lang_label("quality_admin2_complete")
+  ),
+  VAL = c(
+    admin2_total,
+    admin2_included,
+    admin2_complete
+  )
+)
+
+
+knitr::kable(quality_df, align = "lr", booktabs = TRUE, col.names = NULL)
+```

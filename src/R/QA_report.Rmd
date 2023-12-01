@@ -24,14 +24,13 @@ library(pacman)
 p_load(tidyverse,tidyr,readxl,
        webshot,sf,sp,mapview,leaflet,
        htmltools,DT,data.table)
+options(knitr.table.format = "pandoc")
 
 # PATHS ----
-file_path = rstudioapi::getSourceEditorContext()$path
-file_path_index = unlist(gregexec('R/QA_report.Rmd',file_path))[1]
-PATH_global = substr(file_path,1,file_path_index - 1)
-PATH_country_data   =  paste0(PATH_global, "Data/country_data.xlsx")
-PATH_country_flag   = paste0(PATH_global, "Data/country_flag.png")
-PATH_shapefiles     = paste0(PATH_global, "Data/shapefiles/")
+PATH_global = ""
+PATH_country_data   =  paste0(PATH_global, "../Data/country_data.xlsx")
+PATH_country_flag   = paste0(PATH_global, "../Data/country_flag.png")
+PATH_shapefiles     = paste0(PATH_global, "../Data/shapefiles/")
 
 # HTML - CSS
 html_white_background <- htmltools::tags$style(".leaflet-container { background: #FFF; }")
@@ -76,7 +75,7 @@ cat_na_table <- function(df_all,in_cols=NULL) {
     na_rows_df <- data.frame(V1="")
     colnames(na_rows_df) <- lang_label("no_missing_data")
   }
-  return(knitr::kable(na_rows_df, row.names = F, booktabs = T))
+  return(knitr::kable(na_rows_df, row.names = FALSE, booktabs = TRUE))
 }
 
 cat_invalid_geoid_table <- function(data_df) {
