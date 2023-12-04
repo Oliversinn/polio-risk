@@ -4,6 +4,7 @@ author: "`r library(readxl); if (read_excel('../Data/country_data.xlsx')[3,2] ==
 date: "![](Dashboard/www/country_flag.png){width=20%}"
 output:
   word_document: default
+fontsize: 11pt
 ---
 
 ```{r setup, include=FALSE}
@@ -244,7 +245,7 @@ table_1a <- data.frame(
 knitr::kable(table_1a, align = "lr", booktabs = TRUE, col.names = NULL)
 ```
 
-## `r title_name_table` 1b: `r lang_label("table_1b_title")`, `r ref_country_name`, `r YEAR_1`-`r YEAR_5`.
+## `r title_name_table` 1b: `r lang_label("table_1b_title")`, `r ref_country_name`, `r YEAR_EVAL`.
 ```{r table_1a, echo=F,results="asis"}
 
 pop_LR <- pop_data[which(risk_levels_df$level == lang_label("LR")),]
@@ -336,7 +337,7 @@ knitr::kable(mun_risk_levels_df,align = "lrrrrrr", booktabs = T) %>%
 
 
 \newpage
-## `r title_name_figure` 1a: `r lang_label("figure_1a_title")` `r ref_country_name`, `r YEAR_1`-`r YEAR_5`.
+## `r title_name_figure` 1a: `r lang_label("figure_1a_title")` `r ref_country_name`, `r YEAR_EVAL`.
 ```{r figure_1a, echo=F, out.width="100%", out.width="78%"}
 indicadores_prep_map_data = ind_prep_map_data(LANG_TLS,ZERO_POB_LIST,CUT_OFFS,country_shapes,scores_data,"total_score",0,"ALL", lang_label("filter_all"))
 fig_map <- ind_plot_map_data(LANG_TLS,ZERO_POB_LIST,CUT_OFFS,indicadores_prep_map_data,"PR",0,"ALL")
@@ -352,7 +353,7 @@ knitr::kable(cheat_cheet_figura_1a)
 
 
 \newpage
-## `r title_name_figure` 1b: `r lang_label("figure_1b_title")` `r ref_country_name`, `r YEAR_1`-`r YEAR_5`.
+## `r title_name_figure` 1b: `r lang_label("figure_1b_title")` `r ref_country_name`, `r YEAR_EVAL`.
 ```{r figure_1b, echo=F, out.width="100%", out.width="78%"}
 indicadores_prep_map_data = ind_prep_map_data(LANG_TLS,ZERO_POB_LIST,CUT_OFFS,country_shapes,scores_data,"total_score",0,"ALL", lang_label("greater_than_100000"))
 fig_map <- ind_plot_map_data(LANG_TLS,ZERO_POB_LIST,CUT_OFFS,indicadores_prep_map_data,"PR",0,"ALL")
@@ -368,7 +369,7 @@ knitr::kable(cheat_cheet_figura_1b)
 
 
 \newpage
-## `r title_name_figure` 1c: `r lang_label("figure_1c_title")` `r ref_country_name`, `r YEAR_1`-`r YEAR_5`.
+## `r title_name_figure` 1c: `r lang_label("figure_1c_title")` `r ref_country_name`, `r YEAR_EVAL`.
 ```{r figure_1c, echo=F, out.width="100%", out.width="78%"}
 indicadores_prep_map_data = ind_prep_map_data(LANG_TLS,ZERO_POB_LIST,CUT_OFFS,country_shapes,scores_data,"total_score",0,"ALL", lang_label("less_than_100000"))
 fig_map <- ind_plot_map_data(LANG_TLS,ZERO_POB_LIST,CUT_OFFS,indicadores_prep_map_data,"PR",0,"ALL")
@@ -387,7 +388,7 @@ knitr::kable(cheat_cheet_figura_1b)
 # __`r lang_label("title_name_section")` 2: `r lang_label("title_section_2")`__
 
 
-## `r title_name_table` 2a: `r lang_label("table_2a_title")`, `r ref_country_name`, `r YEAR_1`-`r YEAR_5`.
+## `r title_name_table` 2a: `r lang_label("table_2a_title")`, `r ref_country_name`, `r YEAR_EVAL`.
 ```{r table_2a, echo=F,results="asis"}
 risk_levels_df <- data.frame(level=get_risk_level(LANG_TLS,CUT_OFFS,"immunity_score",scores_data$immunity_score, population_and_pfa(scores_data)),n=1)
 
@@ -490,7 +491,7 @@ knitr::kable(mun_risk_levels_df,align = "lrrrrrr", booktabs = T) %>%
 
 
 \newpage
-## `r title_name_figure` 2a: `r lang_label("figure_2a_title")` `r ref_country_name`, `r YEAR_1`-`r YEAR_5`.
+## `r title_name_figure` 2a: `r lang_label("figure_2a_title")` `r ref_country_name`, `r YEAR_EVAL`.
 ```{r figure_2a, echo=F, out.width="100%", out.width="78%"}
 indicadores_prep_map_data = ind_prep_map_data(LANG_TLS,ZERO_POB_LIST,CUT_OFFS,country_shapes,scores_data,"immunity_score",0,"ALL", lang_label("filter_all"))
 fig_map <- ind_plot_map_data(LANG_TLS,ZERO_POB_LIST,CUT_OFFS,indicadores_prep_map_data,"PR",0,"ALL")
@@ -513,7 +514,7 @@ knitr::kable(cheat_cheet_figura_2a) %>%
 
 
 \newpage
-## `r title_name_figure` 2b: `r lang_label("figure_2b_title")` `r ref_country_name`, `r YEAR_1`-`r YEAR_5`.
+## `r title_name_figure` 2b: `r lang_label("figure_2b_title")` `r ref_country_name`, `r YEAR_EVAL`.
 ```{r figure_2b, echo=F, out.width="100%", out.width="78%"}
 fig_map = inmu_plot_map_data(
     LANG_TLS,YEAR_CAMP_SR,toupper(COUNTRY_NAME),YEAR_LIST,ZERO_POB_LIST,
@@ -536,7 +537,7 @@ knitr::kable(cheat_cheet_figura_2b) %>%
 
 
 \newpage
-## `r title_name_figure` 2c: `r lang_label("figure_2c_title")` `r ref_country_name`, `r YEAR_1`-`r YEAR_5`.
+## `r title_name_figure` 2c: `r lang_label("figure_2c_title")` `r ref_country_name`, `r YEAR_EVAL`.
 ```{r figure_2c, echo=F, out.width="100%", out.width="78%"}
 fig_map = inmu_plot_map_data(
     LANG_TLS,YEAR_CAMP_SR,toupper(COUNTRY_NAME),YEAR_LIST,ZERO_POB_LIST,
@@ -570,7 +571,7 @@ knitr::kable(cheat_cheet_figura_2c) %>%
 # __`r lang_label("title_name_section")` 3: `r lang_label("title_section_3")`__
 
 
-## `r title_name_table` 3a: `r lang_label("table_3a_title")`, `r ref_country_name`, `r YEAR_1`-`r YEAR_5`.
+## `r title_name_table` 3a: `r lang_label("table_3a_title")`, `r ref_country_name`, `r YEAR_EVAL`.
 ```{r table_3a, echo=F,results="asis"}
 risk_levels_df <- data.frame(level=get_risk_level(LANG_TLS,CUT_OFFS,"surveillance_score",scores_data$surveillance_score, population_and_pfa(scores_data)),n=1)
 
@@ -672,7 +673,7 @@ knitr::kable(mun_risk_levels_df,align = "lrrrrrr", booktabs = T) %>%
 ```
 
 \newpage
-## `r title_name_figure` 3a: `r lang_label("figure_3a_title")` `r ref_country_name`, `r YEAR_1`-`r YEAR_5`.
+## `r title_name_figure` 3a: `r lang_label("figure_3a_title")` `r ref_country_name`, `r YEAR_EVAL`.
 ```{r figure_3a, echo=F, out.width="100%", out.width="78%"}
 fig_map = cal_plot_map_data(
   LANG_TLS,
@@ -709,7 +710,7 @@ knitr::kable(cheat_cheet_figura_3a) %>%
 
 
 \newpage
-## `r title_name_figure` 3b: `r lang_label("figure_3b_title")` `r ref_country_name`, `r YEAR_1`-`r YEAR_5`.
+## `r title_name_figure` 3b: `r lang_label("figure_3b_title")` `r ref_country_name`, `r YEAR_EVAL`.
 ```{r figure_3b, echo=F, out.width="100%", out.width="78%"}
 fig_map =cal_plot_map_data(
   LANG_TLS,
@@ -741,7 +742,7 @@ knitr::kable(cheat_cheet_figura_3b) %>%
 
 \newpage
 
-## `r title_name_figure` 3c: `r lang_label("figure_3c_title")` `r ref_country_name`, `r YEAR_1`-`r YEAR_5`.
+## `r title_name_figure` 3c: `r lang_label("figure_3c_title")` `r ref_country_name`, `r YEAR_EVAL`.
 ```{r figure_3c, echo=F, out.width="100%", out.width="78%"}
 fig_map = cal_plot_map_data(
   LANG_TLS,

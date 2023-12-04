@@ -96,10 +96,10 @@ fluidPage(
                       label = paste0(lang_label("general_select_ind"), ":"),
                       choices = c(
                         lang_label("menuitem_general_label"),
-                        lang_label("menuitem_immunity"),
-                        lang_label("menuitem_surveillance"),
-                        lang_label("menuitem_determinants"),
-                        lang_label("menuitem_outbreaks")
+                        lang_label("general_select_immunity"),
+                        lang_label("general_select_surveillance"),
+                        lang_label("general_select_determinants"),
+                        lang_label("general_select_outbreaks")
                       ),
                       selected = lang_label("menuitem_general_label")
           ),
@@ -303,11 +303,11 @@ fluidPage(
                     column(width = 12,
                            selectInput("radio_inmunidad_cob_1", label = "", 
                                        choices = c(
-                                         paste(lang_label("vac_coverage"),YEAR_1),
-                                         paste(lang_label("vac_coverage"),YEAR_2),
-                                         paste(lang_label("vac_coverage"),YEAR_3),
+                                         paste(lang_label("vac_coverage"),YEAR_5),
                                          paste(lang_label("vac_coverage"),YEAR_4),
-                                         paste(lang_label("vac_coverage"),YEAR_5)
+                                         paste(lang_label("vac_coverage"),YEAR_3),
+                                         paste(lang_label("vac_coverage"),YEAR_2),
+                                         paste(lang_label("vac_coverage"),YEAR_1)
                                        ),
                            ),style = "z-index:2000;"),
                     shinycssloaders::withSpinner(leafletOutput("inmunidad_map_cob_1",height = 600),color = "#1c9ad6", type = "8", size = 0.5),
