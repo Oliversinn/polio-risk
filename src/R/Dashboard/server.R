@@ -33,7 +33,11 @@ function(input, output, session) {
       lang_label("menuitem_immunity") == selected_ind ~ "immunity_score",
       lang_label("menuitem_surveillance") == selected_ind ~ "surveillance_score",
       lang_label("menuitem_determinants") == selected_ind ~ "determinants_score",
-      lang_label("menuitem_outbreaks") == selected_ind ~ "outbreaks_score"
+      lang_label("menuitem_outbreaks") == selected_ind ~ "outbreaks_score",
+      lang_label("general_select_immunity") == selected_ind ~ "immunity_score",
+      lang_label("general_select_surveillance") == selected_ind ~ "surveillance_score",
+      lang_label("general_select_determinants") == selected_ind ~ "determinants_score",
+      lang_label("general_select_outbreaks") == selected_ind ~ "outbreaks_score"
     )
     return(renamed)
   }
@@ -166,7 +170,13 @@ function(input, output, session) {
   
   output$indicadores_title_map_box <- renderText({
     text_title <- title_map_box(input$indicadores_select_indicador,input$admin1_filter)
-    text_title <- paste0(text_title," (",YEAR_1," - ",YEAR_EVAL,")")
+    text_title <- paste0(text_title," (",YEAR_EVAL,")")
+    text_title
+  })
+  
+  output$indicadores_title_map_box_2 <- renderText({
+    text_title <- title_map_box(input$indicadores_select_indicador,input$admin1_filter)
+    text_title <- paste0(text_title," (",YEAR_EVAL,")")
     text_title
   })
   
@@ -214,7 +224,7 @@ function(input, output, session) {
   
   output$indicadores_title_bar_box <- renderText({
     text_title <- title_bar_box(input$indicadores_select_indicador,input$admin1_filter)
-    text_title <- paste0(text_title," (",YEAR_1," - ",YEAR_5,")")
+    text_title <- paste0(text_title," (",YEAR_EVAL,")")
     text_title
   })
   
