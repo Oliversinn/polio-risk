@@ -327,13 +327,13 @@ colnames(mun_risk_levels_df) <- c(
   lang_label("table_cut_offs_riskcats"),
   paste0(lang_label("table_number_of")," ",rep_label_admin2_name_plural),
   paste0(lang_label("table_pct_of")," ",rep_label_admin2_name_plural),
-  lang_label("table_1b_pob1"),
-  lang_label("table_1b_pob5"),
-  lang_label("table_1b_pob15")
+  lang_label("table_1a_pob1_html"),
+  lang_label("table_1b_pob5_html"),
+  lang_label("table_1b_pob15_html")
 )
 
 knitr::kable(mun_risk_levels_df,align = "lrrrrrr", booktabs = T) %>% 
-  add_footnote(lang_label("table_1b_footnote"), notation = "none") %>% 
+  add_footnote(lang_label("table_1b_footnote"), notation = "symbol") %>% 
   kable_styling()
 ```
 
@@ -476,13 +476,13 @@ colnames(mun_risk_levels_df) <- c(
   lang_label("table_cut_offs_riskcats"),
   paste0(lang_label("table_number_of")," ",rep_label_admin2_name_plural),
   paste0(lang_label("table_pct_of")," ",rep_label_admin2_name_plural),
-  lang_label("table_1b_pob1"),
-  lang_label("table_1b_pob5"),
-  lang_label("table_1b_pob15")
+  lang_label("table_1b_pob1_html"),
+  lang_label("table_1b_pob5_html"),
+  lang_label("table_1b_pob15_html")
 )
 
 knitr::kable(mun_risk_levels_df,align = "lrrrrrr", booktabs = T) %>% 
-  add_footnote(lang_label("table_1b_footnote"), notation = "none") %>% 
+  add_footnote(lang_label("table_1b_footnote"), notation = "symbol") %>% 
   kable_styling()
 ```
 
@@ -649,13 +649,13 @@ colnames(mun_risk_levels_df) <- c(
   lang_label("table_cut_offs_riskcats"),
   paste0(lang_label("table_number_of")," ",rep_label_admin2_name_plural),
   paste0(lang_label("table_pct_of")," ",rep_label_admin2_name_plural),
-  lang_label("table_1b_pob1"),
-  lang_label("table_1b_pob5"),
-  lang_label("table_1b_pob15")
+  lang_label("table_1b_pob1_html"),
+  lang_label("table_1b_pob5_html"),
+  lang_label("table_1b_pob15_html")
 )
 
 knitr::kable(mun_risk_levels_df,align = "lrrrrrr", booktabs = T) %>% 
-  add_footnote(lang_label("table_1b_footnote"), notation = "none") %>% 
+  add_footnote(lang_label("table_1b_footnote"), notation = "symbol") %>% 
   kable_styling()
 ```
 
@@ -837,5 +837,6 @@ quality_df <- data.frame(
 )
 
 
-knitr::kable(quality_df, align = "lr", booktabs = TRUE, col.names = NULL)
+knitr::kable(quality_df, align = "lr", booktabs = TRUE, col.names = NULL) %>% 
+  kable_styling()
 ```
