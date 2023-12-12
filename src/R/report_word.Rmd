@@ -150,9 +150,10 @@ colnames(cut_offs_table) = c(lang_label("table_cut_offs_riskcats"),lang_label("t
 
 flextable::flextable(cut_offs_table) %>% 
   flextable::fontsize(size = 11, part = "all") %>% 
-  flextable::font()
+  flextable::font(fontname = "Calibri", part = "all") %>% 
   flextable::autofit()
 ```
+
 
 `r lang_label("background_par_3")`
 
@@ -249,6 +250,8 @@ table_1a <- data.frame(
 
 flextable::flextable(table_1a) %>%
   flextable::delete_part(part = "header") %>% 
+  flextable::fontsize(size = 11, part = "all") %>% 
+  flextable::font(fontname = "Calibri", part = "all") %>% 
   flextable::autofit()
 ```
 
@@ -340,6 +343,8 @@ colnames(mun_risk_levels_df) <- c(
 
 flextable::flextable(mun_risk_levels_df) %>% 
   flextable::width(width = 1) %>% 
+  flextable::fontsize(size = 11, part = "all") %>% 
+  flextable::font(fontname = "Calibri", part = "all") %>% 
   flextable::footnote(
     i = 1,
     j = 4:6,
@@ -365,7 +370,9 @@ knitr::include_graphics("figures/fig_1a.png")
 
 ```{r cheat_sheet_figura_1a, echo=FALSE}
 cheat_cheet_figura_1a = ind_rangos_table(LANG_TLS,CUT_OFFS,"total_score", TRUE, return_html = FALSE)
-flextable::flextable(cheat_cheet_figura_1a)
+flextable::flextable(cheat_cheet_figura_1a) %>% 
+  flextable::fontsize(size = 11, part = "all") %>% 
+  flextable::font(fontname = "Calibri", part = "all")
 ```
 
 
@@ -381,7 +388,9 @@ knitr::include_graphics("figures/fig_1b.png")
 
 ```{r cheat_sheet_figura_1b, echo=FALSE}
 cheat_cheet_figura_1b = ind_rangos_table(LANG_TLS,CUT_OFFS,"total_score", TRUE, return_html = FALSE)
-flextable::flextable(cheat_cheet_figura_1b)
+flextable::flextable(cheat_cheet_figura_1b) %>% 
+  flextable::fontsize(size = 11, part = "all") %>% 
+  flextable::font(fontname = "Calibri", part = "all")
 ```
 
 
@@ -397,7 +406,9 @@ knitr::include_graphics("figures/fig_1c.png")
 
 ```{r cheat_sheet_figura_1c, echo=FALSE}
 cheat_cheet_figura_1c = ind_rangos_table(LANG_TLS,CUT_OFFS,"total_score", TRUE, return_html = FALSE)
-flextable::flextable(cheat_cheet_figura_1c)
+flextable::flextable(cheat_cheet_figura_1c) %>% 
+  flextable::fontsize(size = 11, part = "all") %>% 
+  flextable::font(fontname = "Calibri", part = "all")
 ```
 
 \newpage
@@ -504,6 +515,8 @@ colnames(mun_risk_levels_df) <- c(
 
 flextable::flextable(mun_risk_levels_df) %>% 
   flextable::width(width = 1) %>% 
+  flextable::fontsize(size = 11, part = "all") %>% 
+  flextable::font(fontname = "Calibri", part = "all") %>% 
   flextable::footnote(
     i = 1,
     j = 4:6,
@@ -533,6 +546,8 @@ cheat_cheet_figura_2a = ind_rangos_table(LANG_TLS,CUT_OFFS,"immunity_score", TRU
 
 flextable::flextable(cheat_cheet_figura_2a) %>% 
   flextable::autofit() %>% 
+  flextable::fontsize(size = 11, part = "all") %>% 
+  flextable::font(fontname = "Calibri", part = "all") %>% 
   flextable::add_header_row(
     values = lang_label("population_pfa_filter"),
     colwidths = length(colnames(cheat_cheet_figura_2a))
@@ -545,6 +560,8 @@ cheat_cheet_figura_2a = ind_rangos_table(LANG_TLS,CUT_OFFS,"immunity_score", FAL
 
 flextable::flextable(cheat_cheet_figura_2a) %>% 
   flextable::autofit() %>% 
+  flextable::fontsize(size = 11, part = "all") %>% 
+  flextable::font(fontname = "Calibri", part = "all") %>% 
   flextable::add_header_row(
     values = lang_label("population_pfa_no_filter"),
     colwidths = length(colnames(cheat_cheet_figura_2a))
@@ -573,6 +590,8 @@ cheat_cheet_figura_2b = ind_rangos_table(LANG_TLS,CUT_OFFS,"immunity_score", TRU
 
 flextable::flextable(cheat_cheet_figura_2b) %>% 
   flextable::autofit() %>% 
+  flextable::fontsize(size = 11, part = "all") %>% 
+  flextable::font(fontname = "Calibri", part = "all") %>% 
   flextable::add_header_row(
     values = lang_label("population_pfa_filter"),
     colwidths = length(colnames(cheat_cheet_figura_2b))
@@ -600,6 +619,8 @@ knitr::include_graphics("figures/fig_2c.png")
 cheat_cheet_figura_2c = ind_rangos_table(LANG_TLS,CUT_OFFS,"immunity_score", TRUE, lang_label("population_pfa_filter"), return_html = FALSE)
 flextable::flextable(cheat_cheet_figura_2c) %>% 
   flextable::autofit() %>% 
+  flextable::fontsize(size = 11, part = "all") %>% 
+  flextable::font(fontname = "Calibri", part = "all") %>% 
   flextable::add_header_row(
     values = lang_label("population_pfa_filter"),
     colwidths = length(colnames(cheat_cheet_figura_2c))
@@ -612,6 +633,8 @@ flextable::flextable(cheat_cheet_figura_2c) %>%
 cheat_cheet_figura_2c = ind_rangos_table(LANG_TLS,CUT_OFFS,"immunity_score", FALSE, lang_label("population_pfa_no_filter"), return_html = FALSE)
 flextable::flextable(cheat_cheet_figura_2c) %>% 
   flextable::autofit() %>% 
+  flextable::fontsize(size = 11, part = "all") %>% 
+  flextable::font(fontname = "Calibri", part = "all") %>% 
   flextable::add_header_row(
     values = lang_label("population_pfa_no_filter"),
     colwidths = length(colnames(cheat_cheet_figura_2c))
@@ -723,6 +746,8 @@ colnames(mun_risk_levels_df) <- c(
 
 flextable::flextable(mun_risk_levels_df) %>% 
   flextable::width(width = 1) %>% 
+  flextable::fontsize(size = 11, part = "all") %>% 
+  flextable::font(fontname = "Calibri", part = "all") %>% 
   flextable::footnote(
     i = 1,
     j = 4:6,
@@ -764,6 +789,8 @@ knitr::include_graphics("figures/fig_3a.png")
 cheat_cheet_figura_3a = ind_rangos_table(LANG_TLS,CUT_OFFS,"surveillance_score", TRUE, lang_label("population_pfa_filter"), return_html = FALSE)
 flextable::flextable(cheat_cheet_figura_3a) %>% 
   flextable::autofit() %>% 
+  flextable::fontsize(size = 11, part = "all") %>% 
+  flextable::font(fontname = "Calibri", part = "all") %>% 
   flextable::add_header_row(
     values = lang_label("population_pfa_filter"),
     colwidths = length(colnames(cheat_cheet_figura_3a))
@@ -775,6 +802,8 @@ flextable::flextable(cheat_cheet_figura_3a) %>%
 cheat_cheet_figura_3a = ind_rangos_table(LANG_TLS,CUT_OFFS,"surveillance_score", FALSE, lang_label("population_pfa_no_filter"), return_html = FALSE)
 flextable::flextable(cheat_cheet_figura_3a) %>% 
   flextable::autofit() %>% 
+  flextable::fontsize(size = 11, part = "all") %>% 
+  flextable::font(fontname = "Calibri", part = "all") %>% 
   flextable::add_header_row(
     values = lang_label("population_pfa_no_filter"),
     colwidths = length(colnames(cheat_cheet_figura_3a))
@@ -812,6 +841,8 @@ knitr::include_graphics("figures/fig_3b.png")
 cheat_cheet_figura_3b = ind_rangos_table(LANG_TLS,CUT_OFFS,"surveillance_score", TRUE, lang_label("population_pfa_filter"), return_html = FALSE)
 flextable::flextable(cheat_cheet_figura_3b) %>% 
   flextable::autofit() %>% 
+  flextable::fontsize(size = 11, part = "all") %>% 
+  flextable::font(fontname = "Calibri", part = "all") %>% 
   flextable::add_header_row(
     values = lang_label("population_pfa_filter"),
     colwidths = length(colnames(cheat_cheet_figura_3b))
@@ -849,6 +880,8 @@ cheat_cheet_figura_3c = ind_rangos_table(LANG_TLS,CUT_OFFS,"surveillance_score",
 
 flextable::flextable(cheat_cheet_figura_3c) %>% 
   flextable::autofit() %>% 
+  flextable::fontsize(size = 11, part = "all") %>% 
+  flextable::font(fontname = "Calibri", part = "all") %>% 
   flextable::add_header_row(
     values = lang_label("population_pfa_filter"),
     colwidths = length(colnames(cheat_cheet_figura_3c))
@@ -859,6 +892,8 @@ flextable::flextable(cheat_cheet_figura_3c) %>%
 cheat_cheet_figura_3c = ind_rangos_table(LANG_TLS,CUT_OFFS,"surveillance_score", FALSE, lang_label("population_pfa_no_filter"), return_html = FALSE)
 flextable::flextable(cheat_cheet_figura_3c) %>% 
   flextable::autofit() %>% 
+  flextable::fontsize(size = 11, part = "all") %>% 
+  flextable::font(fontname = "Calibri", part = "all") %>% 
   flextable::add_header_row(
     values = lang_label("population_pfa_no_filter"),
     colwidths = length(colnames(cheat_cheet_figura_3c))
@@ -953,5 +988,7 @@ quality_df <- data.frame(
 
 flextable::flextable(quality_df) %>%
   flextable::delete_part(part = "header") %>% 
+  flextable::fontsize(size = 11, part = "all") %>% 
+  flextable::font(fontname = "Calibri", part = "all") %>% 
   flextable::autofit()
 ```
