@@ -290,6 +290,47 @@ ind_get_bar_table <- function(LANG_TLS,CUT_OFFS,data,indicator,admin1_id,risk) {
       data <- data %>% filter(risk_level == lang_label_tls(LANG_TLS,risk))
     }
     
+    indicators_risk <- data.frame(
+      immunity_score = get_risk_level(LANG_TLS,CUT_OFFS,"immunity_score",data$immunity_score, pfa = pfa),
+      surveillance_score = get_risk_level(LANG_TLS,CUT_OFFS,"surveillance_score",data$surveillance_score, pfa = pfa),
+      determinants_score = get_risk_level(LANG_TLS,CUT_OFFS,"determinants_score",data$determinants_score, pfa = pfa),
+      outbreaks_score = get_risk_level(LANG_TLS,CUT_OFFS,"outbreaks_score",data$outbreaks_score, pfa = pfa)
+    )
+    # 
+    # indicators_risk$immunity_score <- get_risk_level(LANG_TLS,CUT_OFFS,"immunity_score",data$immunity_score, pfa = pfa)
+    # indicators_risk$surveillance_score <- get_risk_level(LANG_TLS,CUT_OFFS,"surveillance_score",data$surveillance_score, pfa = pfa)
+    # indicators_risk$determinants_score <- get_risk_level(LANG_TLS,CUT_OFFS,"determinants_score",data$determinants_score, pfa = pfa)
+    # indicators_risk$outbreaks_score <- get_risk_level(LANG_TLS,CUT_OFFS,"outbreaks_score",data$outbreaks_score, pfa = pfa)
+    # 
+    indicators_risk <- indicators_risk %>% 
+      mutate(
+        row_id = row_number(),
+        immunity_score_color = case_when(
+          immunity_score == lang_label_tls(LANG_TLS,"LR") ~ "rgba(146, 208, 80, 0.7)",
+          immunity_score == lang_label_tls(LANG_TLS,"MR") ~ "rgba(254, 192, 0, 0.7)",
+          immunity_score == lang_label_tls(LANG_TLS,"HR") ~ "rgba(232, 19, 43, 0.7)",
+          immunity_score == lang_label_tls(LANG_TLS,"VHR") ~ "rgba(146, 0, 0, 0.7)",
+        ),
+        surveillance_score_color = case_when(
+          surveillance_score == lang_label_tls(LANG_TLS,"LR") ~ "rgba(146, 208, 80, 0.7)",
+          surveillance_score == lang_label_tls(LANG_TLS,"MR") ~ "rgba(254, 192, 0, 0.7)",
+          surveillance_score == lang_label_tls(LANG_TLS,"HR") ~ "rgba(232, 19, 43, 0.7)",
+          surveillance_score == lang_label_tls(LANG_TLS,"VHR") ~ "rgba(146, 0, 0, 0.7)",
+        ),
+        determinants_score_color = case_when(
+          determinants_score == lang_label_tls(LANG_TLS,"LR") ~ "rgba(146, 208, 80, 0.7)",
+          determinants_score == lang_label_tls(LANG_TLS,"MR") ~ "rgba(254, 192, 0, 0.7)",
+          determinants_score == lang_label_tls(LANG_TLS,"HR") ~ "rgba(232, 19, 43, 0.7)",
+          determinants_score == lang_label_tls(LANG_TLS,"VHR") ~ "rgba(146, 0, 0, 0.7)",
+        ),
+        outbreaks_score_color = case_when(
+          outbreaks_score == lang_label_tls(LANG_TLS,"LR") ~ "rgba(146, 208, 80, 0.7)",
+          outbreaks_score == lang_label_tls(LANG_TLS,"MR") ~ "rgba(254, 192, 0, 0.7)",
+          outbreaks_score == lang_label_tls(LANG_TLS,"HR") ~ "rgba(232, 19, 43, 0.7)",
+          outbreaks_score == lang_label_tls(LANG_TLS,"VHR") ~ "rgba(146, 0, 0, 0.7)",
+        )
+      )
+    
     colnames(data) = c(
       lang_label_tls(LANG_TLS,"table_admin1_name"),
       lang_label_tls(LANG_TLS,"table_admin2_name"),
@@ -334,6 +375,38 @@ ind_get_bar_table <- function(LANG_TLS,CUT_OFFS,data,indicator,admin1_id,risk) {
       lang_label_tls(LANG_TLS,"risk_points"),
       backgroundColor = "#e3e3e3"
     )
+  
+  if (indicator == "total_score") {
+    datos_table <- datos_table %>% 
+      formatStyle(
+        lang_label_tls(LANG_TLS,"menuitem_immunity"),
+        backgroundColor = styleRow(
+          indicators_risk$row_id,
+          indicators_risk$immunity_score_color
+        )
+      ) %>% 
+      formatStyle(
+        lang_label_tls(LANG_TLS,"menuitem_surveillance"),
+        backgroundColor = styleRow(
+          indicators_risk$row_id,
+          indicators_risk$surveillance_score_color
+        )
+      ) %>% 
+      formatStyle(
+        lang_label_tls(LANG_TLS,"menuitem_determinants"),
+        backgroundColor = styleRow(
+          indicators_risk$row_id,
+          indicators_risk$determinants_score_color
+        )
+      ) %>% 
+      formatStyle(
+        lang_label_tls(LANG_TLS,"menuitem_outbreaks"),
+        backgroundColor = styleRow(
+          indicators_risk$row_id,
+          indicators_risk$outbreaks_score_color
+        )
+      )
+  }
   
   return(datos_table)
 }
