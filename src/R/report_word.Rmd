@@ -16,7 +16,9 @@ fontsize: 11pt
 
 Sys.setlocale(locale = "es_ES.UTF-8")
 
-knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
+knitr::opts_chunk$set(
+  echo = FALSE, warning = FALSE, message = FALSE
+)
 
 # Load RData created by risk_tool.R
 load(file = "./Dashboard/POLIO.RData")
@@ -146,7 +148,8 @@ cut_offs_table <- data.frame(
 )
 colnames(cut_offs_table) = c(lang_label("table_cut_offs_riskcats"),lang_label("table_cut_offs_risktotal"))
 
-knitr::kable(cut_offs_table,align = "lr", booktabs = T) 
+flextable::flextable(cut_offs_table) %>% 
+  flextable::autofit()
 ```
 
 `r lang_label("background_par_3")`
@@ -242,7 +245,9 @@ table_1a <- data.frame(
   )
 )
 
-knitr::kable(table_1a, align = "lr", booktabs = TRUE, col.names = NULL)
+flextable::flextable(table_1a) %>%
+  flextable::delete_part(part = "header") %>% 
+  flextable::autofit()
 ```
 
 ## `r title_name_table` 1b: `r lang_label("table_1b_title")`, `r ref_country_name`, `r YEAR_EVAL`.
@@ -330,11 +335,21 @@ colnames(mun_risk_levels_df) <- c(
   lang_label("table_1b_pob15")
 )
 
-knitr::kable(mun_risk_levels_df,align = "lrrrrrr", booktabs = T) %>% 
-  add_footnote(lang_label("table_1b_footnote"), notation = "none") 
 
+flextable::flextable(mun_risk_levels_df) %>% 
+  flextable::width(width = 1) %>% 
+  flextable::footnote(
+    i = 1,
+    j = 4:6,
+    value = flextable::as_paragraph(
+      c(
+        lang_label("table_1b_footnote")
+      )
+    ),
+    ref_symbols = c("a"),
+    part = "header", inline = TRUE
+  )
 ```
-
 
 \newpage
 ## `r title_name_figure` 1a: `r lang_label("figure_1a_title")` `r ref_country_name`, `r YEAR_EVAL`.
@@ -348,7 +363,7 @@ knitr::include_graphics("figures/fig_1a.png")
 
 ```{r cheat_sheet_figura_1a, echo=FALSE}
 cheat_cheet_figura_1a = ind_rangos_table(LANG_TLS,CUT_OFFS,"total_score", TRUE, return_html = FALSE)
-knitr::kable(cheat_cheet_figura_1a)
+flextable::flextable(cheat_cheet_figura_1a)
 ```
 
 
@@ -364,7 +379,7 @@ knitr::include_graphics("figures/fig_1b.png")
 
 ```{r cheat_sheet_figura_1b, echo=FALSE}
 cheat_cheet_figura_1b = ind_rangos_table(LANG_TLS,CUT_OFFS,"total_score", TRUE, return_html = FALSE)
-knitr::kable(cheat_cheet_figura_1b)
+flextable::flextable(cheat_cheet_figura_1b)
 ```
 
 
@@ -379,8 +394,8 @@ knitr::include_graphics("figures/fig_1c.png")
 ```
 
 ```{r cheat_sheet_figura_1c, echo=FALSE}
-cheat_cheet_figura_1b = ind_rangos_table(LANG_TLS,CUT_OFFS,"total_score", TRUE, return_html = FALSE)
-knitr::kable(cheat_cheet_figura_1b)
+cheat_cheet_figura_1c = ind_rangos_table(LANG_TLS,CUT_OFFS,"total_score", TRUE, return_html = FALSE)
+flextable::flextable(cheat_cheet_figura_1c)
 ```
 
 \newpage
@@ -485,10 +500,21 @@ colnames(mun_risk_levels_df) <- c(
   lang_label("table_1b_pob15")
 )
 
-knitr::kable(mun_risk_levels_df,align = "lrrrrrr", booktabs = T) %>% 
-  add_footnote(lang_label("table_1b_footnote"), notation = "none") 
-```
+flextable::flextable(mun_risk_levels_df) %>% 
+  flextable::width(width = 1) %>% 
+  flextable::footnote(
+    i = 1,
+    j = 4:6,
+    value = flextable::as_paragraph(
+      c(
+        lang_label("table_1b_footnote")
+      )
+    ),
+    ref_symbols = c("a"),
+    part = "header", inline = TRUE
+  )
 
+```
 
 \newpage
 ## `r title_name_figure` 2a: `r lang_label("figure_2a_title")` `r ref_country_name`, `r YEAR_EVAL`.
@@ -502,14 +528,25 @@ knitr::include_graphics("figures/fig_2a.png")
 
 ```{r cheat_sheet_figura_2a_pfa_true, echo=FALSE}
 cheat_cheet_figura_2a = ind_rangos_table(LANG_TLS,CUT_OFFS,"immunity_score", TRUE, lang_label("population_pfa_filter"), return_html = FALSE)
-knitr::kable(cheat_cheet_figura_2a) %>% 
-  add_footnote(lang_label("population_pfa_filter"), notation = "none")
+
+flextable::flextable(cheat_cheet_figura_2a) %>% 
+  flextable::autofit() %>% 
+  flextable::add_header_row(
+    values = lang_label("population_pfa_filter"),
+    colwidths = length(colnames(cheat_cheet_figura_2a))
+  )
+
 ```
 
 ```{r cheat_sheet_figura_2a_pfa_false, echo=FALSE}
 cheat_cheet_figura_2a = ind_rangos_table(LANG_TLS,CUT_OFFS,"immunity_score", FALSE, lang_label("population_pfa_no_filter"), return_html = FALSE)
-knitr::kable(cheat_cheet_figura_2a) %>% 
-  add_footnote(lang_label("population_pfa_no_filter"), notation = "none")
+
+flextable::flextable(cheat_cheet_figura_2a) %>% 
+  flextable::autofit() %>% 
+  flextable::add_header_row(
+    values = lang_label("population_pfa_no_filter"),
+    colwidths = length(colnames(cheat_cheet_figura_2a))
+  )
 ```
 
 
@@ -531,8 +568,13 @@ knitr::include_graphics("figures/fig_2b.png")
 
 ```{r cheat_sheet_figura_2b_pfa_true, echo=FALSE}
 cheat_cheet_figura_2b = ind_rangos_table(LANG_TLS,CUT_OFFS,"immunity_score", TRUE, lang_label("population_pfa_filter"), return_html = FALSE)
-knitr::kable(cheat_cheet_figura_2b) %>% 
-  add_footnote(lang_label("population_pfa_filter"), notation = "none")
+
+flextable::flextable(cheat_cheet_figura_2b) %>% 
+  flextable::autofit() %>% 
+  flextable::add_header_row(
+    values = lang_label("population_pfa_filter"),
+    colwidths = length(colnames(cheat_cheet_figura_2b))
+  )
 ```
 
 
@@ -554,15 +596,24 @@ knitr::include_graphics("figures/fig_2c.png")
 
 ```{r cheat_sheet_figura_2c_pfa_true, echo=FALSE}
 cheat_cheet_figura_2c = ind_rangos_table(LANG_TLS,CUT_OFFS,"immunity_score", TRUE, lang_label("population_pfa_filter"), return_html = FALSE)
-knitr::kable(cheat_cheet_figura_2c) %>% 
-  add_footnote(lang_label("population_pfa_filter"), notation = "none")
+flextable::flextable(cheat_cheet_figura_2c) %>% 
+  flextable::autofit() %>% 
+  flextable::add_header_row(
+    values = lang_label("population_pfa_filter"),
+    colwidths = length(colnames(cheat_cheet_figura_2c))
+  )
+
 ```
 
 
 ```{r cheat_sheet_figura_2c_pfa_false, echo=FALSE}
 cheat_cheet_figura_2c = ind_rangos_table(LANG_TLS,CUT_OFFS,"immunity_score", FALSE, lang_label("population_pfa_no_filter"), return_html = FALSE)
-knitr::kable(cheat_cheet_figura_2c) %>% 
-  add_footnote(lang_label("population_pfa_no_filter"), notation = "none")
+flextable::flextable(cheat_cheet_figura_2c) %>% 
+  flextable::autofit() %>% 
+  flextable::add_header_row(
+    values = lang_label("population_pfa_no_filter"),
+    colwidths = length(colnames(cheat_cheet_figura_2c))
+  )
 ```
 
 
@@ -668,8 +719,19 @@ colnames(mun_risk_levels_df) <- c(
   lang_label("table_1b_pob15")
 )
 
-knitr::kable(mun_risk_levels_df,align = "lrrrrrr", booktabs = T) %>% 
-  add_footnote(lang_label("table_1b_footnote"), notation = "none") 
+flextable::flextable(mun_risk_levels_df) %>% 
+  flextable::width(width = 1) %>% 
+  flextable::footnote(
+    i = 1,
+    j = 4:6,
+    value = flextable::as_paragraph(
+      c(
+        lang_label("table_1b_footnote")
+      )
+    ),
+    ref_symbols = c("a"),
+    part = "header", inline = TRUE
+  )
 ```
 
 \newpage
@@ -698,14 +760,24 @@ knitr::include_graphics("figures/fig_3a.png")
 
 ```{r cheat_sheet_figura_3a_pfa_true, echo=FALSE}
 cheat_cheet_figura_3a = ind_rangos_table(LANG_TLS,CUT_OFFS,"surveillance_score", TRUE, lang_label("population_pfa_filter"), return_html = FALSE)
-knitr::kable(cheat_cheet_figura_3a) %>% 
-  add_footnote(lang_label("population_pfa_filter"), notation = "none")
+flextable::flextable(cheat_cheet_figura_3a) %>% 
+  flextable::autofit() %>% 
+  flextable::add_header_row(
+    values = lang_label("population_pfa_filter"),
+    colwidths = length(colnames(cheat_cheet_figura_3a))
+  )
+
 ```
 
 ```{r cheat_sheet_figura_3a_pfa_false, echo=FALSE}
 cheat_cheet_figura_3a = ind_rangos_table(LANG_TLS,CUT_OFFS,"surveillance_score", FALSE, lang_label("population_pfa_no_filter"), return_html = FALSE)
-knitr::kable(cheat_cheet_figura_3a) %>% 
-  add_footnote(lang_label("population_pfa_no_filter"), notation = "none")
+flextable::flextable(cheat_cheet_figura_3a) %>% 
+  flextable::autofit() %>% 
+  flextable::add_header_row(
+    values = lang_label("population_pfa_no_filter"),
+    colwidths = length(colnames(cheat_cheet_figura_3a))
+  )
+
 ```
 
 
@@ -736,8 +808,13 @@ knitr::include_graphics("figures/fig_3b.png")
 
 ```{r cheat_sheet_figura_3b_pfa_true, echo=FALSE}
 cheat_cheet_figura_3b = ind_rangos_table(LANG_TLS,CUT_OFFS,"surveillance_score", TRUE, lang_label("population_pfa_filter"), return_html = FALSE)
-knitr::kable(cheat_cheet_figura_3b) %>% 
-  add_footnote(lang_label("population_pfa_filter"), notation = "none")
+flextable::flextable(cheat_cheet_figura_3b) %>% 
+  flextable::autofit() %>% 
+  flextable::add_header_row(
+    values = lang_label("population_pfa_filter"),
+    colwidths = length(colnames(cheat_cheet_figura_3b))
+  )
+
 ```
 
 \newpage
@@ -767,16 +844,27 @@ knitr::include_graphics("figures/fig_3c.png")
 
 ```{r cheat_sheet_figura_3c_pfa_true, echo=FALSE}
 cheat_cheet_figura_3c = ind_rangos_table(LANG_TLS,CUT_OFFS,"surveillance_score", TRUE, lang_label("population_pfa_filter"), return_html = FALSE)
-knitr::kable(cheat_cheet_figura_3c) %>% 
-  add_footnote(lang_label("population_pfa_filter"), notation = "none")
+
+flextable::flextable(cheat_cheet_figura_3c) %>% 
+  flextable::autofit() %>% 
+  flextable::add_header_row(
+    values = lang_label("population_pfa_filter"),
+    colwidths = length(colnames(cheat_cheet_figura_3c))
+  )
 ```
 
 ```{r cheat_sheet_figura_3c_pfa_false, echo=FALSE}
 cheat_cheet_figura_3c = ind_rangos_table(LANG_TLS,CUT_OFFS,"surveillance_score", FALSE, lang_label("population_pfa_no_filter"), return_html = FALSE)
-knitr::kable(cheat_cheet_figura_3c) %>% 
-  add_footnote(lang_label("population_pfa_no_filter"), notation = "none")
+flextable::flextable(cheat_cheet_figura_3c) %>% 
+  flextable::autofit() %>% 
+  flextable::add_header_row(
+    values = lang_label("population_pfa_no_filter"),
+    colwidths = length(colnames(cheat_cheet_figura_3c))
+  )
+
 ```
 
+\newpage
 # __`r lang_label("title_name_section")` 4: `r lang_label("quality_title")`__
 
 ```{r quality_table, echo = FALSE}
@@ -861,6 +949,7 @@ quality_df <- data.frame(
   )
 )
 
-
-knitr::kable(quality_df, align = "lr", booktabs = TRUE, col.names = NULL)
+flextable::flextable(quality_df) %>%
+  flextable::delete_part(part = "header") %>% 
+  flextable::autofit()
 ```
