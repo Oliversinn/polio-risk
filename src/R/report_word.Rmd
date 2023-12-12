@@ -3,8 +3,8 @@ title: "`r library(readxl); read_excel('../Data/country_data.xlsx',sheet = 1)[1,
 author: "`r library(readxl); if (read_excel('../Data/country_data.xlsx')[3,2] == 'SPA') {paste(read_excel('translations.xlsx',sheet='REPORT')[2,2])} else if (read_excel('../Data/country_data.xlsx')[3,2] == 'ENG') {paste(read_excel('translations.xlsx',sheet='REPORT')[2,3])} else if (read_excel('../Data/country_data.xlsx')[3,2] == 'POR') {paste(read_excel('translations.xlsx',sheet='REPORT')[2,4])} else if (read_excel('../Data/country_data.xlsx')[3,2] == 'FRA') {paste(read_excel('translations.xlsx',sheet='REPORT')[2,5])};`, `r format(Sys.Date(),'%d.%m.%Y')`"
 date: "![](Dashboard/www/country_flag.png){width=20%}"
 output:
-  word_document: default
-fontsize: 11pt
+  word_document: 
+    reference_docx: word_template.docx
 ---
 
 ```{r setup, include=FALSE}
@@ -149,6 +149,8 @@ cut_offs_table <- data.frame(
 colnames(cut_offs_table) = c(lang_label("table_cut_offs_riskcats"),lang_label("table_cut_offs_risktotal"))
 
 flextable::flextable(cut_offs_table) %>% 
+  flextable::fontsize(size = 11, part = "all") %>% 
+  flextable::font()
   flextable::autofit()
 ```
 
