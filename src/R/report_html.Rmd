@@ -348,7 +348,7 @@ fig_map
 
 ```{r cheat_sheet_figura_1a, echo=FALSE}
 cheat_cheet_figura_1a = ind_rangos_table(LANG_TLS,CUT_OFFS,"total_score", TRUE)
-cheat_cheet_figura_1a
+#cheat_cheet_figura_1a
 ```
 
 
@@ -362,7 +362,7 @@ fig_map
 
 ```{r cheat_sheet_figura_1b, echo=FALSE}
 cheat_cheet_figura_1b = ind_rangos_table(LANG_TLS,CUT_OFFS,"total_score", TRUE)
-cheat_cheet_figura_1b
+#cheat_cheet_figura_1b
 ```
 
 
@@ -376,7 +376,7 @@ fig_map
 
 ```{r cheat_sheet_figura_1c, echo=FALSE}
 cheat_cheet_figura_1b = ind_rangos_table(LANG_TLS,CUT_OFFS,"total_score", TRUE)
-cheat_cheet_figura_1b
+#cheat_cheet_figura_1b
 ```
 
 \newpage
@@ -497,12 +497,12 @@ fig_map
 
 ```{r cheat_sheet_figura_2a_pfa_true, echo=FALSE}
 cheat_cheet_figura_2a = ind_rangos_table(LANG_TLS,CUT_OFFS,"immunity_score", TRUE, lang_label("population_pfa_filter"))
-cheat_cheet_figura_2a
+#cheat_cheet_figura_2a
 ```
 
 ```{r cheat_sheet_figura_2a_pfa_false, echo=FALSE}
 cheat_cheet_figura_2a = ind_rangos_table(LANG_TLS,CUT_OFFS,"immunity_score", FALSE, lang_label("population_pfa_no_filter"))
-cheat_cheet_figura_2a
+#cheat_cheet_figura_2a
 ```
 
 
@@ -522,7 +522,7 @@ fig_map
 
 ```{r cheat_sheet_figura_2b_pfa_true, echo=FALSE}
 cheat_cheet_figura_2b = ind_rangos_table(LANG_TLS,CUT_OFFS,"immunity_score", TRUE, lang_label("population_pfa_filter"))
-cheat_cheet_figura_2b
+#cheat_cheet_figura_2b
 ```
 
 
@@ -542,13 +542,13 @@ fig_map
 
 ```{r cheat_sheet_figura_2c_pfa_true, echo=FALSE}
 cheat_cheet_figura_2c = ind_rangos_table(LANG_TLS,CUT_OFFS,"immunity_score", TRUE, lang_label("population_pfa_filter"))
-cheat_cheet_figura_2c
+#cheat_cheet_figura_2c
 ```
 
 
 ```{r cheat_sheet_figura_2c_pfa_false, echo=FALSE}
 cheat_cheet_figura_2c = ind_rangos_table(LANG_TLS,CUT_OFFS,"immunity_score", FALSE, lang_label("population_pfa_no_filter"))
-cheat_cheet_figura_2c
+#cheat_cheet_figura_2c
 ```
 
 
@@ -683,12 +683,12 @@ fig_map
 
 ```{r cheat_sheet_figura_3a_pfa_true, echo=FALSE}
 cheat_cheet_figura_3a = ind_rangos_table(LANG_TLS,CUT_OFFS,"surveillance_score", TRUE, lang_label("population_pfa_filter"))
-cheat_cheet_figura_3a
+#cheat_cheet_figura_3a
 ```
 
 ```{r cheat_sheet_figura_3a_pfa_false, echo=FALSE}
 cheat_cheet_figura_3a = ind_rangos_table(LANG_TLS,CUT_OFFS,"surveillance_score", FALSE, lang_label("population_pfa_no_filter"))
-cheat_cheet_figura_3a
+#cheat_cheet_figura_3a
 ```
 
 
@@ -717,7 +717,7 @@ fig_map
 
 ```{r cheat_sheet_figura_3b_pfa_true, echo=FALSE}
 cheat_cheet_figura_3b = ind_rangos_table(LANG_TLS,CUT_OFFS,"surveillance_score", TRUE, lang_label("population_pfa_filter"))
-cheat_cheet_figura_3b
+#cheat_cheet_figura_3b
 ```
 
 ## `r title_name_figure` 3c: `r lang_label("figure_3c_title")` `r ref_country_name`, `r YEAR_1`-`r YEAR_5`.
@@ -744,12 +744,12 @@ fig_map
 
 ```{r cheat_sheet_figura_3c_pfa_true, echo=FALSE}
 cheat_cheet_figura_3c = ind_rangos_table(LANG_TLS,CUT_OFFS,"surveillance_score", TRUE, lang_label("population_pfa_filter"))
-cheat_cheet_figura_3c
+#cheat_cheet_figura_3c
 ```
 
 ```{r cheat_sheet_figura_3c_pfa_false, echo=FALSE}
 cheat_cheet_figura_3c = ind_rangos_table(LANG_TLS,CUT_OFFS,"surveillance_score", FALSE, lang_label("population_pfa_no_filter"))
-cheat_cheet_figura_3c
+#cheat_cheet_figura_3c
 ```
 
 # __`r lang_label("title_name_section")` 4: `r lang_label("quality_title")`__
