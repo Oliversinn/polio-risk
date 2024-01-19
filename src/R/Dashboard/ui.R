@@ -314,7 +314,11 @@ fluidPage(
                       lang_label("population_pfa_no_filter")
                     ),
                   ),
-                  shinycssloaders::withSpinner(DT::dataTableOutput("indicadores_rangos_table"),color = "#1c9ad6", type = "8", size = 0.3)
+                  shinycssloaders::withSpinner(DT::dataTableOutput("indicadores_rangos_table"),color = "#1c9ad6", type = "8", size = 0.3),
+                  div(
+                    class = "text-center",
+                    downloadButton("download_cutoffs_excel",lang_label("download_cutoffs_excel"), icon=icon("file-lines"), class = "button_word")
+                  )
                 )
               )
             )

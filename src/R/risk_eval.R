@@ -36,6 +36,16 @@ lang_label <- function(label) {
   return(LANG_TLS$LANG[LANG_TLS$LABEL == label])
 }
 
+if (LANG == "SPA") {
+  file.copy(from = "R/cut_offs_excel/cut_offs_download_ESP.xlsx",to ="R/Dashboard/www/cut_offs_download.xlsx",overwrite = TRUE)
+} else if (LANG == "ENG") {
+  file.copy(from = "R/cut_offs_excel/cut_offs_download_ENG.xlsx",to ="R/Dashboard/www/cut_offs_download.xlsx",overwrite = TRUE)
+} else if (LANG == "POR") {
+  file.copy(from = "R/cut_offs_excel/cut_offs_download_POR.xlsx",to ="R/Dashboard/www/cut_offs_download.xlsx",overwrite = TRUE)
+} else if (LANG == "FRA") {
+  file.copy(from = "R/cut_offs_excel/cut_offs_download_FRA.xlsx",to ="R/Dashboard/www/cut_offs_download.xlsx",overwrite = TRUE)
+}
+
 rep_label_admin1_name = lang_label("rep_label_admin1_name")
 rep_label_admin1_name_plural = lang_label("rep_label_admin1_name_plural")
 rep_label_admin2_name = lang_label("rep_label_admin2_name")

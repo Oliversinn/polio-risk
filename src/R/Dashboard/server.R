@@ -413,6 +413,13 @@ function(input, output, session) {
     ind_rangos_table(LANG_TLS,CUT_OFFS,ind_rename(input$indicadores_select_indicador), pfa_filter)
   })
   
+  output$download_cutoffs_excel <- downloadHandler(
+    filename = paste0(lang_label("cutoffs_excel_filename")," ",toupper(COUNTRY_NAME),".xlsx"),
+    content = function(file) {
+      file.copy("www/cut_offs_download.xlsx", file)
+    }
+  )
+  
   # IMMUNITY ----
   
   ## MAP ----
