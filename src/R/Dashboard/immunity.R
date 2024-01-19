@@ -351,13 +351,13 @@ inmu_plot_map_data <- function(LANG_TLS,YEAR_CAMP_SR,COUNTRY_NAME,YEAR_LIST,
     map_data <- map_data %>% mutate(
       var_num = case_when(
         GEO_ID %in% ZERO_POB_LIST ~ 3,
-        is.na(COB) ~ 0,
+        is.na(COB) ~ 4,
         tolower(COB) == tolower(lang_label_tls(LANG_TLS,"yes")) ~ 1,
         tolower(COB) == tolower(lang_label_tls(LANG_TLS,"no")) ~ 2
       ),
       var_word = case_when(
         GEO_ID %in% ZERO_POB_LIST ~ lang_label_tls(LANG_TLS,"no_hab"),
-        is.na(COB) ~ lang_label_tls(LANG_TLS,"no_data"),
+        is.na(COB) ~ lang_label_tls(LANG_TLS,"na"),
         tolower(COB) == tolower(lang_label_tls(LANG_TLS,"yes")) ~ lang_label_tls(LANG_TLS,"yes"),
         tolower(COB) == tolower(lang_label_tls(LANG_TLS,"no")) ~ lang_label_tls(LANG_TLS,"no")
       )

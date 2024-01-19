@@ -161,27 +161,33 @@ function(input, output, session) {
   
   ## MAP ----
   indicadores_prep_map_data <- reactive({
-    ind_prep_map_data(LANG_TLS,ZERO_POB_LIST,CUT_OFFS,country_shapes,scores_data,ind_rename(input$indicadores_select_indicador),get_a1_geo_id(input$admin1_filter),risk_rename(input$indicadores_select_risk), input$population15_filter)
+    ind_prep_map_data(LANG_TLS,ZERO_POB_LIST,CUT_OFFS,country_shapes,scores_data,"total_score",get_a1_geo_id(input$admin1_filter),risk_rename(input$indicadores_select_risk), input$population15_filter)
   })
+  
   
   ind_map <- reactiveValues(dat = 0)
   ind_map_2 <- reactiveValues(dat = 0)
   
   
   output$indicadores_title_map_box <- renderText({
-    text_title <- title_map_box(input$indicadores_select_indicador,input$admin1_filter)
+    text_title <- paste(
+      lang_label(
+        "general_title_map_box"),"-",
+        ifelse(input$admin1_filter == lang_label("filter_all"), COUNTRY_NAME, input$admin1_filter)
+      )
     text_title <- paste0(text_title," (",YEAR_EVAL,")")
     text_title
   })
   
   output$indicadores_title_map_box_2 <- renderText({
-    text_title <- title_map_box(input$indicadores_select_indicador,input$admin1_filter)
+    text_title <- title_map_box(lang_label("general_title_map_box"),input$admin1_filter)
     text_title <- paste0(text_title," (",YEAR_EVAL,")")
     text_title
   })
   
+  ### TOTALS ----
   output$indicadores_plot_map <- renderLeaflet({
-    ind_map$dat <- ind_plot_map_data(LANG_TLS,ZERO_POB_LIST,CUT_OFFS,indicadores_prep_map_data(),ind_rename(input$indicadores_select_indicador),get_a1_geo_id(input$admin1_filter),risk_rename(input$indicadores_select_risk))
+    ind_map$dat <- ind_plot_map_data(LANG_TLS,ZERO_POB_LIST,CUT_OFFS,indicadores_prep_map_data(),"total_score",get_a1_geo_id(input$admin1_filter),risk_rename(input$indicadores_select_risk), input$admin1_filter)
     ind_map$dat
   })
   
@@ -194,12 +200,8 @@ function(input, output, session) {
     }
   )
   
-  output$indicadores_table <- DT::renderDataTable(server = FALSE,{
-    ind_get_bar_table(LANG_TLS,CUT_OFFS,scores_data,ind_rename(input$indicadores_select_indicador),get_a1_geo_id(input$admin1_filter),risk_rename(input$indicadores_select_risk))
-  })
-  
   output$indicadores_plot_map_2 <- renderLeaflet({
-    ind_map_2$dat <- ind_plot_map_data(LANG_TLS,ZERO_POB_LIST,CUT_OFFS,indicadores_prep_map_data(),ind_rename(input$indicadores_select_indicador),get_a1_geo_id(input$admin1_filter),risk_rename(input$indicadores_select_risk))
+    ind_map_2$dat <- ind_plot_map_data(LANG_TLS,ZERO_POB_LIST,CUT_OFFS,indicadores_prep_map_data(),"total_score",get_a1_geo_id(input$admin1_filter),risk_rename(input$indicadores_select_risk), input$admin1_filter)
     ind_map_2$dat
   })
   
@@ -211,6 +213,164 @@ function(input, output, session) {
       mapshot(ind_map_2$dat, file = file)
     }
   )
+  
+  ### IMMUNITY ----
+  inmu_map_total <- reactiveValues(dat = 0)
+  
+  output$indicadores_plot_map_immunity <- renderLeaflet({
+    inmu_map_total$dat <- inmu_plot_map_data(
+      LANG_TLS,YEAR_CAMP_SR,toupper(COUNTRY_NAME),YEAR_LIST,ZERO_POB_LIST,
+      CUT_OFFS,country_shapes,immunity_scores,"immunity_score",
+      input$admin1_filter,get_a1_geo_id(input$admin1_filter),admin1_geo_id_df, 
+      input$population15_filter, risk_filter_rename(input$indicadores_select_risk))
+    inmu_map_total$dat
+  })
+  
+  output$dl_indicadores_plot_map_immunity <- downloadHandler(
+    filename = function() {
+      paste0(lang_label("map")," ",toupper(COUNTRY_NAME)," ",lang_label("general_select_immunity")," (",YEAR_EVAL,").png")
+    },
+    content = function(file) {
+      mapshot(inmu_map_total$dat, file = file)
+    }
+  )
+  
+  inmu_map_total_2 <- reactiveValues(dat = 0)
+  
+  output$indicadores_plot_map_immunity_2 <- renderLeaflet({
+    inmu_map_total$dat <- inmu_plot_map_data(
+      LANG_TLS,YEAR_CAMP_SR,toupper(COUNTRY_NAME),YEAR_LIST,ZERO_POB_LIST,
+      CUT_OFFS,country_shapes,immunity_scores,"immunity_score",
+      input$admin1_filter,get_a1_geo_id(input$admin1_filter),admin1_geo_id_df, 
+      input$population15_filter, risk_filter_rename(input$indicadores_select_risk))
+    inmu_map_total$dat
+  })
+  
+  output$dl_indicadores_plot_map_immunity_2 <- downloadHandler(
+    filename = function() {
+      paste0(lang_label("map")," ",input$admin1_filter," ",toupper(COUNTRY_NAME)," ",lang_label("general_select_immunity")," (",YEAR_EVAL,").png")
+    },
+    content = function(file) {
+      mapshot(inmu_map_total_2$dat, file = file)
+    }
+  )
+  
+  ### SURVEILLANCE ----
+  cal_map_total <- reactiveValues(dat = 0)
+  
+  output$indicadores_plot_map_surveillance <- renderLeaflet({
+    cal_map_total$dat <- cal_plot_map_data(LANG_TLS,toupper(COUNTRY_NAME),YEAR_LIST,ZERO_POB_LIST,CUT_OFFS,country_shapes,surveillance_scores,"surveillance_score",input$admin1_filter,get_a1_geo_id(input$admin1_filter),admin1_geo_id_df, input$population15_filter, risk_filter_rename(input$indicadores_select_risk))
+    cal_map_total$dat
+  })
+  
+  output$dl_indicadores_plot_map_surveillance <- downloadHandler(
+    filename = function() {
+      paste0(lang_label("map")," ",toupper(COUNTRY_NAME)," ",lang_label("general_select_surveillance")," (",YEAR_EVAL,").png")
+    },
+    content = function(file) {
+      mapshot(cal_map_total$dat, file = file)
+    }
+  )
+  
+  cal_map_total_2 <- reactiveValues(dat = 0)
+  
+  output$indicadores_plot_map_surveillance_2 <- renderLeaflet({
+    cal_map_total$dat <- cal_plot_map_data(LANG_TLS,toupper(COUNTRY_NAME),YEAR_LIST,ZERO_POB_LIST,CUT_OFFS,country_shapes,surveillance_scores,"surveillance_score",input$admin1_filter,get_a1_geo_id(input$admin1_filter),admin1_geo_id_df, input$population15_filter, risk_filter_rename(input$indicadores_select_risk))
+    cal_map_total$dat
+  })
+  
+  output$dl_indicadores_plot_map_immunity_2 <- downloadHandler(
+    filename = function() {
+      paste0(lang_label("map")," ",input$admin1_filter," ",toupper(COUNTRY_NAME)," ",lang_label("general_select_surveillance")," (",YEAR_EVAL,").png")
+    },
+    content = function(file) {
+      mapshot(cal_map_total_2$dat, file = file)
+    }
+  )
+  
+  
+  ### DETERMINANTS ----
+  determinants_map_total <- reactiveValues(dat = 0)
+  
+  output$indicadores_plot_map_determinants <- renderLeaflet({
+    determinants_map_total$dat <- determinants_plot_map_data(LANG_TLS,toupper(COUNTRY_NAME),YEAR_LIST,ZERO_POB_LIST,CUT_OFFS,country_shapes,determinants_scores,"determinants_score",input$admin1_filter,get_a1_geo_id(input$admin1_filter),admin1_geo_id_df, input$population15_filter, risk_filter_rename(input$indicadores_select_risk))
+    determinants_map_total$dat
+  })
+  
+  output$dl_indicadores_plot_map_determinants <- downloadHandler(
+    filename = function() {
+      paste0(lang_label("map")," ",toupper(COUNTRY_NAME)," ",lang_label("general_select_determinants")," (",YEAR_EVAL,").png")
+    },
+    content = function(file) {
+      mapshot(determinants_map_total$dat, file = file)
+    }
+  )
+  
+  determinants_map_total_2 <- reactiveValues(dat = 0)
+  
+  output$indicadores_plot_map_determinants_2 <- renderLeaflet({
+    determinants_map_total_2$dat <- determinants_plot_map_data(LANG_TLS,toupper(COUNTRY_NAME),YEAR_LIST,ZERO_POB_LIST,CUT_OFFS,country_shapes,determinants_scores,"determinants_score",input$admin1_filter,get_a1_geo_id(input$admin1_filter),admin1_geo_id_df, input$population15_filter, risk_filter_rename(input$indicadores_select_risk))
+    determinants_map_total_2$dat
+  })
+  
+  output$dl_indicadores_plot_map_determinants_2 <- downloadHandler(
+    filename = function() {
+      paste0(lang_label("map")," ",input$admin1_filter," ",toupper(COUNTRY_NAME)," ",lang_label("general_select_determinants")," (",YEAR_EVAL,").png")
+    },
+    content = function(file) {
+      mapshot(determinants_map_total_2$dat, file = file)
+    }
+  )
+  
+  
+  ### OUTBREAKS ----
+  outbreaks_map_total <- reactiveValues(dat = 0)
+  
+  output$indicadores_plot_map_outbreaks <- renderLeaflet({
+    outbreaks_map_total$dat <- outbreaks_plot_map_data(
+      LANG_TLS,YEAR_CAMP_SR,toupper(COUNTRY_NAME),YEAR_LIST,ZERO_POB_LIST,
+      CUT_OFFS,country_shapes,outbreaks_scores,"outbreaks_score",
+      input$admin1_filter,get_a1_geo_id(input$admin1_filter),admin1_geo_id_df, 
+      input$population15_filter, risk_filter_rename(input$indicadores_select_risk))
+    outbreaks_map_total$dat
+  })
+  
+  output$dl_indicadores_plot_map_outbreaks <- downloadHandler(
+    filename = function() {
+      paste0(lang_label("map")," ",toupper(COUNTRY_NAME)," ",lang_label("general_select_outbreaks")," (",YEAR_EVAL,").png")
+    },
+    content = function(file) {
+      mapshot(outbreaks_map_total$dat, file = file)
+    }
+  )
+  
+  outbreaks_map_total_2 <- reactiveValues(dat = 0)
+  
+  output$indicadores_plot_map_outbreaks_2 <- renderLeaflet({
+    outbreaks_map_total$dat <- outbreaks_plot_map_data(
+      LANG_TLS,YEAR_CAMP_SR,toupper(COUNTRY_NAME),YEAR_LIST,ZERO_POB_LIST,
+      CUT_OFFS,country_shapes,outbreaks_scores,"outbreaks_score",
+      input$admin1_filter,get_a1_geo_id(input$admin1_filter),admin1_geo_id_df, 
+      input$population15_filter, risk_filter_rename(input$indicadores_select_risk))
+    outbreaks_map_total$dat
+  })
+  
+  output$dl_indicadores_plot_map_outbreaks_2 <- downloadHandler(
+    filename = function() {
+      paste0(lang_label("map")," ",input$admin1_filter," ",toupper(COUNTRY_NAME)," ",lang_label("general_select_outbreaks")," (",YEAR_EVAL,").png")
+    },
+    content = function(file) {
+      mapshot(outbreaks_map_total_2$dat, file = file)
+    }
+  )
+  
+  
+  ### TABLE ----
+  
+  output$indicadores_table <- DT::renderDataTable(server = FALSE,{
+    ind_get_bar_table(LANG_TLS,CUT_OFFS,scores_data,ind_rename(input$indicadores_select_indicador),get_a1_geo_id(input$admin1_filter),risk_rename(input$indicadores_select_risk))
+  })
+  
   
   output$indicadores_table_2 <- DT::renderDataTable(server = FALSE,{
     ind_get_bar_table(LANG_TLS,CUT_OFFS,scores_data,ind_rename(input$indicadores_select_indicador),get_a1_geo_id(input$admin1_filter),risk_rename(input$indicadores_select_risk))
@@ -261,7 +421,6 @@ function(input, output, session) {
     title_map_box(lang_label("INM_POB"),input$admin1_filter)
   })
   
-  inmu_map_total <- reactiveValues(dat = 0)
   
   output$inmunidad_map_total <- renderLeaflet({
     inmu_map_total$dat <- inmu_plot_map_data(
@@ -387,7 +546,6 @@ function(input, output, session) {
   })
   
   ### SURVEILLANCE SCORE ----
-  cal_map_total <- reactiveValues(dat = 0)
   
   output$calidad_map_total <- renderLeaflet({
     cal_map_total$dat <- cal_plot_map_data(LANG_TLS,toupper(COUNTRY_NAME),YEAR_LIST,ZERO_POB_LIST,CUT_OFFS,country_shapes,surveillance_scores,"surveillance_score",input$admin1_filter,get_a1_geo_id(input$admin1_filter),admin1_geo_id_df, input$population15_filter, risk_filter_rename(input$indicadores_select_risk))
@@ -553,8 +711,6 @@ function(input, output, session) {
   })
   
   ### DETERMINANTS SCORE ----
-  determinants_map_total <- reactiveValues(dat = 0)
-  
   output$determinants_map_total <- renderLeaflet({
     determinants_map_total$dat <- determinants_plot_map_data(LANG_TLS,toupper(COUNTRY_NAME),YEAR_LIST,ZERO_POB_LIST,CUT_OFFS,country_shapes,determinants_scores,"determinants_score",input$admin1_filter,get_a1_geo_id(input$admin1_filter),admin1_geo_id_df, input$population15_filter, risk_filter_rename(input$indicadores_select_risk))
     determinants_map_total$dat
@@ -645,7 +801,6 @@ function(input, output, session) {
   })
   
   ### OUTBREAK SCORE ----
-  outbreaks_map_total <- reactiveValues(dat = 0)
   
   output$outbreaks_map_total <- renderLeaflet({
     outbreaks_map_total$dat <- outbreaks_plot_map_data(

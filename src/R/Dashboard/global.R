@@ -186,7 +186,6 @@ apply_admin_pop_filters <- function(data, admin1_filter, pop_filter) {
 
 
 # TITLES ----
-
 title_map_box <- function(indicator,admin1) {
   indicator_as_is <- indicator
   indicator = tolower(indicator)
@@ -198,9 +197,9 @@ title_map_box <- function(indicator,admin1) {
     indicator = paste0("(",indicator,")")
   }
   if (admin1 == toupper(lang_label("rep_label_all"))) {
-    title_text <- paste0(lang_label("general_title_map_box")," ",indicator," - ",toupper(COUNTRY_NAME))
+    title_text <- paste0(lang_label("general_title_map_box")," - ",toupper(COUNTRY_NAME))
   } else {
-    title_text <- paste0(lang_label("general_title_map_box")," ",indicator," - ",admin1,", ",toupper(COUNTRY_NAME))
+    title_text <- paste0(lang_label("general_title_map_box")," - ",admin1,", ",toupper(COUNTRY_NAME))
   }
   return(title_text)
 }

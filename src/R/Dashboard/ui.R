@@ -172,11 +172,35 @@ fluidPage(
                   tabBox(
                     width = 12,
                     height = NULL,
-                    ###### MAP ----
+                    ###### MAP TOTALS----
                     tabPanel(
-                      title = lang_label("button_map"), icon = icon("map",class = "fa-solid fa-map"),
+                      title = lang_label("menuitem_general_label"), icon = icon("map",class = "fa-solid fa-map"),
                       shinycssloaders::withSpinner(leafletOutput("indicadores_plot_map",height = 600),color = "#1c9ad6", type = "8", size = 0.5),
                       br(),div(style = "text-align: center;",downloadButton(outputId = "dl_indicadores_plot_map",lang_label("button_download_map"),icon = icon('camera')))
+                    ),
+                    ###### MAP IMMUNITY----
+                    tabPanel(
+                      title = lang_label("immunity_score"), icon = icon("map",class = "fa-solid fa-map"),
+                      shinycssloaders::withSpinner(leafletOutput("indicadores_plot_map_immunity",height = 600),color = "#1c9ad6", type = "8", size = 0.5),
+                      br(),div(style = "text-align: center;",downloadButton(outputId = "dl_indicadores_plot_map_immunity",lang_label("button_download_map"),icon = icon('camera')))
+                    ),
+                    ###### MAP SURVEILLANCE ----
+                    tabPanel(
+                      title = lang_label("surveillance_score"), icon = icon("map",class = "fa-solid fa-map"),
+                      shinycssloaders::withSpinner(leafletOutput("indicadores_plot_map_surveillance",height = 600),color = "#1c9ad6", type = "8", size = 0.5),
+                      br(),div(style = "text-align: center;",downloadButton(outputId = "dl_indicadores_plot_map_surveillance",lang_label("button_download_map"),icon = icon('camera')))
+                    ),
+                    ###### MAP DETERMINANTS ----
+                    tabPanel(
+                      title = lang_label("determinants_score"), icon = icon("map",class = "fa-solid fa-map"),
+                      shinycssloaders::withSpinner(leafletOutput("indicadores_plot_map_determinants",height = 600),color = "#1c9ad6", type = "8", size = 0.5),
+                      br(),div(style = "text-align: center;",downloadButton(outputId = "dl_indicadores_plot_map_determinants",lang_label("button_download_map"),icon = icon('camera')))
+                    ),
+                    ###### MAP OUTBREAKS ----
+                    tabPanel(
+                      title = lang_label("outbreaks_score"), icon = icon("map",class = "fa-solid fa-map"),
+                      shinycssloaders::withSpinner(leafletOutput("indicadores_plot_map_outbreaks",height = 600),color = "#1c9ad6", type = "8", size = 0.5),
+                      br(),div(style = "text-align: center;",downloadButton(outputId = "dl_indicadores_plot_map_outbreaks",lang_label("button_download_map"),icon = icon('camera')))
                     ),
                     ###### TABLE ----
                     tabPanel(
@@ -200,11 +224,35 @@ fluidPage(
                   tabBox(
                     width = 12,
                     height = NULL,
-                    ##### MAP ----
+                    ##### MAP TOTALS ----
                     tabPanel(
-                      title = lang_label("button_map"), icon = icon("map",class = "fa-solid fa-map"),
+                      title = lang_label("total_score"), icon = icon("map",class = "fa-solid fa-map"),
                       shinycssloaders::withSpinner(leafletOutput("indicadores_plot_map_2",height = 600),color = "#1c9ad6", type = "8", size = 0.5),
                       br(),div(style = "text-align: center;",downloadButton(outputId = "dl_indicadores_plot_map_2",lang_label("button_download_map"),icon = icon('camera')))
+                    ),
+                    ##### MAP IMMUNITY ----
+                    tabPanel(
+                      title = lang_label("immunity_score"), icon = icon("map",class = "fa-solid fa-map"),
+                      shinycssloaders::withSpinner(leafletOutput("indicadores_plot_map_immunity_2",height = 600),color = "#1c9ad6", type = "8", size = 0.5),
+                      br(),div(style = "text-align: center;",downloadButton(outputId = "dl_indicadores_plot_map_immunity_2",lang_label("button_download_map"),icon = icon('camera')))
+                    ),
+                    ##### MAP SURVEILLANCE ----
+                    tabPanel(
+                      title = lang_label("surveillance_score"), icon = icon("map",class = "fa-solid fa-map"),
+                      shinycssloaders::withSpinner(leafletOutput("indicadores_plot_map_surveillance_2",height = 600),color = "#1c9ad6", type = "8", size = 0.5),
+                      br(),div(style = "text-align: center;",downloadButton(outputId = "dl_indicadores_plot_map_surveillance_2",lang_label("button_download_map"),icon = icon('camera')))
+                    ),
+                    ##### MAP DETERMINANTS ----
+                    tabPanel(
+                      title = lang_label("determinants_score"), icon = icon("map",class = "fa-solid fa-map"),
+                      shinycssloaders::withSpinner(leafletOutput("indicadores_plot_map_determinants_2",height = 600),color = "#1c9ad6", type = "8", size = 0.5),
+                      br(),div(style = "text-align: center;",downloadButton(outputId = "dl_indicadores_plot_map_determinants_2",lang_label("button_download_map"),icon = icon('camera')))
+                    ),
+                    ##### MAP OUTBREAKS ----
+                    tabPanel(
+                      title = lang_label("outbreaks_score"), icon = icon("map",class = "fa-solid fa-map"),
+                      shinycssloaders::withSpinner(leafletOutput("indicadores_plot_map_outbreaks_2",height = 600),color = "#1c9ad6", type = "8", size = 0.5),
+                      br(),div(style = "text-align: center;",downloadButton(outputId = "dl_indicadores_plot_map_outbreaks_2",lang_label("button_download_map"),icon = icon('camera')))
                     ),
                     ##### TABLE ----
                     tabPanel(

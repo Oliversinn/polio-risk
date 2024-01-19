@@ -590,7 +590,8 @@ ind_plot_multibar_data <- function(LANG_TLS,CUT_OFFS,bar_data,admin1_id,selected
 }
 
 
-ind_plot_map_data <- function(LANG_TLS,ZERO_POB_LIST,CUT_OFFS,map_data,indicator,admin1_id,risk) {
+
+ind_plot_map_data <- function(LANG_TLS,ZERO_POB_LIST,CUT_OFFS,map_data,indicator,admin1_id,risk,admin1) {
   pfa <- population_and_pfa(map_data)
   table_intervals <- c(
     get_risk_level_point_limit(CUT_OFFS,indicator,"LR", pfa),
@@ -670,6 +671,7 @@ ind_plot_map_data <- function(LANG_TLS,ZERO_POB_LIST,CUT_OFFS,map_data,indicator
                          map_data$risk_level_word
   ) %>% lapply(HTML)
   
+  map_title = paste0(lang_label_tls(LANG_TLS,"total_score")," ",admin1_transform(LANG_TLS,COUNTRY_NAME,admin1)," (",YEAR_EVAL,")")
   # MAPA
   map <- leaflet(map_data,options = leafletOptions(doubleClickZoom = T, attributionControl = F, zoomSnap = 0.1, zoomDelta = 0.1)) %>%
     addProviderTiles(providers$Esri.WorldGrayCanvas) %>%
@@ -692,6 +694,7 @@ ind_plot_map_data <- function(LANG_TLS,ZERO_POB_LIST,CUT_OFFS,map_data,indicator
         textsize = "15px",
         direction = "auto")
     ) %>% 
+    addLegend(layerId = "map_title","topright",color = "white", opacity = 0,labels=HTML(paste0("<strong>",map_title,"</strong>"))) %>%
     addLegend(title = lang_label_tls(LANG_TLS,"legend_risk_class"),colors = legend_colors,labels = legend_values, opacity = 0.5, position = 'topright')
   
   return(map)
