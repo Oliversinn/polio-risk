@@ -591,7 +591,7 @@ ind_plot_multibar_data <- function(LANG_TLS,CUT_OFFS,bar_data,admin1_id,selected
 
 
 
-ind_plot_map_data <- function(LANG_TLS,ZERO_POB_LIST,CUT_OFFS,map_data,indicator,admin1_id,risk,admin1) {
+ind_plot_map_data <- function(LANG_TLS,ZERO_POB_LIST,CUT_OFFS,map_data,indicator,admin1_id,risk,admin1 = lang_label("filter_all")) {
   pfa <- population_and_pfa(map_data)
   table_intervals <- c(
     get_risk_level_point_limit(CUT_OFFS,indicator,"LR", pfa),

@@ -840,3 +840,21 @@ quality_df <- data.frame(
 knitr::kable(quality_df, align = "lr", booktabs = TRUE, col.names = NULL) %>% 
   kable_styling()
 ```
+\newline
+
+# __`r lang_label("title_name_section")` 5: `r lang_label("table_cut_offs_riskcats")`__
+```{r cutoffs_image, echo = FALSE}
+
+cutoffs_image <- case_when(
+  LANG == "SPA" ~ "cutoffs_SPA.png",
+  LANG == "POR" ~ "cutoffs_POR.png",
+  LANG == "ENG" ~ "cutoffs_ENG.png",
+  LANG == "FRA" ~ "cutoffs_FRA.png"
+)
+
+# Path to the image file
+image_path <- paste0("../R/cut_offs_excel/", cutoffs_image)
+
+knitr::include_graphics(image_path)
+
+```

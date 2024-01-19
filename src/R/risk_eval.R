@@ -37,7 +37,7 @@ lang_label <- function(label) {
 }
 
 if (LANG == "SPA") {
-  file.copy(from = "R/cut_offs_excel/cut_offs_download_ESP.xlsx",to ="R/Dashboard/www/cut_offs_download.xlsx",overwrite = TRUE)
+  file.copy(from = "R/cut_offs_excel/cut_offs_download_SPA.xlsx",to ="R/Dashboard/www/cut_offs_download.xlsx",overwrite = TRUE)
 } else if (LANG == "ENG") {
   file.copy(from = "R/cut_offs_excel/cut_offs_download_ENG.xlsx",to ="R/Dashboard/www/cut_offs_download.xlsx",overwrite = TRUE)
 } else if (LANG == "POR") {

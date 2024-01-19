@@ -35,6 +35,8 @@ library(tidyverse)
 library(janitor)
 library(kableExtra)
 library(DT)
+library(magrittr)
+
 if(is.null(webshot:::find_phantom())){webshot::install_phantomjs()}
 options(
   knitr.duplicate.label = "allow",
@@ -991,4 +993,23 @@ flextable::flextable(quality_df) %>%
   flextable::fontsize(size = 11, part = "all") %>% 
   flextable::font(fontname = "Calibri", part = "all") %>% 
   flextable::autofit()
+```
+
+\newpage
+
+# __`r lang_label("title_name_section")` 5: `r lang_label("table_cut_offs_riskcats")`__
+```{r cutoffs_image, echo = FALSE}
+
+cutoffs_image <- case_when(
+  LANG == "SPA" ~ "cutoffs_SPA.png",
+  LANG == "POR" ~ "cutoffs_POR.png",
+  LANG == "ENG" ~ "cutoffs_ENG.png",
+  LANG == "FRA" ~ "cutoffs_FRA.png"
+)
+
+# Path to the image file
+image_path <- paste0("../R/cut_offs_excel/", cutoffs_image)
+
+knitr::include_graphics(image_path)
+
 ```
