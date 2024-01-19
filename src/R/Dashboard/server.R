@@ -368,12 +368,12 @@ function(input, output, session) {
   ### TABLE ----
   
   output$indicadores_table <- DT::renderDataTable(server = FALSE,{
-    ind_get_bar_table(LANG_TLS,CUT_OFFS,scores_data,ind_rename(input$indicadores_select_indicador),get_a1_geo_id(input$admin1_filter),risk_rename(input$indicadores_select_risk))
+    ind_get_bar_table(LANG_TLS,CUT_OFFS,scores_data,ind_rename(input$indicadores_select_indicador),get_a1_geo_id(input$admin1_filter),risk_rename(input$indicadores_select_risk), input$population15_filter)
   })
   
   
   output$indicadores_table_2 <- DT::renderDataTable(server = FALSE,{
-    ind_get_bar_table(LANG_TLS,CUT_OFFS,scores_data,ind_rename(input$indicadores_select_indicador),get_a1_geo_id(input$admin1_filter),risk_rename(input$indicadores_select_risk))
+    ind_get_bar_table(LANG_TLS,CUT_OFFS,scores_data,ind_rename(input$indicadores_select_indicador),get_a1_geo_id(input$admin1_filter),risk_rename(input$indicadores_select_risk), input$population15_filter)
   })
   
   ### TOTAL POINTS ----

@@ -12,7 +12,7 @@ fluidPage(
     box(width = 12, background = "maroon",
         HTML(paste0('<center><div style = "text-align: left; padding-left: 30px; padding-right: 30px; padding-top: 10px;">
                         <img src="',lang_label("logo_org"),'" height="35"> <img id="country_flag" style = "right: 30px !important; position: absolute; padding-top: 1px; padding-bottom: 1px; padding-right: 1px; padding-left: 1px; margin-bottom: 10px; background-color: white;" src="country_flag.png" height="50">
-                        </div> <h2>',lang_label("dashboard_title"),' <b>',toupper(COUNTRY_NAME),'</b></h2> </center>'))
+                        </div> <h2>',lang_label("dashboard_title"),'<br> <b>',toupper(COUNTRY_NAME),'</b></h2> </center>'))
     )
   ),
   ## DASHBOARD SKIN ----

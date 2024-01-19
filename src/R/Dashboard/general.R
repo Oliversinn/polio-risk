@@ -243,7 +243,7 @@ ind_prep_map_data <- function(LANG_TLS,ZERO_POB_LIST,CUT_OFFS,map_data,data,indi
   return(map_data)
 }
 
-ind_get_bar_table <- function(LANG_TLS,CUT_OFFS,data,indicator,admin1_id,risk) {
+ind_get_bar_table <- function(LANG_TLS,CUT_OFFS,data,indicator,admin1_id,risk, pop_filter) {
   
   var_to_summarise <- case_when(
     indicator == "total_score" ~ "total_score",
@@ -254,6 +254,12 @@ ind_get_bar_table <- function(LANG_TLS,CUT_OFFS,data,indicator,admin1_id,risk) {
   )
   
   pfa <- population_and_pfa(data)
+  
+  if (pop_filter == lang_label("less_than_100000")) {
+    data <- data %>% filter(POB15 < 100000)
+  } else if (pop_filter == lang_label("greater_than_100000")) {
+    data <- data %>% filter(POB15 >= 100000)
+  }
   
   
   if (indicator != "total_score") {
