@@ -107,6 +107,16 @@ fluidPage(
           
         ),
         
+        div(
+          class = "text-black font-weight-bold",
+          tags$h4(
+            tags$strong(
+              style = "margin-left: 15px; color: #474747; font-size: 16px;",
+              paste(lang_label("sidebar_component_detail"), ":")
+            )
+          )
+        ),
+        
         ### IMMUNITY SCORES ----
         menuItem(
           text = lang_label("menuitem_immunity"),
