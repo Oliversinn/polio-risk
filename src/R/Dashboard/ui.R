@@ -112,7 +112,7 @@ fluidPage(
           tags$h4(
             tags$strong(
               style = "margin-left: 15px; color: #474747; font-size: 16px;",
-              paste(lang_label("sidebar_component_detail"), ":")
+              paste0(lang_label("sidebar_component_detail"), ":")
             )
           )
         ),
