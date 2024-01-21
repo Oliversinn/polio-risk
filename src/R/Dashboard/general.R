@@ -677,7 +677,18 @@ ind_plot_map_data <- function(LANG_TLS,ZERO_POB_LIST,CUT_OFFS,map_data,indicator
                          map_data$risk_level_word
   ) %>% lapply(HTML)
   
-  map_title = paste0(lang_label_tls(LANG_TLS,"total_score")," ",admin1_transform(LANG_TLS,COUNTRY_NAME,admin1)," (",YEAR_EVAL,")")
+  
+  if (indicator == "total_score") {
+    map_title = paste0(lang_label_tls(LANG_TLS,"total_score")," ",admin1_transform(LANG_TLS,COUNTRY_NAME,admin1)," (",YEAR_EVAL,")")
+  } else if (indicator == "immunity_score") {
+    map_title = paste0(lang_label_tls(LANG_TLS,"immunity_score")," ",admin1_transform(LANG_TLS,COUNTRY_NAME,admin1)," (",YEAR_EVAL,")")
+  } else if (indicator == "surveillance_score") {
+    map_title = paste0(lang_label_tls(LANG_TLS,"surveillance_score")," ",admin1_transform(LANG_TLS,COUNTRY_NAME,admin1)," (",YEAR_EVAL,")")
+  } else if (indicator == "determinants_score") {
+    map_title = paste0(lang_label_tls(LANG_TLS,"determinants_score")," ",admin1_transform(LANG_TLS,COUNTRY_NAME,admin1)," (",YEAR_EVAL,")")
+  } else if (indicator == "outbreaks_score") {
+    map_title = paste0(lang_label_tls(LANG_TLS,"outbreaks_score")," ",admin1_transform(LANG_TLS,COUNTRY_NAME,admin1)," (",YEAR_EVAL,")")
+  }
   # MAPA
   map <- leaflet(map_data,options = leafletOptions(doubleClickZoom = T, attributionControl = F, zoomSnap = 0.1, zoomDelta = 0.1)) %>%
     addProviderTiles(providers$Esri.WorldGrayCanvas) %>%

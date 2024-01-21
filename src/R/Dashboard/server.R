@@ -161,7 +161,7 @@ function(input, output, session) {
   
   ## MAP ----
   indicadores_prep_map_data <- reactive({
-    ind_prep_map_data(LANG_TLS,ZERO_POB_LIST,CUT_OFFS,country_shapes,scores_data,"total_score",get_a1_geo_id(input$admin1_filter),risk_rename(input$indicadores_select_risk), input$population15_filter)
+    ind_prep_map_data(LANG_TLS,ZERO_POB_LIST,CUT_OFFS,country_shapes,scores_data,ind_rename(input$indicadores_select_indicador),get_a1_geo_id(input$admin1_filter),risk_rename(input$indicadores_select_risk), input$population15_filter)
   })
   
   
@@ -187,13 +187,13 @@ function(input, output, session) {
   
   ### TOTALS ----
   output$indicadores_plot_map <- renderLeaflet({
-    ind_map$dat <- ind_plot_map_data(LANG_TLS,ZERO_POB_LIST,CUT_OFFS,indicadores_prep_map_data(),"total_score",get_a1_geo_id(input$admin1_filter),risk_rename(input$indicadores_select_risk), input$admin1_filter)
+    ind_map$dat <- ind_plot_map_data(LANG_TLS,ZERO_POB_LIST,CUT_OFFS,indicadores_prep_map_data(),ind_rename(input$indicadores_select_indicador),get_a1_geo_id(input$admin1_filter),risk_rename(input$indicadores_select_risk), input$admin1_filter)
     ind_map$dat
   })
   
   output$dl_indicadores_plot_map <- downloadHandler(
     filename = function() {
-      paste0(lang_label("map")," ",toupper(COUNTRY_NAME)," ",input$indicadores_select_indicador," (",YEAR_1,"-",YEAR_EVAL,").png")
+      paste0(lang_label("map")," ",toupper(COUNTRY_NAME)," ",input$indicadores_select_indicador," (",YEAR_EVAL,").png")
     },
     content = function(file) {
       mapshot(ind_map$dat, file = file)
@@ -201,13 +201,13 @@ function(input, output, session) {
   )
   
   output$indicadores_plot_map_2 <- renderLeaflet({
-    ind_map_2$dat <- ind_plot_map_data(LANG_TLS,ZERO_POB_LIST,CUT_OFFS,indicadores_prep_map_data(),"total_score",get_a1_geo_id(input$admin1_filter),risk_rename(input$indicadores_select_risk), input$admin1_filter)
+    ind_map_2$dat <- ind_plot_map_data(LANG_TLS,ZERO_POB_LIST,CUT_OFFS,indicadores_prep_map_data(),ind_rename(input$indicadores_select_indicador),get_a1_geo_id(input$admin1_filter),risk_rename(input$indicadores_select_risk), input$admin1_filter)
     ind_map_2$dat
   })
   
   output$dl_indicadores_plot_map_2 <- downloadHandler(
     filename = function() {
-      paste0(lang_label("map")," ",input$admin1_filter," ",toupper(COUNTRY_NAME)," ",input$indicadores_select_indicador," (",YEAR_1,"-",YEAR_EVAL,").png")
+      paste0(lang_label("map")," ",input$admin1_filter," ",toupper(COUNTRY_NAME)," ",input$indicadores_select_indicador," (",YEAR_EVAL,").png")
     },
     content = function(file) {
       mapshot(ind_map_2$dat, file = file)
@@ -366,9 +366,17 @@ function(input, output, session) {
   
   
   ### TABLE ----
+  output$general_title_data_box <- renderText({
+    title_data_box(lang_label("total_score"),input$admin1_filter)
+  })
+  
   
   output$indicadores_table <- DT::renderDataTable(server = FALSE,{
     ind_get_bar_table(LANG_TLS,CUT_OFFS,scores_data,ind_rename(input$indicadores_select_indicador),get_a1_geo_id(input$admin1_filter),risk_rename(input$indicadores_select_risk), input$population15_filter)
+  })
+  
+  output$general_title_data_box2 <- renderText({
+    title_data_box(lang_label("total_score"),input$admin1_filter)
   })
   
   

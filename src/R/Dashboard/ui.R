@@ -179,45 +179,17 @@ fluidPage(
                   solidHeader = TRUE,
                   collapsible = TRUE,
                   title = textOutput("indicadores_title_map_box"),
-                  tabBox(
-                    width = 12,
-                    height = NULL,
-                    ###### MAP TOTALS----
-                    tabPanel(
-                      title = lang_label("menuitem_general_label"), icon = icon("map",class = "fa-solid fa-map"),
-                      shinycssloaders::withSpinner(leafletOutput("indicadores_plot_map",height = 600),color = "#1c9ad6", type = "8", size = 0.5),
-                      br(),div(style = "text-align: center;",downloadButton(outputId = "dl_indicadores_plot_map",lang_label("button_download_map"),icon = icon('camera')))
-                    ),
-                    ###### MAP IMMUNITY----
-                    tabPanel(
-                      title = lang_label("immunity_score"), icon = icon("map",class = "fa-solid fa-map"),
-                      shinycssloaders::withSpinner(leafletOutput("indicadores_plot_map_immunity",height = 600),color = "#1c9ad6", type = "8", size = 0.5),
-                      br(),div(style = "text-align: center;",downloadButton(outputId = "dl_indicadores_plot_map_immunity",lang_label("button_download_map"),icon = icon('camera')))
-                    ),
-                    ###### MAP SURVEILLANCE ----
-                    tabPanel(
-                      title = lang_label("surveillance_score"), icon = icon("map",class = "fa-solid fa-map"),
-                      shinycssloaders::withSpinner(leafletOutput("indicadores_plot_map_surveillance",height = 600),color = "#1c9ad6", type = "8", size = 0.5),
-                      br(),div(style = "text-align: center;",downloadButton(outputId = "dl_indicadores_plot_map_surveillance",lang_label("button_download_map"),icon = icon('camera')))
-                    ),
-                    ###### MAP DETERMINANTS ----
-                    tabPanel(
-                      title = lang_label("determinants_score"), icon = icon("map",class = "fa-solid fa-map"),
-                      shinycssloaders::withSpinner(leafletOutput("indicadores_plot_map_determinants",height = 600),color = "#1c9ad6", type = "8", size = 0.5),
-                      br(),div(style = "text-align: center;",downloadButton(outputId = "dl_indicadores_plot_map_determinants",lang_label("button_download_map"),icon = icon('camera')))
-                    ),
-                    ###### MAP OUTBREAKS ----
-                    tabPanel(
-                      title = lang_label("outbreaks_score"), icon = icon("map",class = "fa-solid fa-map"),
-                      shinycssloaders::withSpinner(leafletOutput("indicadores_plot_map_outbreaks",height = 600),color = "#1c9ad6", type = "8", size = 0.5),
-                      br(),div(style = "text-align: center;",downloadButton(outputId = "dl_indicadores_plot_map_outbreaks",lang_label("button_download_map"),icon = icon('camera')))
-                    ),
-                    ###### TABLE ----
-                    tabPanel(
-                      title = lang_label("button_datatable"),icon = icon("table"),
-                      shinycssloaders::withSpinner(DT::dataTableOutput("indicadores_table"),color = "#1c9ad6", type = "8", size = 0.5)
-                    )
-                  )
+                  shinycssloaders::withSpinner(leafletOutput("indicadores_plot_map",height = 600),color = "#1c9ad6", type = "8", size = 0.5),
+                  br(),div(style = "text-align: center;",downloadButton(outputId = "dl_indicadores_plot_map",lang_label("button_download_map"),icon = icon('camera')))
+                )
+              ),
+              fluidRow(
+                box(
+                  width = 12,
+                  solidHeader = TRUE,
+                  collapsible = TRUE,
+                  title = textOutput("general_title_data_box"),
+                  shinycssloaders::withSpinner(DT::dataTableOutput("indicadores_table"),color = "#1c9ad6", type = "8", size = 0.5)
                 )
               )
             ),
@@ -231,45 +203,8 @@ fluidPage(
                   solidHeader = TRUE,
                   collapsible = TRUE,
                   title = textOutput("indicadores_title_map_box_2"),
-                  tabBox(
-                    width = 12,
-                    height = NULL,
-                    ##### MAP TOTALS ----
-                    tabPanel(
-                      title = lang_label("total_score"), icon = icon("map",class = "fa-solid fa-map"),
-                      shinycssloaders::withSpinner(leafletOutput("indicadores_plot_map_2",height = 600),color = "#1c9ad6", type = "8", size = 0.5),
-                      br(),div(style = "text-align: center;",downloadButton(outputId = "dl_indicadores_plot_map_2",lang_label("button_download_map"),icon = icon('camera')))
-                    ),
-                    ##### MAP IMMUNITY ----
-                    tabPanel(
-                      title = lang_label("immunity_score"), icon = icon("map",class = "fa-solid fa-map"),
-                      shinycssloaders::withSpinner(leafletOutput("indicadores_plot_map_immunity_2",height = 600),color = "#1c9ad6", type = "8", size = 0.5),
-                      br(),div(style = "text-align: center;",downloadButton(outputId = "dl_indicadores_plot_map_immunity_2",lang_label("button_download_map"),icon = icon('camera')))
-                    ),
-                    ##### MAP SURVEILLANCE ----
-                    tabPanel(
-                      title = lang_label("surveillance_score"), icon = icon("map",class = "fa-solid fa-map"),
-                      shinycssloaders::withSpinner(leafletOutput("indicadores_plot_map_surveillance_2",height = 600),color = "#1c9ad6", type = "8", size = 0.5),
-                      br(),div(style = "text-align: center;",downloadButton(outputId = "dl_indicadores_plot_map_surveillance_2",lang_label("button_download_map"),icon = icon('camera')))
-                    ),
-                    ##### MAP DETERMINANTS ----
-                    tabPanel(
-                      title = lang_label("determinants_score"), icon = icon("map",class = "fa-solid fa-map"),
-                      shinycssloaders::withSpinner(leafletOutput("indicadores_plot_map_determinants_2",height = 600),color = "#1c9ad6", type = "8", size = 0.5),
-                      br(),div(style = "text-align: center;",downloadButton(outputId = "dl_indicadores_plot_map_determinants_2",lang_label("button_download_map"),icon = icon('camera')))
-                    ),
-                    ##### MAP OUTBREAKS ----
-                    tabPanel(
-                      title = lang_label("outbreaks_score"), icon = icon("map",class = "fa-solid fa-map"),
-                      shinycssloaders::withSpinner(leafletOutput("indicadores_plot_map_outbreaks_2",height = 600),color = "#1c9ad6", type = "8", size = 0.5),
-                      br(),div(style = "text-align: center;",downloadButton(outputId = "dl_indicadores_plot_map_outbreaks_2",lang_label("button_download_map"),icon = icon('camera')))
-                    ),
-                    ##### TABLE ----
-                    tabPanel(
-                      title = lang_label("button_datatable"),icon = icon("table"),
-                      shinycssloaders::withSpinner(DT::dataTableOutput("indicadores_table_2"),color = "#1c9ad6", type = "8", size = 0.5)
-                    )
-                  )
+                  shinycssloaders::withSpinner(leafletOutput("indicadores_plot_map_2",height = 700),color = "#1c9ad6", type = "8", size = 0.5),
+                  br(),div(style = "text-align: center;",downloadButton(outputId = "dl_indicadores_plot_map_2",lang_label("button_download_map"),icon = icon('camera'))),
                 ),
                 box(
                   width = 6,
@@ -307,32 +242,37 @@ fluidPage(
                     )
                   )
                 )
+              ),
+              fluidRow(
+                box(
+                  width = 12,
+                  solidHeader = TRUE,
+                  collapsible = TRUE,
+                  title = textOutput("general_title_data_box2"),
+                  shinycssloaders::withSpinner(DT::dataTableOutput("indicadores_table_2"),color = "#1c9ad6", type = "8", size = 0.5)
+                )
               )
             ),
             #### SCORE CHEAT SHEET ----
             fluidRow(
-              column(
+              box(
                 width = 12,
-                box(
-                  width = 12,
-                  solidHeader = TRUE,collapsible = TRUE,title = lang_label("general_title_limits_table"),
-                  selectInput(
-                    "general_limits_table_filter", 
-                    label = "", 
-                    choices = c(
-                      lang_label("population_pfa_filter"),
-                      lang_label("population_pfa_no_filter")
-                    ),
+                solidHeader = TRUE,collapsible = TRUE,title = lang_label("general_title_limits_table"),
+                selectInput(
+                  "general_limits_table_filter", 
+                  label = "", 
+                  choices = c(
+                    lang_label("population_pfa_filter"),
+                    lang_label("population_pfa_no_filter")
                   ),
-                  shinycssloaders::withSpinner(DT::dataTableOutput("indicadores_rangos_table"),color = "#1c9ad6", type = "8", size = 0.3),
-                  div(
-                    class = "text-center",
-                    downloadButton("download_cutoffs_excel",lang_label("download_cutoffs_excel"), icon=icon("file-lines"), class = "button_word")
-                  )
+                ),
+                shinycssloaders::withSpinner(DT::dataTableOutput("indicadores_rangos_table"),color = "#1c9ad6", type = "8", size = 0.3),
+                div(
+                  class = "text-center",
+                  downloadButton("download_cutoffs_excel",lang_label("download_cutoffs_excel"), icon=icon("file-lines"), class = "button_word")
                 )
               )
             )
-            
           ),
           
           ### TAB IMMUNITY SCORES ----
