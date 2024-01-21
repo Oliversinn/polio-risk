@@ -678,7 +678,7 @@ ind_plot_map_data <- function(LANG_TLS,ZERO_POB_LIST,CUT_OFFS,map_data,indicator
   ) %>% lapply(HTML)
   
   
-  if (indicator == "total_score") {
+  if (indicator == "total_score" || indicator == "PR") {
     map_title = paste0(lang_label_tls(LANG_TLS,"total_score")," ",admin1_transform(LANG_TLS,COUNTRY_NAME,admin1)," (",YEAR_EVAL,")")
   } else if (indicator == "immunity_score") {
     map_title = paste0(lang_label_tls(LANG_TLS,"immunity_score")," ",admin1_transform(LANG_TLS,COUNTRY_NAME,admin1)," (",YEAR_EVAL,")")
