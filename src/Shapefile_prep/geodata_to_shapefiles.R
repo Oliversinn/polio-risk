@@ -117,10 +117,12 @@ map_preview <- leaflet(country_shapefiles) %>%
   addPolygons(fillColor = "orange",fillOpacity = .9,
               weight = 1.5,color = "black", opacity = .7)
 
+map_preview
+
+
 # Step 5 [Save] ----
 # Save shapefiles to use in the tool
 dir.create("../Data/shapefiles")
 st_write(country_shapefiles, "../Data/shapefiles/admin2.shp", append=FALSE)
 write_xlsx(as.data.frame(country_shapefiles) %>% select(-geometry) %>% na.omit() %>% arrange(ADMIN1),"geocodigos_nombres.xlsx")
 
-map_preview

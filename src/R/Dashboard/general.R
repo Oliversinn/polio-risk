@@ -730,7 +730,7 @@ ind_prep_box_data <- function(LANG_TLS,CUT_OFFS,data,indicator,admin1_id,pop_fil
   )
   
   pfa <- population_and_pfa(data)
-  prep_data <- data %>% rename("PR" = var_to_summarise)
+  prep_data <- data %>% rename("PR" = all_of(var_to_summarise))
   
   if (admin1_id == 0) {
     prep_data <- prep_data %>% filter(!is.na(PR)) %>% select(LUGAR = ADMIN2,PR, POB15)

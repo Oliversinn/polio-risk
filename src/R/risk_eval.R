@@ -549,104 +549,13 @@ if ("ADMIN1_GEO_ID" %in% colnames(country_shapes)) {
   admin1_geo_id_df <- rbind(admin1_geo_id_df,c(0,toupper(lang_label("rep_label_all"))))
 }
 
-# # HARCODE ADMIN1 GEO ID ----
-country_shapes <- country_shapes %>%
-  mutate(
-    `ADMIN1 GEO_ID` = case_when(
-      nchar(as.character(GEO_ID)) == 3 ~ substr(as.character(GEO_ID),1,1),
-      nchar(as.character(GEO_ID)) == 4 ~ substr(as.character(GEO_ID),1,2)
-    ),
-    .before = 1
-  ) %>% mutate(
-    GEO_ID = as.character(GEO_ID)
-  )
-
-hardcoded_columns <- as.data.frame(country_shapes) %>%
-  select(
-    `ADMIN1 GEO_ID`,
-    GEO_ID,
-    ADMIN1,
-    ADMIN2
-  )
-
-# ## POPULATION IMMUNITY ----
-# immunity_scores <- immunity_scores %>% 
-#   select(
-#     -`ADMIN1 GEO_ID`,
-#     -GEO_ID
-#   ) %>% 
-#   full_join(hardcoded_columns, ., by = c("ADMIN1" = "ADMIN1", "ADMIN2" = "ADMIN2"))
-# 
-# immunity_data <- immunity_data %>% 
-#   select(
-#     -`ADMIN1 GEO_ID`,
-#     -GEO_ID
-#   ) %>% 
-#   full_join(hardcoded_columns, ., by = c("ADMIN1" = "ADMIN1", "ADMIN2" = "ADMIN2"))
-# 
-# ## SURVAILLANCE ----
-# surveillance_scores <- surveillance_scores %>% 
-#   select(
-#     -`ADMIN1 GEO_ID`,
-#     -GEO_ID
-#   ) %>% 
-#   full_join(hardcoded_columns, ., by = c("ADMIN1" = "ADMIN1", "ADMIN2" = "ADMIN2"))
-# 
-# surveillance_data <- surveillance_data %>% 
-#   select(
-#     -`ADMIN1 GEO_ID`,
-#     -GEO_ID
-#   ) %>% 
-#   full_join(hardcoded_columns, ., by = c("ADMIN1" = "ADMIN1", "ADMIN2" = "ADMIN2"))
-# 
-# 
-# 
-# ## DETERMINANTS ----
-# determinants_data <- determinants_data %>% 
-#   select(
-#     -`ADMIN1 GEO_ID`,
-#     -GEO_ID
-#   ) %>% 
-#   full_join(hardcoded_columns, ., by = c("ADMIN1" = "ADMIN1", "ADMIN2" = "ADMIN2"))
-# 
-# determinants_scores <- determinants_scores %>% 
-#   select(
-#     -`ADMIN1 GEO_ID`,
-#     -GEO_ID
-#   ) %>% 
-#   full_join(hardcoded_columns, ., by = c("ADMIN1" = "ADMIN1", "ADMIN2" = "ADMIN2"))
-# 
-# ## OUTBREAKS ----
-# outbreaks_scores <- outbreaks_scores %>% 
-#   select(
-#     -`ADMIN1 GEO_ID`,
-#     -GEO_ID
-#   ) %>% 
-#   full_join(hardcoded_columns, ., by = c("ADMIN1" = "ADMIN1", "ADMIN2" = "ADMIN2"))
-# 
-# outbreaks_data <- outbreaks_data %>% 
-#   select(
-#     -`ADMIN1 GEO_ID`,
-#     -GEO_ID
-#   ) %>% 
-#   full_join(hardcoded_columns, ., by = c("ADMIN1" = "ADMIN1", "ADMIN2" = "ADMIN2"))
-# 
-## admin1_geo_id_df ----
-admin1_geo_id_df <- hardcoded_columns %>%
-  select(
-    `ADMIN1 GEO_ID`,
-    ADMIN1
-  )
-admin1_geo_id_df <- rbind(admin1_geo_id_df,c(0,toupper(lang_label("rep_label_all"))))
-
-# 
-# ## SCORES ----
-# scores_data <- scores_data %>% 
-#   select(
-#     -`ADMIN1 GEO_ID`,
-#     -GEO_ID
-#   ) %>% 
-#   full_join(hardcoded_columns, ., by = c("ADMIN1" = "ADMIN1", "ADMIN2" = "ADMIN2"))
+if (("ADMIN1_GEO_ID" %in% colnames(country_shapes)) & ("ADMIN1 GEO_ID" %!in% colnames(country_shapes))) {
+  country_shapes <- country_shapes %>% 
+    rename(
+      "ADMIN1 GEO_ID" = "ADMIN1_GEO_ID"
+    )
+  
+}
 
 
 # SAVE ----
@@ -658,6 +567,6 @@ rm(determinants_scores_join,
 save.image(file = paste0(PATH_global, "R/Dashboard/POLIO.RData"))
 
 # CLEAN ----
-#rm(list = ls())
+rm(list = ls())
 
 

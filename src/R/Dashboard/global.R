@@ -29,7 +29,7 @@ library(mapview)
 library(webshot)
 
 
-webshot::install_phantomjs(force = TRUE)
+#webshot::install_phantomjs(force = TRUE)
 Sys.setenv(OPENSSL_CONF = "/dev/null")
 options(shiny.fullstacktrace = TRUE)
 
@@ -54,7 +54,7 @@ admin1_transform <- function(LANG_TLS,COUNTRY_NAME,admin1) {
 }
 
 plot_pie_data <- function(LANG_TLS,ZERO_POB_LIST,CUT_OFFS,indicator,data,admin1_id,pop_filter, return_table=F) {
-  data <- data %>% rename('var' = indicator)
+  data <- data %>% rename('var' = all_of(indicator))
   data$risk_level <- get_risk_level(LANG_TLS,CUT_OFFS,indicator,data$var, data$population_and_pfa_bool)
   
   if (pop_filter != lang_label("filter_all")) {
